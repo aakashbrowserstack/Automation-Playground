@@ -1,1 +1,41 @@
-<!doctype html><html><head><meta charset='utf-8'><title>v1/alerts.html</title><link rel='stylesheet' href='/shared/styles.css'></head><body><a href='/index.html' class='small btn'>Back</a><section class='card'><h2>Alerts & Dialogs</h2><div class='row'><button id='js-alert' class='btn'>JS Alert</button><button id='js-confirm' class='btn'>JS Confirm</button><button id='js-prompt' class='btn'>JS Prompt</button></div><div id='out' class='small'></div></section><script>onReady(function(){ el('js-alert').addEventListener('click',()=>alert('Alert')); el('js-confirm').addEventListener('click',()=>{ if(confirm('Sure?')) el('out').textContent='Confirmed'; else el('out').textContent='Cancelled'; }); el('js-prompt').addEventListener('click', ()=>{ const v=prompt('Enter'); el('out').textContent='Prompt:'+v; }); });</script><script src='/shared/scripts.js'></script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Alerts & Dialogs</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<h2>Alerts & Dialogs</h2>
+<div class='row'>
+<button id='js-alert' class='btn' data-testid='btn-alert'>JS Alert</button>
+<button id='js-confirm' class='btn' data-testid='btn-confirm'>JS Confirm</button>
+<button id='js-prompt' class='btn' data-testid='btn-prompt'>JS Prompt</button>
+</div>
+<div id='out' class='small' data-testid='alert-output'></div>
+</section>
+
+<script src='/shared/scripts.js'></script>
+<script>
+onReady(function() {
+  el('js-alert').addEventListener('click', () => alert('Alert'));
+  
+  el('js-confirm').addEventListener('click', () => {
+    if (confirm('Sure?')) {
+      el('out').textContent = 'Confirmed';
+    } else {
+      el('out').textContent = 'Cancelled';
+    }
+  });
+  
+  el('js-prompt').addEventListener('click', () => {
+    const v = prompt('Enter');
+    el('out').textContent = 'Prompt: ' + v;
+  });
+});
+</script>
+</body>
+</html>
