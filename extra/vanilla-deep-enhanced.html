@@ -1,0 +1,474 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Vanilla JS Advanced Demo - LCNC Testing</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+.form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+.form-group label { margin-bottom: 5px; font-weight: bold; }
+.form-group input, .form-group select, .form-group textarea { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+.error { color: red; font-size: 12px; margin-top: 3px; }
+.success { color: green; font-size: 12px; margin-top: 3px; }
+.tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+.tab { padding: 10px 20px; cursor: pointer; border: none; background: none; }
+.tab.active { border-bottom: 3px solid #4CAF50; font-weight: bold; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.sortable-item { padding: 10px; margin: 5px 0; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: move; display: flex; justify-content: space-between; align-items: center; }
+.sortable-item:hover { background: #e8e8e8; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+.modal.show { display: flex; align-items: center; justify-content: center; }
+.modal-content { background-color: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; }
+.data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+.data-table th { background-color: #f5f5f5; cursor: pointer; }
+.data-table tr:hover { background-color: #f9f9f9; }
+.progress-bar { width: 100%; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #45a049); transition: width 0.3s; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<h2>Vanilla JS Advanced Demo - LCNC Testing</h2>
+<p style='color: #666; margin-bottom: 20px;'>Pure JavaScript demo with forms, tables, modals, and interactive features</p>
+
+<!-- Tabs -->
+<div class='tabs'>
+  <button class='tab active' data-tab='form' data-testid='tab-form'>Multi-Step Form</button>
+  <button class='tab' data-tab='table' data-testid='tab-table'>Data Table</button>
+  <button class='tab' data-tab='tasks' data-testid='tab-tasks'>Task List</button>
+</div>
+
+<!-- Tab 1: Multi-Step Form -->
+<div class='tab-content active' data-content='form' data-testid='form-tab-content'>
+  <h3>Multi-Step Registration Form</h3>
+  <div class='progress-bar'>
+    <div class='progress-fill' id='formProgress' data-testid='form-progress' style='width: 33%'></div>
+  </div>
+  <p id='stepIndicator'>Step 1 of 3</p>
+
+  <form id='multiStepForm'>
+    <!-- Step 1 -->
+    <div class='form-step' data-step='1'>
+      <div class='form-grid'>
+        <div class='form-group'>
+          <label>First Name *</label>
+          <input type='text' name='firstName' data-testid='input-firstname'>
+          <span class='error' id='error-firstName'></span>
+        </div>
+        <div class='form-group'>
+          <label>Last Name *</label>
+          <input type='text' name='lastName' data-testid='input-lastname'>
+          <span class='error' id='error-lastName'></span>
+        </div>
+        <div class='form-group'>
+          <label>Email *</label>
+          <input type='email' name='email' data-testid='input-email'>
+          <span class='error' id='error-email'></span>
+        </div>
+        <div class='form-group'>
+          <label>Phone</label>
+          <input type='tel' name='phone' data-testid='input-phone'>
+        </div>
+      </div>
+      <button type='button' class='btn' onclick='nextStep()' data-testid='btn-next-step1'>Next</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class='form-step' data-step='2' style='display: none;'>
+      <div class='form-grid'>
+        <div class='form-group'>
+          <label>Country *</label>
+          <select name='country' data-testid='select-country'>
+            <option value=''>Select Country</option>
+            <option value='USA'>USA</option>
+            <option value='UK'>UK</option>
+            <option value='Canada'>Canada</option>
+            <option value='India'>India</option>
+          </select>
+          <span class='error' id='error-country'></span>
+        </div>
+        <div class='form-group'>
+          <label>City *</label>
+          <input type='text' name='city' data-testid='input-city'>
+          <span class='error' id='error-city'></span>
+        </div>
+        <div class='form-group' style='grid-column: 1 / -1;'>
+          <label>Address</label>
+          <textarea name='address' rows='3' data-testid='textarea-address'></textarea>
+        </div>
+      </div>
+      <button type='button' class='btn' onclick='prevStep()' data-testid='btn-prev-step2'>Previous</button>
+      <button type='button' class='btn' onclick='nextStep()' data-testid='btn-next-step2'>Next</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div class='form-step' data-step='3' style='display: none;'>
+      <div class='form-group'>
+        <label>
+          <input type='checkbox' name='newsletter' data-testid='checkbox-newsletter'>
+          Subscribe to newsletter
+        </label>
+      </div>
+      <div class='form-group'>
+        <label>
+          <input type='checkbox' name='terms' data-testid='checkbox-terms'>
+          I agree to terms and conditions *
+        </label>
+        <span class='error' id='error-terms'></span>
+      </div>
+      <button type='button' class='btn' onclick='prevStep()' data-testid='btn-prev-step3'>Previous</button>
+      <button type='submit' class='btn' data-testid='btn-submit-form'>Submit</button>
+    </div>
+  </form>
+
+  <div id='formSuccess' style='display: none; margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 4px;' data-testid='form-success'>
+    <strong>✓ Form Submitted Successfully!</strong>
+    <p id='successMessage'></p>
+  </div>
+</div>
+
+<!-- Tab 2: Data Table -->
+<div class='tab-content' data-content='table' data-testid='table-tab-content'>
+  <h3>User Data Table</h3>
+  <input type='text' id='searchInput' placeholder='Search users...' style='padding: 8px; width: 100%; margin-bottom: 15px;' data-testid='input-search'>
+  
+  <table class='data-table' data-testid='data-table'>
+    <thead>
+      <tr>
+        <th data-sort='name' data-testid='th-name'>Name</th>
+        <th data-sort='email' data-testid='th-email'>Email</th>
+        <th data-sort='role' data-testid='th-role'>Role</th>
+        <th data-sort='status' data-testid='th-status'>Status</th>
+        <th data-testid='th-actions'>Actions</th>
+      </tr>
+    </thead>
+    <tbody id='tableBody'>
+    </tbody>
+  </table>
+</div>
+
+<!-- Tab 3: Task List -->
+<div class='tab-content' data-content='tasks' data-testid='tasks-tab-content'>
+  <h3>Task Management</h3>
+  <div style='margin-bottom: 20px;'>
+    <input type='text' id='newTaskInput' placeholder='Enter new task...' style='padding: 8px; width: 70%;' data-testid='input-new-task'>
+    <button class='btn' onclick='addTask()' data-testid='btn-add-task'>Add Task</button>
+  </div>
+  
+  <div id='taskList'></div>
+  
+  <p style='margin-top: 15px;' id='taskStats'></p>
+</div>
+
+<!-- Modal -->
+<div class='modal' id='editModal' data-testid='edit-modal'>
+  <div class='modal-content'>
+    <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'>
+      <h3>Edit User</h3>
+      <span style='font-size: 28px; cursor: pointer;' onclick='closeModal()' data-testid='btn-close-modal'>&times;</span>
+    </div>
+    <div class='form-group'>
+      <label>Name</label>
+      <input type='text' id='modalName' data-testid='modal-input-name'>
+    </div>
+    <div class='form-group'>
+      <label>Email</label>
+      <input type='email' id='modalEmail' data-testid='modal-input-email'>
+    </div>
+    <div class='form-group'>
+      <label>Role</label>
+      <select id='modalRole' data-testid='modal-select-role'>
+        <option value='Admin'>Admin</option>
+        <option value='User'>User</option>
+        <option value='Guest'>Guest</option>
+      </select>
+    </div>
+    <button class='btn' onclick='saveUser()' data-testid='btn-save-user'>Save Changes</button>
+  </div>
+</div>
+
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script>
+// Global state
+let currentStep = 1;
+let users = [
+  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active' },
+  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Inactive' },
+  { id: 4, name: 'Alice Williams', email: 'alice@example.com', role: 'Guest', status: 'Active' }
+];
+let tasks = [
+  { text: 'Complete project documentation', completed: false },
+  { text: 'Review pull requests', completed: true },
+  { text: 'Update test cases', completed: false }
+];
+let editingUserId = null;
+let sortField = 'name';
+let sortReverse = false;
+
+onReady(() => {
+  initTabs();
+  initForm();
+  renderTable();
+  renderTasks();
+  initSearch();
+  initTableSort();
+});
+
+// Tab management
+function initTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = tab.dataset.tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`[data-content="${tabName}"]`).classList.add('active');
+    });
+  });
+}
+
+// Multi-step form
+function initForm() {
+  document.getElementById('multiStepForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitForm();
+  });
+}
+
+function nextStep() {
+  clearErrors();
+  if (currentStep === 1) {
+    const firstName = document.querySelector('[name="firstName"]').value;
+    const lastName = document.querySelector('[name="lastName"]').value;
+    const email = document.querySelector('[name="email"]').value;
+    let hasError = false;
+    
+    if (!firstName) {
+      showError('firstName', 'First name is required');
+      hasError = true;
+    }
+    if (!lastName) {
+      showError('lastName', 'Last name is required');
+      hasError = true;
+    }
+    if (!email) {
+      showError('email', 'Email is required');
+      hasError = true;
+    }
+    
+    if (!hasError) {
+      currentStep = 2;
+      updateFormStep();
+    }
+  } else if (currentStep === 2) {
+    const country = document.querySelector('[name="country"]').value;
+    const city = document.querySelector('[name="city"]').value;
+    let hasError = false;
+    
+    if (!country) {
+      showError('country', 'Country is required');
+      hasError = true;
+    }
+    if (!city) {
+      showError('city', 'City is required');
+      hasError = true;
+    }
+    
+    if (!hasError) {
+      currentStep = 3;
+      updateFormStep();
+    }
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) {
+    currentStep--;
+    updateFormStep();
+  }
+}
+
+function updateFormStep() {
+  document.querySelectorAll('.form-step').forEach((step, index) => {
+    step.style.display = (index + 1) === currentStep ? 'block' : 'none';
+  });
+  document.getElementById('stepIndicator').textContent = `Step ${currentStep} of 3`;
+  document.getElementById('formProgress').style.width = `${(currentStep / 3) * 100}%`;
+}
+
+function submitForm() {
+  clearErrors();
+  const terms = document.querySelector('[name="terms"]').checked;
+  
+  if (!terms) {
+    showError('terms', 'You must agree to terms');
+    return;
+  }
+  
+  const firstName = document.querySelector('[name="firstName"]').value;
+  const lastName = document.querySelector('[name="lastName"]').value;
+  
+  document.getElementById('formSuccess').style.display = 'block';
+  document.getElementById('successMessage').textContent = `Thank you, ${firstName} ${lastName}!`;
+}
+
+function showError(field, message) {
+  document.getElementById(`error-${field}`).textContent = message;
+}
+
+function clearErrors() {
+  document.querySelectorAll('.error').forEach(el => el.textContent = '');
+}
+
+// Data table
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  
+  const filteredUsers = getFilteredUsers();
+  const sortedUsers = sortUsers(filteredUsers);
+  
+  sortedUsers.forEach((user, index) => {
+    const row = tbody.insertRow();
+    row.dataset.testid = `table-row-${index}`;
+    row.innerHTML = `
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+      <td>${user.role}</td>
+      <td>${user.status}</td>
+      <td>
+        <button class='small btn' onclick='editUser(${user.id})' data-testid='btn-edit-${index}'>Edit</button>
+        <button class='small btn' onclick='deleteUser(${user.id})' data-testid='btn-delete-${index}'>Delete</button>
+      </td>
+    `;
+  });
+}
+
+function getFilteredUsers() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  if (!query) return users;
+  
+  return users.filter(user => 
+    user.name.toLowerCase().includes(query) ||
+    user.email.toLowerCase().includes(query) ||
+    user.role.toLowerCase().includes(query)
+  );
+}
+
+function sortUsers(userList) {
+  return userList.sort((a, b) => {
+    const aVal = a[sortField];
+    const bVal = b[sortField];
+    const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+    return sortReverse ? -comparison : comparison;
+  });
+}
+
+function initSearch() {
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+}
+
+function initTableSort() {
+  document.querySelectorAll('[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const field = th.dataset.sort;
+      if (sortField === field) {
+        sortReverse = !sortReverse;
+      } else {
+        sortField = field;
+        sortReverse = false;
+      }
+      renderTable();
+    });
+  });
+}
+
+function editUser(id) {
+  const user = users.find(u => u.id === id);
+  if (user) {
+    editingUserId = id;
+    document.getElementById('modalName').value = user.name;
+    document.getElementById('modalEmail').value = user.email;
+    document.getElementById('modalRole').value = user.role;
+    document.getElementById('editModal').classList.add('show');
+  }
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('show');
+}
+
+function saveUser() {
+  const user = users.find(u => u.id === editingUserId);
+  if (user) {
+    user.name = document.getElementById('modalName').value;
+    user.email = document.getElementById('modalEmail').value;
+    user.role = document.getElementById('modalRole').value;
+    renderTable();
+    closeModal();
+  }
+}
+
+function deleteUser(id) {
+  users = users.filter(u => u.id !== id);
+  renderTable();
+}
+
+// Task list
+function renderTasks() {
+  const taskList = document.getElementById('taskList');
+  taskList.innerHTML = '';
+  
+  tasks.forEach((task, index) => {
+    const taskDiv = document.createElement('div');
+    taskDiv.className = 'sortable-item';
+    taskDiv.dataset.testid = `task-item-${index}`;
+    taskDiv.innerHTML = `
+      <div>
+        <input type='checkbox' ${task.completed ? 'checked' : ''} onchange='toggleTask(${index})' data-testid='checkbox-task-${index}'>
+        <span style='text-decoration: ${task.completed ? 'line-through' : 'none'}'>${task.text}</span>
+      </div>
+      <button class='small btn' onclick='removeTask(${index})' data-testid='btn-remove-task-${index}'>Remove</button>
+    `;
+    taskList.appendChild(taskDiv);
+  });
+  
+  updateTaskStats();
+}
+
+function addTask() {
+  const input = document.getElementById('newTaskInput');
+  if (input.value.trim()) {
+    tasks.push({ text: input.value, completed: false });
+    input.value = '';
+    renderTasks();
+  }
+}
+
+function removeTask(index) {
+  tasks.splice(index, 1);
+  renderTasks();
+}
+
+function toggleTask(index) {
+  tasks[index].completed = !tasks[index].completed;
+  renderTasks();
+}
+
+function updateTaskStats() {
+  const completed = tasks.filter(t => t.completed).length;
+  const pending = tasks.filter(t => !t.completed).length;
+  document.getElementById('taskStats').textContent = 
+    `Total: ${tasks.length} | Completed: ${completed} | Pending: ${pending}`;
+}
+</script>
+</body>
+</html>

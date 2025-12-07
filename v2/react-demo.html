@@ -1,0 +1,559 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>React Advanced Demo - LCNC Testing</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { margin-bottom: 5px; font-weight: bold; }
+.form-group input, .form-group select, .form-group textarea { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #2196F3; }
+.error { color: red; font-size: 12px; margin-top: 3px; }
+.tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+.tab { padding: 10px 20px; cursor: pointer; border: none; background: none; }
+.tab.active { border-bottom: 3px solid #2196F3; font-weight: bold; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #2196F3; }
+input:checked + .slider:before { transform: translateX(26px); }
+.sortable-item { padding: 10px; margin: 5px 0; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: move; display: flex; justify-content: space-between; align-items: center; }
+.sortable-item:hover { background: #e8e8e8; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+.modal.show { display: flex; align-items: center; justify-content: center; }
+.modal-content { background-color: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.close { font-size: 28px; font-weight: bold; cursor: pointer; }
+.btn-group { display: flex; gap: 10px; margin-top: 20px; }
+.data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+.data-table th { background-color: #f5f5f5; cursor: pointer; user-select: none; }
+.data-table th:hover { background-color: #e8e8e8; }
+.data-table tr:hover { background-color: #f9f9f9; }
+.chip { display: inline-block; padding: 5px 12px; margin: 3px; background: #e0e0e0; border-radius: 16px; font-size: 14px; }
+.chip .remove { margin-left: 8px; cursor: pointer; font-weight: bold; }
+.progress-bar { width: 100%; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #2196F3, #1976D2); transition: width 0.3s; }
+.stepper { display: flex; justify-content: space-between; margin: 20px 0; }
+.step { flex: 1; text-align: center; position: relative; }
+.step-circle { width: 40px; height: 40px; border-radius: 50%; background: #ddd; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.step.active .step-circle { background: #2196F3; color: white; }
+.step.completed .step-circle { background: #4CAF50; color: white; }
+.rating { display: flex; gap: 5px; font-size: 24px; }
+.rating span { cursor: pointer; color: #ddd; }
+.rating span.filled { color: #FFD700; }
+.success-msg { margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+<section class='card'>
+<h2>React Advanced Demo - LCNC Testing Suite</h2>
+<div id='react-root'></div>
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script src='https://unpkg.com/react@18/umd/react.development.js'></script>
+<script src='https://unpkg.com/react-dom@18/umd/react-dom.development.js'></script>
+<script>
+onReady(() => {
+  const e = React.createElement;
+  const { useState, useEffect } = React;
+
+  function App() {
+    const [activeTab, setActiveTab] = useState('form');
+    const [formStep, setFormStep] = useState(1);
+    const [form, setForm] = useState({
+      firstName: '', lastName: '', email: '', phone: '', dob: '', gender: '',
+      color: '#2196F3', experience: 5, country: '', interests: [],
+      newsletter: false, bio: '', rating: 0, terms: false
+    });
+    const [errors, setErrors] = useState({});
+    const [tasks, setTasks] = useState([
+      { id: 1, text: 'Complete React form', completed: false },
+      { id: 2, text: 'Test drag functionality', completed: false },
+      { id: 3, text: 'Verify data filtering', completed: true }
+    ]);
+    const [newTask, setNewTask] = useState('');
+    const [draggedIndex, setDraggedIndex] = useState(null);
+    const [tableSearch, setTableSearch] = useState('');
+    const [users] = useState([
+      { id: 1, name: 'Emma Wilson', email: 'emma@example.com', role: 'Developer', status: 'Active' },
+      { id: 2, name: 'James Lee', email: 'james@example.com', role: 'Designer', status: 'Active' },
+      { id: 3, name: 'Sophia Chen', email: 'sophia@example.com', role: 'Manager', status: 'Inactive' },
+      { id: 4, name: 'Oliver Davis', email: 'oliver@example.com', role: 'Tester', status: 'Active' }
+    ]);
+    const [sortKey, setSortKey] = useState('');
+    const [sortDir, setSortDir] = useState('asc');
+    const [tags, setTags] = useState(['React', 'Automation', 'Testing']);
+    const [newTag, setNewTag] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [modalInput, setModalInput] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+
+    const validateField = (field) => {
+      const newErrors = { ...errors };
+      if (field === 'firstName' && !form.firstName) {
+        newErrors.firstName = 'First name is required';
+      } else if (field === 'firstName') {
+        delete newErrors.firstName;
+      }
+      if (field === 'lastName' && !form.lastName) {
+        newErrors.lastName = 'Last name is required';
+      } else if (field === 'lastName') {
+        delete newErrors.lastName;
+      }
+      if (field === 'email') {
+        if (!form.email) {
+          newErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+          newErrors.email = 'Email is invalid';
+        } else {
+          delete newErrors.email;
+        }
+      }
+      setErrors(newErrors);
+    };
+
+    const nextStep = () => {
+      if (formStep === 1) {
+        validateField('firstName');
+        validateField('lastName');
+        validateField('email');
+        if (!form.firstName || !form.lastName || !form.email || !/\S+@\S+\.\S+/.test(form.email)) {
+          return;
+        }
+      }
+      setFormStep(formStep + 1);
+    };
+
+    const prevStep = () => setFormStep(formStep - 1);
+
+    const submitForm = () => {
+      if (!form.terms) {
+        setErrors({ ...errors, terms: 'You must agree to the terms' });
+        return;
+      }
+      setSuccessMessage('Form submitted successfully! All validations passed.');
+      setTimeout(() => {
+        setSuccessMessage('');
+        setFormStep(1);
+        setForm({
+          firstName: '', lastName: '', email: '', phone: '', dob: '', gender: '',
+          color: '#2196F3', experience: 5, country: '', interests: [],
+          newsletter: false, bio: '', rating: 0, terms: false
+        });
+        setErrors({});
+      }, 3000);
+    };
+
+    const updateForm = (field, value) => {
+      setForm({ ...form, [field]: value });
+    };
+
+    const toggleInterest = (interest) => {
+      const interests = form.interests.includes(interest)
+        ? form.interests.filter(i => i !== interest)
+        : [...form.interests, interest];
+      setForm({ ...form, interests });
+    };
+
+    const addTask = () => {
+      if (newTask.trim()) {
+        setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
+        setNewTask('');
+      }
+    };
+
+    const removeTask = (index) => {
+      setTasks(tasks.filter((_, i) => i !== index));
+    };
+
+    const toggleTask = (index) => {
+      const newTasks = [...tasks];
+      newTasks[index].completed = !newTasks[index].completed;
+      setTasks(newTasks);
+    };
+
+    const dragStart = (index) => setDraggedIndex(index);
+
+    const drop = (index) => {
+      const newTasks = [...tasks];
+      const draggedItem = newTasks[draggedIndex];
+      newTasks.splice(draggedIndex, 1);
+      newTasks.splice(index, 0, draggedItem);
+      setTasks(newTasks);
+      setDraggedIndex(null);
+    };
+
+    const filteredUsers = () => {
+      let filtered = users;
+      if (tableSearch) {
+        const search = tableSearch.toLowerCase();
+        filtered = filtered.filter(u =>
+          u.name.toLowerCase().includes(search) ||
+          u.email.toLowerCase().includes(search) ||
+          u.role.toLowerCase().includes(search) ||
+          u.status.toLowerCase().includes(search)
+        );
+      }
+      if (sortKey) {
+        filtered = [...filtered].sort((a, b) => {
+          const aVal = a[sortKey].toLowerCase();
+          const bVal = b[sortKey].toLowerCase();
+          return sortDir === 'asc' ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+        });
+      }
+      return filtered;
+    };
+
+    const sortTable = (key) => {
+      if (sortKey === key) {
+        setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+      } else {
+        setSortKey(key);
+        setSortDir('asc');
+      }
+    };
+
+    const addTag = () => {
+      if (newTag.trim() && !tags.includes(newTag.trim())) {
+        setTags([...tags, newTag.trim()]);
+        setNewTag('');
+      }
+    };
+
+    const removeTag = (index) => {
+      setTags(tags.filter((_, i) => i !== index));
+    };
+
+    const confirmModal = () => {
+      setSuccessMessage(`Modal confirmed with input: "${modalInput}"`);
+      setShowModal(false);
+      setModalInput('');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    };
+
+    return e('div', null,
+      // Tabs
+      e('div', { className: 'tabs' },
+        e('button', { className: `tab ${activeTab === 'form' ? 'active' : ''}`, onClick: () => setActiveTab('form') }, 'Multi-Step Form'),
+        e('button', { className: `tab ${activeTab === 'list' ? 'active' : ''}`, onClick: () => setActiveTab('list') }, 'Task Manager'),
+        e('button', { className: `tab ${activeTab === 'table' ? 'active' : ''}`, onClick: () => setActiveTab('table') }, 'Data Grid'),
+        e('button', { className: `tab ${activeTab === 'components' ? 'active' : ''}`, onClick: () => setActiveTab('components') }, 'UI Components')
+      ),
+
+      // Tab 1: Multi-Step Form
+      e('div', { className: `tab-content ${activeTab === 'form' ? 'active' : ''}` },
+        e('h3', null, `Step ${formStep} of 3`),
+        e('div', { className: 'progress-bar' },
+          e('div', { className: 'progress-fill', style: { width: `${(formStep / 3) * 100}%` } })
+        ),
+
+        // Step 1
+        formStep === 1 && e('div', null,
+          e('div', { className: 'form-grid' },
+            e('div', { className: 'form-group' },
+              e('label', null, 'First Name *'),
+              e('input', {
+                value: form.firstName,
+                onChange: (ev) => updateForm('firstName', ev.target.value),
+                onBlur: () => validateField('firstName'),
+                placeholder: 'John',
+                'data-testid': 'first-name'
+              }),
+              errors.firstName && e('span', { className: 'error' }, errors.firstName)
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, 'Last Name *'),
+              e('input', {
+                value: form.lastName,
+                onChange: (ev) => updateForm('lastName', ev.target.value),
+                onBlur: () => validateField('lastName'),
+                placeholder: 'Doe',
+                'data-testid': 'last-name'
+              }),
+              errors.lastName && e('span', { className: 'error' }, errors.lastName)
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, 'Email *'),
+              e('input', {
+                type: 'email',
+                value: form.email,
+                onChange: (ev) => updateForm('email', ev.target.value),
+                onBlur: () => validateField('email'),
+                placeholder: 'john@example.com',
+                'data-testid': 'email'
+              }),
+              errors.email && e('span', { className: 'error' }, errors.email)
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, 'Phone'),
+              e('input', {
+                type: 'tel',
+                value: form.phone,
+                onChange: (ev) => updateForm('phone', ev.target.value),
+                placeholder: '(555) 123-4567',
+                'data-testid': 'phone'
+              })
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, 'Date of Birth'),
+              e('input', {
+                type: 'date',
+                value: form.dob,
+                onChange: (ev) => updateForm('dob', ev.target.value),
+                'data-testid': 'dob'
+              })
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, 'Gender'),
+              e('select', {
+                value: form.gender,
+                onChange: (ev) => updateForm('gender', ev.target.value),
+                'data-testid': 'gender'
+              },
+                e('option', { value: '' }, 'Select...'),
+                e('option', { value: 'male' }, 'Male'),
+                e('option', { value: 'female' }, 'Female'),
+                e('option', { value: 'other' }, 'Other')
+              )
+            )
+          )
+        ),
+
+        // Step 2
+        formStep === 2 && e('div', null,
+          e('div', { className: 'form-grid' },
+            e('div', { className: 'form-group' },
+              e('label', null, 'Favorite Color'),
+              e('input', {
+                type: 'color',
+                value: form.color,
+                onChange: (ev) => updateForm('color', ev.target.value),
+                'data-testid': 'color'
+              })
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, `Experience Level (${form.experience})`),
+              e('input', {
+                type: 'range',
+                min: '1',
+                max: '10',
+                value: form.experience,
+                onChange: (ev) => updateForm('experience', ev.target.value),
+                'data-testid': 'experience'
+              })
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, 'Country'),
+              e('select', {
+                value: form.country,
+                onChange: (ev) => updateForm('country', ev.target.value),
+                'data-testid': 'country'
+              },
+                e('option', { value: '' }, 'Select...'),
+                e('option', { value: 'us' }, 'United States'),
+                e('option', { value: 'uk' }, 'United Kingdom'),
+                e('option', { value: 'ca' }, 'Canada'),
+                e('option', { value: 'au' }, 'Australia')
+              )
+            ),
+            e('div', { className: 'form-group' },
+              e('label', null, 'Interests (select multiple)'),
+              e('div', null,
+                e('label', null, e('input', { type: 'checkbox', checked: form.interests.includes('coding'), onChange: () => toggleInterest('coding'), 'data-testid': 'interest-coding' }), ' Coding'),
+                e('br'),
+                e('label', null, e('input', { type: 'checkbox', checked: form.interests.includes('design'), onChange: () => toggleInterest('design'), 'data-testid': 'interest-design' }), ' Design'),
+                e('br'),
+                e('label', null, e('input', { type: 'checkbox', checked: form.interests.includes('testing'), onChange: () => toggleInterest('testing'), 'data-testid': 'interest-testing' }), ' Testing'),
+                e('br'),
+                e('label', null, e('input', { type: 'checkbox', checked: form.interests.includes('devops'), onChange: () => toggleInterest('devops'), 'data-testid': 'interest-devops' }), ' DevOps')
+              )
+            )
+          ),
+          e('div', { className: 'form-group', style: { marginTop: '15px' } },
+            e('label', null, 'Newsletter Subscription'),
+            e('label', { className: 'toggle-switch' },
+              e('input', { type: 'checkbox', checked: form.newsletter, onChange: (ev) => updateForm('newsletter', ev.target.checked), 'data-testid': 'newsletter' }),
+              e('span', { className: 'slider' })
+            ),
+            e('span', { style: { marginLeft: '10px' } }, form.newsletter ? 'Subscribed' : 'Not subscribed')
+          )
+        ),
+
+        // Step 3
+        formStep === 3 && e('div', null,
+          e('div', { className: 'form-group' },
+            e('label', null, 'Bio'),
+            e('textarea', {
+              rows: 4,
+              value: form.bio,
+              onChange: (ev) => updateForm('bio', ev.target.value),
+              placeholder: 'Tell us about yourself...',
+              'data-testid': 'bio'
+            })
+          ),
+          e('div', { className: 'form-group', style: { marginTop: '15px' } },
+            e('label', null, 'Rate your experience'),
+            e('div', { className: 'rating' },
+              [1, 2, 3, 4, 5].map(n =>
+                e('span', {
+                  key: n,
+                  className: n <= form.rating ? 'filled' : '',
+                  onClick: () => updateForm('rating', n),
+                  'data-testid': 'rating-star'
+                }, '★')
+              )
+            ),
+            e('span', { style: { marginLeft: '10px' } }, `${form.rating} / 5`)
+          ),
+          e('div', { className: 'form-group', style: { marginTop: '15px' } },
+            e('label', null,
+              e('input', { type: 'checkbox', checked: form.terms, onChange: (ev) => updateForm('terms', ev.target.checked), 'data-testid': 'terms' }),
+              ' I agree to the terms and conditions *'
+            ),
+            errors.terms && e('span', { className: 'error' }, errors.terms)
+          )
+        ),
+
+        e('div', { className: 'btn-group' },
+          formStep > 1 && e('button', { className: 'btn', onClick: prevStep, 'data-testid': 'prev-btn' }, 'Previous'),
+          formStep < 3 && e('button', { className: 'btn', onClick: nextStep, 'data-testid': 'next-btn' }, 'Next'),
+          formStep === 3 && e('button', { className: 'btn', onClick: submitForm, 'data-testid': 'submit-btn' }, 'Submit')
+        )
+      ),
+
+      // Tab 2: Task Manager
+      e('div', { className: `tab-content ${activeTab === 'list' ? 'active' : ''}` },
+        e('h3', null, 'Drag & Drop Task List'),
+        e('div', { className: 'form-group' },
+          e('input', {
+            value: newTask,
+            onChange: (ev) => setNewTask(ev.target.value),
+            onKeyUp: (ev) => ev.key === 'Enter' && addTask(),
+            placeholder: 'Add new task...',
+            'data-testid': 'task-input'
+          }),
+          e('button', { className: 'btn', onClick: addTask, style: { marginTop: '10px' }, 'data-testid': 'add-task-btn' }, 'Add Task')
+        ),
+        e('div', { style: { marginTop: '20px' } },
+          tasks.map((task, index) =>
+            e('div', {
+              key: task.id,
+              className: 'sortable-item',
+              draggable: true,
+              onDragStart: () => dragStart(index),
+              onDragOver: (ev) => ev.preventDefault(),
+              onDrop: () => drop(index),
+              'data-testid': `task-${task.id}`
+            },
+              e('span', null,
+                e('input', { type: 'checkbox', checked: task.completed, onChange: () => toggleTask(index), 'data-testid': `task-check-${task.id}` }),
+                e('span', { style: { textDecoration: task.completed ? 'line-through' : 'none', marginLeft: '10px' } }, task.text)
+              ),
+              e('button', { className: 'small btn', onClick: () => removeTask(index), 'data-testid': `task-remove-${task.id}` }, 'Remove')
+            )
+          )
+        ),
+        tasks.length === 0 && e('p', { style: { color: '#999', textAlign: 'center', marginTop: '20px' } }, 'No tasks yet. Add one above!')
+      ),
+
+      // Tab 3: Data Grid
+      e('div', { className: `tab-content ${activeTab === 'table' ? 'active' : ''}` },
+        e('h3', null, 'Sortable Data Table'),
+        e('div', { className: 'form-group' },
+          e('input', {
+            value: tableSearch,
+            onChange: (ev) => setTableSearch(ev.target.value),
+            placeholder: 'Search users...',
+            'data-testid': 'table-search'
+          })
+        ),
+        e('table', { className: 'data-table' },
+          e('thead', null,
+            e('tr', null,
+              e('th', { onClick: () => sortTable('name'), 'data-testid': 'sort-name' }, `Name ${sortKey === 'name' ? (sortDir === 'asc' ? '↑' : '↓') : ''}`),
+              e('th', { onClick: () => sortTable('email'), 'data-testid': 'sort-email' }, `Email ${sortKey === 'email' ? (sortDir === 'asc' ? '↑' : '↓') : ''}`),
+              e('th', { onClick: () => sortTable('role'), 'data-testid': 'sort-role' }, `Role ${sortKey === 'role' ? (sortDir === 'asc' ? '↑' : '↓') : ''}`),
+              e('th', { onClick: () => sortTable('status'), 'data-testid': 'sort-status' }, `Status ${sortKey === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : ''}`)
+            )
+          ),
+          e('tbody', null,
+            filteredUsers().map(user =>
+              e('tr', { key: user.id, 'data-testid': `user-row-${user.id}` },
+                e('td', null, user.name),
+                e('td', null, user.email),
+                e('td', null, user.role),
+                e('td', null, e('span', { className: 'chip' }, user.status))
+              )
+            )
+          )
+        )
+      ),
+
+      // Tab 4: UI Components
+      e('div', { className: `tab-content ${activeTab === 'components' ? 'active' : ''}` },
+        e('h3', null, 'Interactive Components'),
+        e('div', { className: 'form-group' },
+          e('label', null, 'Tags'),
+          e('div', null,
+            tags.map((tag, index) =>
+              e('span', { key: index, className: 'chip', 'data-testid': `tag-${index}` },
+                tag,
+                e('span', { className: 'remove', onClick: () => removeTag(index) }, '×')
+              )
+            )
+          ),
+          e('input', {
+            value: newTag,
+            onChange: (ev) => setNewTag(ev.target.value),
+            onKeyUp: (ev) => ev.key === 'Enter' && addTag(),
+            placeholder: 'Add tag and press Enter',
+            'data-testid': 'tag-input',
+            style: { marginTop: '10px' }
+          })
+        ),
+        e('button', { className: 'btn', onClick: () => setShowModal(true), style: { marginTop: '20px' }, 'data-testid': 'open-modal-btn' }, 'Open Modal')
+      ),
+
+      // Modal
+      e('div', { className: `modal ${showModal ? 'show' : ''}`, onClick: (ev) => ev.target.className.includes('modal') && setShowModal(false) },
+        e('div', { className: 'modal-content' },
+          e('div', { className: 'modal-header' },
+            e('h3', null, 'Confirmation Modal'),
+            e('span', { className: 'close', onClick: () => setShowModal(false), 'data-testid': 'close-modal' }, '×')
+          ),
+          e('p', null, 'This is a modal dialog for testing purposes. You can interact with various elements here.'),
+          e('div', { className: 'form-group' },
+            e('label', null, 'Modal Input'),
+            e('input', {
+              value: modalInput,
+              onChange: (ev) => setModalInput(ev.target.value),
+              placeholder: 'Type something...',
+              'data-testid': 'modal-input'
+            })
+          ),
+          e('div', { className: 'btn-group' },
+            e('button', { className: 'btn', onClick: confirmModal, 'data-testid': 'confirm-modal-btn' }, 'Confirm'),
+            e('button', { className: 'btn', onClick: () => setShowModal(false), 'data-testid': 'cancel-modal-btn' }, 'Cancel')
+          )
+        )
+      ),
+
+      // Success Message
+      successMessage && e('div', { className: 'success-msg', 'data-testid': 'success-message' }, successMessage)
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById('react-root'));
+  root.render(e(App));
+});
+</script>
+</body>
+</html>

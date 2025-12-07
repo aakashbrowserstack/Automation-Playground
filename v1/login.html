@@ -1,0 +1,247 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Login - Enhanced</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+<style>
+.login-container { max-width: 400px; margin: 0 auto; }
+.form-group { margin: 15px 0; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input { padding: 10px; width: 100%; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+.form-group input:focus { outline: none; border-color: #4CAF50; }
+.error { color: #f44336; font-size: 13px; margin-top: 5px; display: none; }
+.success { color: #4CAF50; font-size: 13px; margin-top: 5px; display: none; }
+.password-toggle { position: relative; }
+.password-toggle button { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #666; }
+.checkbox-group { display: flex; align-items: center; margin: 15px 0; }
+.checkbox-group input { width: auto; margin-right: 8px; }
+.btn-group { display: flex; gap: 10px; margin-top: 20px; }
+.link { color: #2196F3; cursor: pointer; text-decoration: underline; font-size: 14px; }
+.link:hover { color: #1976D2; }
+.login-attempts { margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 4px; display: none; }
+.user-info { margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 4px; display: none; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='login-container'>
+<h2>Enhanced Login</h2>
+<p style='color: #666; font-size: 14px; margin-bottom: 20px;'>Test credentials: user/pass or admin/admin123</p>
+
+<form id='loginForm'>
+  <div class='form-group'>
+    <label for='username'>Username *</label>
+    <input type='text' id='username' data-testid='input-username' placeholder='Enter username' required>
+    <div class='error' id='username-error' data-testid='username-error'>Username is required</div>
+  </div>
+
+  <div class='form-group'>
+    <label for='password'>Password *</label>
+    <div class='password-toggle'>
+      <input type='password' id='password' data-testid='input-password' placeholder='Enter password' required>
+      <button type='button' id='togglePassword' data-testid='btn-toggle-password'>👁️</button>
+    </div>
+    <div class='error' id='password-error' data-testid='password-error'>Password is required</div>
+  </div>
+
+  <div class='form-group'>
+    <label for='email'>Email (optional)</label>
+    <input type='email' id='email' data-testid='input-email' placeholder='Enter email'>
+    <div class='error' id='email-error' data-testid='email-error'>Invalid email format</div>
+  </div>
+
+  <div class='checkbox-group'>
+    <input type='checkbox' id='remember' data-testid='checkbox-remember'>
+    <label for='remember'>Remember me</label>
+  </div>
+
+  <div class='checkbox-group'>
+    <input type='checkbox' id='terms' data-testid='checkbox-terms'>
+    <label for='terms'>I agree to terms and conditions *</label>
+  </div>
+  <div class='error' id='terms-error' data-testid='terms-error' style='margin-top: -10px;'>You must agree to terms</div>
+
+  <div class='btn-group'>
+    <button type='submit' class='btn' data-testid='btn-login'>Login</button>
+    <button type='button' class='btn' onclick='resetForm()' data-testid='btn-reset'>Reset</button>
+  </div>
+</form>
+
+<div style='margin-top: 15px; text-align: center;'>
+  <span class='link' onclick='showForgotPassword()' data-testid='link-forgot-password'>Forgot Password?</span>
+  <span style='margin: 0 10px;'>|</span>
+  <span class='link' onclick='showRegister()' data-testid='link-register'>Create Account</span>
+</div>
+
+<div class='login-attempts' id='loginAttempts' data-testid='login-attempts'>
+  <strong>⚠️ Warning:</strong> <span id='attemptsText'></span>
+</div>
+
+<div class='success' id='loginSuccess' data-testid='login-success'>
+  ✓ Login successful! Redirecting...
+</div>
+
+<div class='user-info' id='userInfo' data-testid='user-info'>
+  <h3 style='margin-top: 0;'>Welcome!</h3>
+  <p><strong>Username:</strong> <span id='displayUsername'></span></p>
+  <p><strong>Email:</strong> <span id='displayEmail'></span></p>
+  <p><strong>Remember Me:</strong> <span id='displayRemember'></span></p>
+  <p><strong>Login Time:</strong> <span id='displayTime'></span></p>
+  <button class='btn' onclick='logout()' data-testid='btn-logout'>Logout</button>
+</div>
+
+</div>
+</section>
+
+<script src='/shared/scripts.js'></script>
+<script>
+let loginAttempts = 0;
+const maxAttempts = 3;
+let isLoggedIn = false;
+
+onReady(() => {
+  // Password toggle
+  document.getElementById('togglePassword').addEventListener('click', () => {
+    const passwordInput = document.getElementById('password');
+    const type = passwordInput.type === 'password' ? 'text' : 'password';
+    passwordInput.type = type;
+    document.getElementById('togglePassword').textContent = type === 'password' ? '👁️' : '🙈';
+  });
+
+  // Form submission
+  document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleLogin();
+  });
+
+  // Real-time email validation
+  document.getElementById('email').addEventListener('blur', () => {
+    const email = document.getElementById('email').value;
+    const emailError = document.getElementById('email-error');
+    if (email && !isValidEmail(email)) {
+      emailError.style.display = 'block';
+    } else {
+      emailError.style.display = 'none';
+    }
+  });
+});
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function handleLogin() {
+  // Clear previous errors
+  document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+  document.getElementById('loginSuccess').style.display = 'none';
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const email = document.getElementById('email').value.trim();
+  const terms = document.getElementById('terms').checked;
+  const remember = document.getElementById('remember').checked;
+
+  let hasError = false;
+
+  // Validation
+  if (!username) {
+    document.getElementById('username-error').style.display = 'block';
+    hasError = true;
+  }
+
+  if (!password) {
+    document.getElementById('password-error').style.display = 'block';
+    hasError = true;
+  }
+
+  if (email && !isValidEmail(email)) {
+    document.getElementById('email-error').style.display = 'block';
+    hasError = true;
+  }
+
+  if (!terms) {
+    document.getElementById('terms-error').style.display = 'block';
+    hasError = true;
+  }
+
+  if (hasError) return;
+
+  // Check credentials
+  const validCredentials = [
+    { username: 'user', password: 'pass' },
+    { username: 'admin', password: 'admin123' }
+  ];
+
+  const isValid = validCredentials.some(cred => 
+    cred.username === username && cred.password === password
+  );
+
+  if (isValid) {
+    // Successful login
+    loginAttempts = 0;
+    document.getElementById('loginAttempts').style.display = 'none';
+    document.getElementById('loginSuccess').style.display = 'block';
+    
+    // Show user info
+    setTimeout(() => {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('loginSuccess').style.display = 'none';
+      document.getElementById('userInfo').style.display = 'block';
+      document.getElementById('displayUsername').textContent = username;
+      document.getElementById('displayEmail').textContent = email || 'Not provided';
+      document.getElementById('displayRemember').textContent = remember ? 'Yes' : 'No';
+      document.getElementById('displayTime').textContent = new Date().toLocaleString();
+      isLoggedIn = true;
+    }, 1500);
+  } else {
+    // Failed login
+    loginAttempts++;
+    
+    if (loginAttempts >= maxAttempts) {
+      document.getElementById('attemptsText').textContent = 
+        `Account locked after ${maxAttempts} failed attempts. Please contact support.`;
+      document.getElementById('loginAttempts').style.display = 'block';
+      document.getElementById('loginAttempts').style.background = '#f8d7da';
+      document.querySelector('#loginForm button[type="submit"]').disabled = true;
+    } else {
+      document.getElementById('attemptsText').textContent = 
+        `Invalid credentials. ${maxAttempts - loginAttempts} attempt(s) remaining.`;
+      document.getElementById('loginAttempts').style.display = 'block';
+    }
+    
+    document.getElementById('password-error').textContent = 'Invalid username or password';
+    document.getElementById('password-error').style.display = 'block';
+  }
+}
+
+function resetForm() {
+  document.getElementById('loginForm').reset();
+  document.querySelectorAll('.error').forEach(el => el.style.display = 'none');
+  document.getElementById('loginSuccess').style.display = 'none';
+  document.getElementById('password').type = 'password';
+  document.getElementById('togglePassword').textContent = '👁️';
+}
+
+function logout() {
+  document.getElementById('userInfo').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
+  resetForm();
+  loginAttempts = 0;
+  document.getElementById('loginAttempts').style.display = 'none';
+  document.querySelector('#loginForm button[type="submit"]').disabled = false;
+  isLoggedIn = false;
+}
+
+function showForgotPassword() {
+  alert('Forgot Password functionality would redirect to password reset page.\n\nThis is a demo - no actual reset available.');
+}
+
+function showRegister() {
+  alert('Registration functionality would redirect to sign-up page.\n\nThis is a demo - no actual registration available.');
+}
+</script>
+</body>
+</html>

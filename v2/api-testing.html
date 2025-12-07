@@ -1,0 +1,436 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>API Testing - LCNC Testing</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+<style>
+.api-container { margin: 20px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.api-container h3 { margin-top: 0; color: #333; }
+.form-group { margin: 15px 0; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input, .form-group select, .form-group textarea { padding: 8px; width: 100%; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; }
+.response-box { margin-top: 15px; padding: 15px; background: #263238; color: #aed581; border-radius: 4px; font-family: monospace; font-size: 13px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; }
+.method-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 10px; }
+.method-get { background: #4caf50; color: white; }
+.method-post { background: #2196f3; color: white; }
+.method-put { background: #ff9800; color: white; }
+.method-delete { background: #f44336; color: white; }
+.status-success { color: #4caf50; }
+.status-error { color: #f44336; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+.tab { padding: 10px 20px; cursor: pointer; border: none; background: none; }
+.tab.active { border-bottom: 3px solid #4CAF50; font-weight: bold; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<h2>API Testing - LCNC Testing</h2>
+<p style='color: #666; margin-bottom: 20px;'>Comprehensive API testing with GET, POST, PUT, DELETE operations using public APIs</p>
+
+<!-- Tabs -->
+<div class='tabs'>
+  <button class='tab active' data-tab='rest' data-testid='tab-rest'>REST APIs</button>
+  <button class='tab' data-tab='json' data-testid='tab-json'>JSON Placeholder</button>
+  <button class='tab' data-tab='custom' data-testid='tab-custom'>Custom Endpoint</button>
+</div>
+
+<!-- Tab 1: REST APIs -->
+<div class='tab-content active' data-content='rest' data-testid='rest-tab-content'>
+  <div class='grid-2'>
+    <!-- GET Request -->
+    <div class='api-container'>
+      <h3><span class='method-badge method-get'>GET</span>Fetch Users</h3>
+      <p style='color: #666; font-size: 14px;'>Retrieve list of users from JSONPlaceholder API</p>
+      <div class='form-group'>
+        <label>API Endpoint</label>
+        <input type='text' id='get-url' value='https://jsonplaceholder.typicode.com/users' data-testid='get-url'>
+      </div>
+      <div class='form-group'>
+        <label>User ID (optional - leave empty for all users)</label>
+        <input type='number' id='get-user-id' placeholder='e.g., 1' data-testid='get-user-id'>
+      </div>
+      <button class='btn' onclick='performGet()' data-testid='btn-get'>Send GET Request</button>
+      <div class='response-box' id='get-response' data-testid='get-response'>Response will appear here...</div>
+    </div>
+
+    <!-- POST Request -->
+    <div class='api-container'>
+      <h3><span class='method-badge method-post'>POST</span>Create User</h3>
+      <p style='color: #666; font-size: 14px;'>Create a new user via POST request</p>
+      <div class='form-group'>
+        <label>API Endpoint</label>
+        <input type='text' id='post-url' value='https://jsonplaceholder.typicode.com/users' data-testid='post-url'>
+      </div>
+      <div class='form-group'>
+        <label>Name</label>
+        <input type='text' id='post-name' placeholder='John Doe' data-testid='post-name'>
+      </div>
+      <div class='form-group'>
+        <label>Email</label>
+        <input type='email' id='post-email' placeholder='john@example.com' data-testid='post-email'>
+      </div>
+      <button class='btn' onclick='performPost()' data-testid='btn-post'>Send POST Request</button>
+      <div class='response-box' id='post-response' data-testid='post-response'>Response will appear here...</div>
+    </div>
+
+    <!-- PUT Request -->
+    <div class='api-container'>
+      <h3><span class='method-badge method-put'>PUT</span>Update User</h3>
+      <p style='color: #666; font-size: 14px;'>Update existing user via PUT request</p>
+      <div class='form-group'>
+        <label>API Endpoint</label>
+        <input type='text' id='put-url' value='https://jsonplaceholder.typicode.com/users/1' data-testid='put-url'>
+      </div>
+      <div class='form-group'>
+        <label>User ID</label>
+        <input type='number' id='put-id' value='1' data-testid='put-id'>
+      </div>
+      <div class='form-group'>
+        <label>Name</label>
+        <input type='text' id='put-name' placeholder='Updated Name' data-testid='put-name'>
+      </div>
+      <div class='form-group'>
+        <label>Email</label>
+        <input type='email' id='put-email' placeholder='updated@example.com' data-testid='put-email'>
+      </div>
+      <button class='btn' onclick='performPut()' data-testid='btn-put'>Send PUT Request</button>
+      <div class='response-box' id='put-response' data-testid='put-response'>Response will appear here...</div>
+    </div>
+
+    <!-- DELETE Request -->
+    <div class='api-container'>
+      <h3><span class='method-badge method-delete'>DELETE</span>Delete User</h3>
+      <p style='color: #666; font-size: 14px;'>Delete user via DELETE request</p>
+      <div class='form-group'>
+        <label>API Endpoint</label>
+        <input type='text' id='delete-url' value='https://jsonplaceholder.typicode.com/users/1' data-testid='delete-url'>
+      </div>
+      <div class='form-group'>
+        <label>User ID to Delete</label>
+        <input type='number' id='delete-id' value='1' data-testid='delete-id'>
+      </div>
+      <button class='btn' onclick='performDelete()' data-testid='btn-delete'>Send DELETE Request</button>
+      <div class='response-box' id='delete-response' data-testid='delete-response'>Response will appear here...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 2: JSON Placeholder -->
+<div class='tab-content' data-content='json' data-testid='json-tab-content'>
+  <div class='api-container'>
+    <h3>JSONPlaceholder - Posts API</h3>
+    <p style='color: #666; margin-bottom: 15px;'>Test various operations on posts endpoint</p>
+    
+    <div class='grid-2'>
+      <div>
+        <h4>Fetch Posts</h4>
+        <div class='form-group'>
+          <label>Post ID (optional)</label>
+          <input type='number' id='json-post-id' placeholder='Leave empty for all posts' data-testid='json-post-id'>
+        </div>
+        <button class='btn' onclick='fetchPosts()' data-testid='btn-fetch-posts'>Fetch Posts</button>
+      </div>
+      
+      <div>
+        <h4>Create New Post</h4>
+        <div class='form-group'>
+          <label>Title</label>
+          <input type='text' id='json-title' placeholder='Post title' data-testid='json-title'>
+        </div>
+        <div class='form-group'>
+          <label>Body</label>
+          <textarea id='json-body' rows='3' placeholder='Post content' data-testid='json-body'></textarea>
+        </div>
+        <button class='btn' onclick='createPost()' data-testid='btn-create-post'>Create Post</button>
+      </div>
+    </div>
+    
+    <div class='response-box' id='json-response' data-testid='json-response'>Response will appear here...</div>
+  </div>
+</div>
+
+<!-- Tab 3: Custom Endpoint -->
+<div class='tab-content' data-content='custom' data-testid='custom-tab-content'>
+  <div class='api-container'>
+    <h3>Custom API Endpoint Tester</h3>
+    <p style='color: #666; margin-bottom: 15px;'>Test any custom API endpoint with custom headers and body</p>
+    
+    <div class='form-group'>
+      <label>HTTP Method</label>
+      <select id='custom-method' data-testid='custom-method'>
+        <option value='GET'>GET</option>
+        <option value='POST'>POST</option>
+        <option value='PUT'>PUT</option>
+        <option value='DELETE'>DELETE</option>
+        <option value='PATCH'>PATCH</option>
+      </select>
+    </div>
+    
+    <div class='form-group'>
+      <label>API Endpoint URL</label>
+      <input type='text' id='custom-url' placeholder='https://api.example.com/endpoint' data-testid='custom-url'>
+    </div>
+    
+    <div class='form-group'>
+      <label>Headers (JSON format)</label>
+      <textarea id='custom-headers' rows='3' placeholder='{"Content-Type": "application/json"}' data-testid='custom-headers'>{"Content-Type": "application/json"}</textarea>
+    </div>
+    
+    <div class='form-group'>
+      <label>Request Body (JSON format - for POST/PUT/PATCH)</label>
+      <textarea id='custom-body' rows='5' placeholder='{"key": "value"}' data-testid='custom-body'></textarea>
+    </div>
+    
+    <button class='btn' onclick='performCustomRequest()' data-testid='btn-custom-request'>Send Request</button>
+    
+    <div class='response-box' id='custom-response' data-testid='custom-response'>Response will appear here...</div>
+  </div>
+</div>
+
+</section>
+
+<script src='/shared/scripts.js'></script>
+<script>
+onReady(() => {
+  // Tab management
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = tab.dataset.tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`[data-content="${tabName}"]`).classList.add('active');
+    });
+  });
+});
+
+// Helper function to format response
+function formatResponse(status, data, error = null) {
+  const timestamp = new Date().toLocaleTimeString();
+  let response = `[${timestamp}] Status: ${status}\n\n`;
+  
+  if (error) {
+    response += `❌ Error: ${error}\n\n`;
+  } else {
+    response += `✓ Success\n\n`;
+  }
+  
+  response += `Response Data:\n${JSON.stringify(data, null, 2)}`;
+  return response;
+}
+
+// GET Request
+async function performGet() {
+  const url = document.getElementById('get-url').value;
+  const userId = document.getElementById('get-user-id').value;
+  const endpoint = userId ? `${url}/${userId}` : url;
+  const responseBox = document.getElementById('get-response');
+  
+  responseBox.textContent = 'Loading...';
+  
+  try {
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    responseBox.textContent = formatResponse(response.status, data);
+  } catch (error) {
+    responseBox.textContent = formatResponse('Error', null, error.message);
+  }
+}
+
+// POST Request
+async function performPost() {
+  const url = document.getElementById('post-url').value;
+  const name = document.getElementById('post-name').value;
+  const email = document.getElementById('post-email').value;
+  const responseBox = document.getElementById('post-response');
+  
+  if (!name || !email) {
+    responseBox.textContent = '❌ Error: Name and Email are required';
+    return;
+  }
+  
+  responseBox.textContent = 'Loading...';
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        username: name.toLowerCase().replace(' ', '.'),
+      })
+    });
+    const data = await response.json();
+    responseBox.textContent = formatResponse(response.status, data);
+  } catch (error) {
+    responseBox.textContent = formatResponse('Error', null, error.message);
+  }
+}
+
+// PUT Request
+async function performPut() {
+  const baseUrl = 'https://jsonplaceholder.typicode.com/users';
+  const userId = document.getElementById('put-id').value;
+  const name = document.getElementById('put-name').value;
+  const email = document.getElementById('put-email').value;
+  const responseBox = document.getElementById('put-response');
+  
+  if (!userId || !name || !email) {
+    responseBox.textContent = '❌ Error: User ID, Name, and Email are required';
+    return;
+  }
+  
+  responseBox.textContent = 'Loading...';
+  
+  try {
+    const response = await fetch(`${baseUrl}/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: parseInt(userId),
+        name: name,
+        email: email,
+        username: name.toLowerCase().replace(' ', '.'),
+      })
+    });
+    const data = await response.json();
+    responseBox.textContent = formatResponse(response.status, data);
+  } catch (error) {
+    responseBox.textContent = formatResponse('Error', null, error.message);
+  }
+}
+
+// DELETE Request
+async function performDelete() {
+  const baseUrl = 'https://jsonplaceholder.typicode.com/users';
+  const userId = document.getElementById('delete-id').value;
+  const responseBox = document.getElementById('delete-response');
+  
+  if (!userId) {
+    responseBox.textContent = '❌ Error: User ID is required';
+    return;
+  }
+  
+  responseBox.textContent = 'Loading...';
+  
+  try {
+    const response = await fetch(`${baseUrl}/${userId}`, {
+      method: 'DELETE'
+    });
+    const data = response.status === 200 ? { message: 'User deleted successfully', id: userId } : await response.json();
+    responseBox.textContent = formatResponse(response.status, data);
+  } catch (error) {
+    responseBox.textContent = formatResponse('Error', null, error.message);
+  }
+}
+
+// Fetch Posts
+async function fetchPosts() {
+  const postId = document.getElementById('json-post-id').value;
+  const url = postId 
+    ? `https://jsonplaceholder.typicode.com/posts/${postId}`
+    : 'https://jsonplaceholder.typicode.com/posts';
+  const responseBox = document.getElementById('json-response');
+  
+  responseBox.textContent = 'Loading...';
+  
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    responseBox.textContent = formatResponse(response.status, data);
+  } catch (error) {
+    responseBox.textContent = formatResponse('Error', null, error.message);
+  }
+}
+
+// Create Post
+async function createPost() {
+  const title = document.getElementById('json-title').value;
+  const body = document.getElementById('json-body').value;
+  const responseBox = document.getElementById('json-response');
+  
+  if (!title || !body) {
+    responseBox.textContent = '❌ Error: Title and Body are required';
+    return;
+  }
+  
+  responseBox.textContent = 'Loading...';
+  
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: title,
+        body: body,
+        userId: 1
+      })
+    });
+    const data = await response.json();
+    responseBox.textContent = formatResponse(response.status, data);
+  } catch (error) {
+    responseBox.textContent = formatResponse('Error', null, error.message);
+  }
+}
+
+// Custom Request
+async function performCustomRequest() {
+  const method = document.getElementById('custom-method').value;
+  const url = document.getElementById('custom-url').value;
+  const headersText = document.getElementById('custom-headers').value;
+  const bodyText = document.getElementById('custom-body').value;
+  const responseBox = document.getElementById('custom-response');
+  
+  if (!url) {
+    responseBox.textContent = '❌ Error: URL is required';
+    return;
+  }
+  
+  responseBox.textContent = 'Loading...';
+  
+  try {
+    let headers = {};
+    if (headersText.trim()) {
+      headers = JSON.parse(headersText);
+    }
+    
+    const options = {
+      method: method,
+      headers: headers
+    };
+    
+    if (['POST', 'PUT', 'PATCH'].includes(method) && bodyText.trim()) {
+      options.body = bodyText;
+    }
+    
+    const response = await fetch(url, options);
+    const contentType = response.headers.get('content-type');
+    let data;
+    
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      data = await response.text();
+    }
+    
+    responseBox.textContent = formatResponse(response.status, data);
+  } catch (error) {
+    responseBox.textContent = formatResponse('Error', null, error.message);
+  }
+}
+</script>
+</body>
+</html>

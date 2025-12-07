@@ -1,0 +1,338 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Shadow DOM Advanced - LCNC Testing</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+<style>
+.shadow-container { margin: 20px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.shadow-container h3 { margin-top: 0; color: #333; }
+.form-group { margin: 15px 0; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input, .form-group select { padding: 8px; width: 100%; max-width: 300px; border: 1px solid #ddd; border-radius: 4px; }
+.output { margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 4px; min-height: 30px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<h2>Shadow DOM Advanced Testing</h2>
+<p style='color: #666; margin-bottom: 20px;'>Comprehensive Shadow DOM scenarios including nested shadows, dynamic creation, and complex interactions</p>
+
+<div class='grid-2'>
+  <!-- Scenario 1: Basic Shadow DOM Form -->
+  <div class='shadow-container'>
+    <h3>1. Basic Shadow DOM Form</h3>
+    <div id='shadow-host-1' data-testid='shadow-host-1'></div>
+  </div>
+
+  <!-- Scenario 2: Nested Shadow DOM -->
+  <div class='shadow-container'>
+    <h3>2. Nested Shadow DOM (2 Levels)</h3>
+    <div id='shadow-host-2' data-testid='shadow-host-2'></div>
+  </div>
+
+  <!-- Scenario 3: Dynamic Shadow DOM Creation -->
+  <div class='shadow-container'>
+    <h3>3. Dynamic Shadow DOM</h3>
+    <button class='btn' onclick='createDynamicShadow()' data-testid='btn-create-shadow'>Create Shadow Component</button>
+    <div id='dynamic-container' data-testid='dynamic-container'></div>
+  </div>
+
+  <!-- Scenario 4: Shadow DOM with Slots -->
+  <div class='shadow-container'>
+    <h3>4. Shadow DOM with Slots</h3>
+    <div id='shadow-host-4' data-testid='shadow-host-4'>
+      <span slot='header'>Custom Header Content</span>
+      <span slot='content'>Custom Body Content</span>
+    </div>
+  </div>
+
+  <!-- Scenario 5: Multiple Shadow Roots -->
+  <div class='shadow-container'>
+    <h3>5. Multiple Independent Shadows</h3>
+    <div id='multi-shadow-container' data-testid='multi-shadow-container'></div>
+  </div>
+
+  <!-- Scenario 6: Shadow DOM with Events -->
+  <div class='shadow-container'>
+    <h3>6. Shadow DOM Event Handling</h3>
+    <div id='shadow-host-6' data-testid='shadow-host-6'></div>
+  </div>
+</div>
+
+<!-- Scenario 7: Deep Nested Shadow (3 Levels) -->
+<div class='shadow-container' style='margin-top: 20px;'>
+  <h3>7. Deep Nested Shadow DOM (3 Levels)</h3>
+  <div id='shadow-host-7' data-testid='shadow-host-7'></div>
+</div>
+
+<!-- Scenario 8: Shadow DOM with Custom Elements -->
+<div class='shadow-container' style='margin-top: 20px;'>
+  <h3>8. Custom Web Component with Shadow DOM</h3>
+  <custom-card data-testid='custom-card'>
+    <span slot='title'>Product Title</span>
+    <span slot='description'>Product Description</span>
+  </custom-card>
+</div>
+
+</section>
+
+<script src='/shared/scripts.js'></script>
+<script>
+onReady(() => {
+  // Scenario 1: Basic Shadow DOM Form
+  const host1 = document.getElementById('shadow-host-1');
+  const shadow1 = host1.attachShadow({ mode: 'open' });
+  shadow1.innerHTML = `
+    <style>
+      .form-group { margin: 10px 0; }
+      label { display: block; margin-bottom: 5px; font-weight: bold; }
+      input { padding: 8px; width: 100%; border: 1px solid #ddd; border-radius: 4px; }
+      button { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+      .output { margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 4px; }
+    </style>
+    <div class='form-group'>
+      <label>Username</label>
+      <input type='text' id='shadow-username' data-testid='shadow-username' placeholder='Enter username'>
+    </div>
+    <div class='form-group'>
+      <label>Email</label>
+      <input type='email' id='shadow-email' data-testid='shadow-email' placeholder='Enter email'>
+    </div>
+    <button id='shadow-submit' data-testid='shadow-submit'>Submit</button>
+    <div class='output' id='shadow-output' data-testid='shadow-output'></div>
+  `;
+  
+  shadow1.getElementById('shadow-submit').addEventListener('click', () => {
+    const username = shadow1.getElementById('shadow-username').value;
+    const email = shadow1.getElementById('shadow-email').value;
+    shadow1.getElementById('shadow-output').textContent = `Submitted: ${username} (${email})`;
+  });
+
+  // Scenario 2: Nested Shadow DOM (2 Levels)
+  const host2 = document.getElementById('shadow-host-2');
+  const shadow2 = host2.attachShadow({ mode: 'open' });
+  shadow2.innerHTML = `
+    <style>
+      .nested-container { padding: 15px; background: #fff3e0; border-radius: 4px; }
+      h4 { margin-top: 0; color: #e65100; }
+    </style>
+    <div class='nested-container'>
+      <h4>Level 1 Shadow</h4>
+      <div id='nested-host' data-testid='nested-host'></div>
+    </div>
+  `;
+  
+  const nestedHost = shadow2.getElementById('nested-host');
+  const nestedShadow = nestedHost.attachShadow({ mode: 'open' });
+  nestedShadow.innerHTML = `
+    <style>
+      .inner-form { padding: 10px; background: #e1f5fe; border-radius: 4px; }
+      input { padding: 6px; margin: 5px 0; width: 100%; border: 1px solid #0288d1; border-radius: 4px; }
+      button { padding: 6px 12px; background: #0288d1; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px; }
+      .result { margin-top: 8px; padding: 8px; background: #b3e5fc; border-radius: 4px; }
+    </style>
+    <div class='inner-form'>
+      <h5 style='margin-top: 0;'>Level 2 Shadow</h5>
+      <input type='text' id='nested-input' data-testid='nested-input' placeholder='Nested input'>
+      <button id='nested-btn' data-testid='nested-btn'>Process</button>
+      <div class='result' id='nested-result' data-testid='nested-result'></div>
+    </div>
+  `;
+  
+  nestedShadow.getElementById('nested-btn').addEventListener('click', () => {
+    const value = nestedShadow.getElementById('nested-input').value;
+    nestedShadow.getElementById('nested-result').textContent = `Nested Result: ${value}`;
+  });
+
+  // Scenario 4: Shadow DOM with Slots
+  const host4 = document.getElementById('shadow-host-4');
+  const shadow4 = host4.attachShadow({ mode: 'open' });
+  shadow4.innerHTML = `
+    <style>
+      .card { border: 2px solid #9c27b0; border-radius: 8px; padding: 15px; background: #f3e5f5; }
+      .card-header { font-size: 18px; font-weight: bold; color: #6a1b9a; margin-bottom: 10px; }
+      .card-content { color: #4a148c; }
+    </style>
+    <div class='card'>
+      <div class='card-header'><slot name='header'>Default Header</slot></div>
+      <div class='card-content'><slot name='content'>Default Content</slot></div>
+    </div>
+  `;
+
+  // Scenario 5: Multiple Independent Shadows
+  const multiContainer = document.getElementById('multi-shadow-container');
+  for (let i = 1; i <= 3; i++) {
+    const shadowHost = document.createElement('div');
+    shadowHost.style.cssText = 'margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px;';
+    shadowHost.dataset.testid = `multi-shadow-${i}`;
+    multiContainer.appendChild(shadowHost);
+    
+    const shadow = shadowHost.attachShadow({ mode: 'open' });
+    shadow.innerHTML = `
+      <style>
+        .mini-form { display: flex; gap: 10px; align-items: center; }
+        input { padding: 6px; border: 1px solid #ddd; border-radius: 4px; flex: 1; }
+        button { padding: 6px 12px; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .output { margin-top: 8px; padding: 8px; background: #fff3e0; border-radius: 4px; }
+      </style>
+      <div class='mini-form'>
+        <span>Shadow ${i}:</span>
+        <input type='text' id='input-${i}' data-testid='input-${i}' placeholder='Enter value'>
+        <button id='btn-${i}' data-testid='btn-${i}'>Save</button>
+      </div>
+      <div class='output' id='output-${i}' data-testid='output-${i}'></div>
+    `;
+    
+    shadow.getElementById(`btn-${i}`).addEventListener('click', () => {
+      const value = shadow.getElementById(`input-${i}`).value;
+      shadow.getElementById(`output-${i}`).textContent = `Shadow ${i} saved: ${value}`;
+    });
+  }
+
+  // Scenario 6: Shadow DOM with Events
+  const host6 = document.getElementById('shadow-host-6');
+  const shadow6 = host6.attachShadow({ mode: 'open' });
+  shadow6.innerHTML = `
+    <style>
+      .event-demo { padding: 15px; background: #e8eaf6; border-radius: 4px; }
+      button { padding: 8px 16px; margin: 5px; background: #3f51b5; color: white; border: none; border-radius: 4px; cursor: pointer; }
+      button:hover { background: #303f9f; }
+      .event-log { margin-top: 10px; padding: 10px; background: #c5cae9; border-radius: 4px; max-height: 100px; overflow-y: auto; }
+    </style>
+    <div class='event-demo'>
+      <button id='event-btn-1' data-testid='event-btn-1'>Click Me</button>
+      <button id='event-btn-2' data-testid='event-btn-2'>Double Click</button>
+      <button id='event-btn-3' data-testid='event-btn-3'>Hover Me</button>
+      <div class='event-log' id='event-log' data-testid='event-log'>Event log will appear here...</div>
+    </div>
+  `;
+  
+  const eventLog = shadow6.getElementById('event-log');
+  const logEvent = (msg) => {
+    const time = new Date().toLocaleTimeString();
+    eventLog.innerHTML = `[${time}] ${msg}<br>` + eventLog.innerHTML;
+  };
+  
+  shadow6.getElementById('event-btn-1').addEventListener('click', () => logEvent('Button 1 clicked'));
+  shadow6.getElementById('event-btn-2').addEventListener('dblclick', () => logEvent('Button 2 double-clicked'));
+  shadow6.getElementById('event-btn-3').addEventListener('mouseenter', () => logEvent('Button 3 hovered'));
+
+  // Scenario 7: Deep Nested Shadow (3 Levels)
+  const host7 = document.getElementById('shadow-host-7');
+  const shadow7 = host7.attachShadow({ mode: 'open' });
+  shadow7.innerHTML = `
+    <style>
+      .level { padding: 15px; margin: 10px 0; border-radius: 4px; }
+      .level-1 { background: #ffebee; border: 2px solid #c62828; }
+      h4 { margin: 0 0 10px 0; }
+    </style>
+    <div class='level level-1'>
+      <h4>Level 1 (Root Shadow)</h4>
+      <div id='level-2-host' data-testid='level-2-host'></div>
+    </div>
+  `;
+  
+  const level2Host = shadow7.getElementById('level-2-host');
+  const shadow7Level2 = level2Host.attachShadow({ mode: 'open' });
+  shadow7Level2.innerHTML = `
+    <style>
+      .level-2 { background: #fff3e0; border: 2px solid #ef6c00; padding: 15px; border-radius: 4px; }
+      h4 { margin: 0 0 10px 0; }
+    </style>
+    <div class='level-2'>
+      <h4>Level 2 (Nested Shadow)</h4>
+      <div id='level-3-host' data-testid='level-3-host'></div>
+    </div>
+  `;
+  
+  const level3Host = shadow7Level2.getElementById('level-3-host');
+  const shadow7Level3 = level3Host.attachShadow({ mode: 'open' });
+  shadow7Level3.innerHTML = `
+    <style>
+      .level-3 { background: #e8f5e9; border: 2px solid #2e7d32; padding: 15px; border-radius: 4px; }
+      input { padding: 8px; width: 100%; margin: 10px 0; border: 1px solid #2e7d32; border-radius: 4px; }
+      button { padding: 8px 16px; background: #2e7d32; color: white; border: none; border-radius: 4px; cursor: pointer; }
+      .deep-output { margin-top: 10px; padding: 10px; background: #c8e6c9; border-radius: 4px; }
+    </style>
+    <div class='level-3'>
+      <h4>Level 3 (Deep Nested Shadow)</h4>
+      <input type='text' id='deep-input' data-testid='deep-input' placeholder='Enter deep value'>
+      <button id='deep-btn' data-testid='deep-btn'>Submit Deep</button>
+      <div class='deep-output' id='deep-output' data-testid='deep-output'></div>
+    </div>
+  `;
+  
+  shadow7Level3.getElementById('deep-btn').addEventListener('click', () => {
+    const value = shadow7Level3.getElementById('deep-input').value;
+    shadow7Level3.getElementById('deep-output').textContent = `Deep nested value: ${value}`;
+  });
+});
+
+// Scenario 3: Dynamic Shadow DOM Creation
+function createDynamicShadow() {
+  const container = document.getElementById('dynamic-container');
+  const newHost = document.createElement('div');
+  newHost.style.cssText = 'margin-top: 15px; padding: 15px; border: 2px dashed #00bcd4; border-radius: 4px;';
+  newHost.dataset.testid = 'dynamic-shadow-host';
+  container.appendChild(newHost);
+  
+  const dynamicShadow = newHost.attachShadow({ mode: 'open' });
+  dynamicShadow.innerHTML = `
+    <style>
+      .dynamic-content { background: #e0f7fa; padding: 15px; border-radius: 4px; }
+      input { padding: 8px; width: 100%; margin: 10px 0; border: 1px solid #00acc1; border-radius: 4px; }
+      button { padding: 8px 16px; background: #00acc1; color: white; border: none; border-radius: 4px; cursor: pointer; }
+      .result { margin-top: 10px; padding: 10px; background: #b2ebf2; border-radius: 4px; }
+    </style>
+    <div class='dynamic-content'>
+      <h4 style='margin-top: 0;'>Dynamically Created Shadow DOM</h4>
+      <input type='text' id='dynamic-input' data-testid='dynamic-input' placeholder='Enter dynamic value'>
+      <button id='dynamic-btn' data-testid='dynamic-btn'>Process</button>
+      <div class='result' id='dynamic-result' data-testid='dynamic-result'></div>
+    </div>
+  `;
+  
+  dynamicShadow.getElementById('dynamic-btn').addEventListener('click', () => {
+    const value = dynamicShadow.getElementById('dynamic-input').value;
+    dynamicShadow.getElementById('dynamic-result').textContent = `Dynamic result: ${value}`;
+  });
+}
+
+// Scenario 8: Custom Web Component with Shadow DOM
+class CustomCard extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+    shadow.innerHTML = `
+      <style>
+        .custom-card { border: 2px solid #673ab7; border-radius: 8px; padding: 20px; background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); }
+        .card-title { font-size: 20px; font-weight: bold; color: #4a148c; margin-bottom: 10px; }
+        .card-desc { color: #6a1b9a; margin-bottom: 15px; }
+        input { padding: 8px; width: 100%; margin: 10px 0; border: 1px solid #9c27b0; border-radius: 4px; }
+        button { padding: 8px 16px; background: #9c27b0; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .card-output { margin-top: 10px; padding: 10px; background: #f3e5f5; border-radius: 4px; }
+      </style>
+      <div class='custom-card'>
+        <div class='card-title'><slot name='title'>Default Title</slot></div>
+        <div class='card-desc'><slot name='description'>Default Description</slot></div>
+        <input type='text' id='custom-input' data-testid='custom-input' placeholder='Enter custom value'>
+        <button id='custom-btn' data-testid='custom-btn'>Submit</button>
+        <div class='card-output' id='custom-output' data-testid='custom-output'></div>
+      </div>
+    `;
+    
+    shadow.getElementById('custom-btn').addEventListener('click', () => {
+      const value = shadow.getElementById('custom-input').value;
+      shadow.getElementById('custom-output').textContent = `Custom component value: ${value}`;
+    });
+  }
+}
+
+customElements.define('custom-card', CustomCard);
+</script>
+</body>
+</html>

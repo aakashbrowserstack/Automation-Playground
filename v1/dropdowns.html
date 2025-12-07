@@ -1,0 +1,309 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Dropdowns - Enhanced</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+<style>
+.dropdown-container { max-width: 800px; margin: 0 auto; }
+.form-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.form-section h3 { margin-top: 0; color: #333; }
+.form-group { margin: 15px 0; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group select { padding: 10px; width: 100%; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+.form-group select:focus { outline: none; border-color: #4CAF50; }
+.form-group select[multiple] { height: 120px; }
+.output-box { margin-top: 15px; padding: 15px; background: #e8f5e9; border-radius: 4px; min-height: 40px; }
+.output-box strong { color: #2e7d32; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.btn-group { display: flex; gap: 10px; margin-top: 15px; }
+.dependent-dropdown { display: none; }
+.dependent-dropdown.show { display: block; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='dropdown-container'>
+<h2>Enhanced Dropdowns</h2>
+<p style='color: #666; margin-bottom: 20px;'>Comprehensive dropdown scenarios including single, multiple, dependent, and dynamic options</p>
+
+<!-- Section 1: Basic Dropdowns -->
+<div class='form-section'>
+  <h3>1. Basic Single Selection</h3>
+  <div class='form-group'>
+    <label for='basic-dropdown'>Select a Country</label>
+    <select id='basic-dropdown' data-testid='select-country'>
+      <option value=''>-- Select Country --</option>
+      <option value='USA'>United States</option>
+      <option value='UK'>United Kingdom</option>
+      <option value='Canada'>Canada</option>
+      <option value='Australia'>Australia</option>
+      <option value='India'>India</option>
+      <option value='Germany'>Germany</option>
+      <option value='France'>France</option>
+      <option value='Japan'>Japan</option>
+    </select>
+  </div>
+  <div class='output-box' id='basic-output' data-testid='basic-output'>
+    <strong>Selected:</strong> None
+  </div>
+</div>
+
+<!-- Section 2: Multiple Selection -->
+<div class='form-section'>
+  <h3>2. Multiple Selection</h3>
+  <p style='color: #666; font-size: 14px;'>Hold Ctrl (Windows) or Cmd (Mac) to select multiple options</p>
+  <div class='form-group'>
+    <label for='multi-dropdown'>Select Programming Languages</label>
+    <select id='multi-dropdown' multiple data-testid='select-languages'>
+      <option value='JavaScript'>JavaScript</option>
+      <option value='Python'>Python</option>
+      <option value='Java'>Java</option>
+      <option value='C++'>C++</option>
+      <option value='Ruby'>Ruby</option>
+      <option value='Go'>Go</option>
+      <option value='Rust'>Rust</option>
+      <option value='TypeScript'>TypeScript</option>
+    </select>
+  </div>
+  <div class='output-box' id='multi-output' data-testid='multi-output'>
+    <strong>Selected:</strong> None
+  </div>
+</div>
+
+<!-- Section 3: Dependent Dropdowns -->
+<div class='form-section'>
+  <h3>3. Dependent Dropdowns (Cascading)</h3>
+  <div class='grid-2'>
+    <div class='form-group'>
+      <label for='category-dropdown'>Select Category</label>
+      <select id='category-dropdown' data-testid='select-category'>
+        <option value=''>-- Select Category --</option>
+        <option value='electronics'>Electronics</option>
+        <option value='clothing'>Clothing</option>
+        <option value='books'>Books</option>
+      </select>
+    </div>
+    
+    <div class='form-group dependent-dropdown' id='subcategory-group'>
+      <label for='subcategory-dropdown'>Select Subcategory</label>
+      <select id='subcategory-dropdown' data-testid='select-subcategory'>
+        <option value=''>-- Select Subcategory --</option>
+      </select>
+    </div>
+  </div>
+  <div class='output-box' id='dependent-output' data-testid='dependent-output'>
+    <strong>Selected:</strong> None
+  </div>
+</div>
+
+<!-- Section 4: Dynamic Dropdown -->
+<div class='form-section'>
+  <h3>4. Dynamic Dropdown (Add/Remove Options)</h3>
+  <div class='form-group'>
+    <label for='dynamic-dropdown'>Select Item</label>
+    <select id='dynamic-dropdown' data-testid='select-dynamic'>
+      <option value='Item 1'>Item 1</option>
+      <option value='Item 2'>Item 2</option>
+      <option value='Item 3'>Item 3</option>
+    </select>
+  </div>
+  <div class='btn-group'>
+    <button class='btn' onclick='addOption()' data-testid='btn-add-option'>Add Option</button>
+    <button class='btn' onclick='removeOption()' data-testid='btn-remove-option'>Remove Selected</button>
+    <button class='btn' onclick='clearOptions()' data-testid='btn-clear-options'>Clear All</button>
+  </div>
+  <div class='output-box' id='dynamic-output' data-testid='dynamic-output'>
+    <strong>Total Options:</strong> 3
+  </div>
+</div>
+
+<!-- Section 5: Grouped Options -->
+<div class='form-section'>
+  <h3>5. Grouped Options (Optgroup)</h3>
+  <div class='form-group'>
+    <label for='grouped-dropdown'>Select a Vehicle</label>
+    <select id='grouped-dropdown' data-testid='select-vehicle'>
+      <option value=''>-- Select Vehicle --</option>
+      <optgroup label='Cars'>
+        <option value='sedan'>Sedan</option>
+        <option value='suv'>SUV</option>
+        <option value='hatchback'>Hatchback</option>
+      </optgroup>
+      <optgroup label='Motorcycles'>
+        <option value='sport'>Sport Bike</option>
+        <option value='cruiser'>Cruiser</option>
+        <option value='touring'>Touring</option>
+      </optgroup>
+      <optgroup label='Trucks'>
+        <option value='pickup'>Pickup</option>
+        <option value='van'>Van</option>
+      </optgroup>
+    </select>
+  </div>
+  <div class='output-box' id='grouped-output' data-testid='grouped-output'>
+    <strong>Selected:</strong> None
+  </div>
+</div>
+
+<!-- Section 6: Disabled Options -->
+<div class='form-section'>
+  <h3>6. Disabled Options</h3>
+  <div class='form-group'>
+    <label for='disabled-dropdown'>Select Plan (Some options disabled)</label>
+    <select id='disabled-dropdown' data-testid='select-plan'>
+      <option value=''>-- Select Plan --</option>
+      <option value='free'>Free Plan</option>
+      <option value='basic'>Basic Plan - $9.99/month</option>
+      <option value='pro' disabled>Pro Plan - $19.99/month (Coming Soon)</option>
+      <option value='enterprise' disabled>Enterprise Plan (Contact Sales)</option>
+    </select>
+  </div>
+  <div class='output-box' id='disabled-output' data-testid='disabled-output'>
+    <strong>Selected:</strong> None
+  </div>
+</div>
+
+</div>
+</section>
+
+<script src='/shared/scripts.js'></script>
+<script>
+let optionCounter = 4;
+
+// Subcategory data for dependent dropdowns
+const subcategories = {
+  electronics: ['Laptops', 'Smartphones', 'Tablets', 'Cameras', 'Headphones'],
+  clothing: ['Shirts', 'Pants', 'Dresses', 'Shoes', 'Accessories'],
+  books: ['Fiction', 'Non-Fiction', 'Science', 'History', 'Biography']
+};
+
+onReady(() => {
+  // Basic dropdown
+  document.getElementById('basic-dropdown').addEventListener('change', (e) => {
+    const value = e.target.value;
+    const text = e.target.options[e.target.selectedIndex].text;
+    document.getElementById('basic-output').innerHTML = 
+      `<strong>Selected:</strong> ${value ? `${text} (${value})` : 'None'}`;
+  });
+
+  // Multiple selection dropdown
+  document.getElementById('multi-dropdown').addEventListener('change', (e) => {
+    const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
+    document.getElementById('multi-output').innerHTML = 
+      `<strong>Selected (${selected.length}):</strong> ${selected.length > 0 ? selected.join(', ') : 'None'}`;
+  });
+
+  // Category dropdown (dependent)
+  document.getElementById('category-dropdown').addEventListener('change', (e) => {
+    const category = e.target.value;
+    const subcategoryGroup = document.getElementById('subcategory-group');
+    const subcategoryDropdown = document.getElementById('subcategory-dropdown');
+    
+    if (category) {
+      // Show subcategory dropdown
+      subcategoryGroup.classList.add('show');
+      
+      // Populate subcategories
+      subcategoryDropdown.innerHTML = '<option value="">-- Select Subcategory --</option>';
+      subcategories[category].forEach(sub => {
+        const option = document.createElement('option');
+        option.value = sub.toLowerCase();
+        option.textContent = sub;
+        subcategoryDropdown.appendChild(option);
+      });
+      
+      updateDependentOutput(category, '');
+    } else {
+      subcategoryGroup.classList.remove('show');
+      updateDependentOutput('', '');
+    }
+  });
+
+  // Subcategory dropdown
+  document.getElementById('subcategory-dropdown').addEventListener('change', (e) => {
+    const category = document.getElementById('category-dropdown').value;
+    const subcategory = e.target.value;
+    updateDependentOutput(category, subcategory);
+  });
+
+  // Dynamic dropdown
+  document.getElementById('dynamic-dropdown').addEventListener('change', (e) => {
+    updateDynamicOutput();
+  });
+
+  // Grouped dropdown
+  document.getElementById('grouped-dropdown').addEventListener('change', (e) => {
+    const value = e.target.value;
+    const text = e.target.options[e.target.selectedIndex].text;
+    const group = e.target.options[e.target.selectedIndex].parentElement.label || 'None';
+    document.getElementById('grouped-output').innerHTML = 
+      `<strong>Selected:</strong> ${value ? `${text} (Group: ${group})` : 'None'}`;
+  });
+
+  // Disabled dropdown
+  document.getElementById('disabled-dropdown').addEventListener('change', (e) => {
+    const value = e.target.value;
+    const text = e.target.options[e.target.selectedIndex].text;
+    document.getElementById('disabled-output').innerHTML = 
+      `<strong>Selected:</strong> ${value ? text : 'None'}`;
+  });
+});
+
+function updateDependentOutput(category, subcategory) {
+  const categoryText = category ? document.getElementById('category-dropdown').options[document.getElementById('category-dropdown').selectedIndex].text : '';
+  const subcategoryText = subcategory ? document.getElementById('subcategory-dropdown').options[document.getElementById('subcategory-dropdown').selectedIndex].text : '';
+  
+  let output = '<strong>Selected:</strong> ';
+  if (category && subcategory) {
+    output += `${categoryText} > ${subcategoryText}`;
+  } else if (category) {
+    output += `${categoryText} (Select subcategory)`;
+  } else {
+    output += 'None';
+  }
+  
+  document.getElementById('dependent-output').innerHTML = output;
+}
+
+function addOption() {
+  const dropdown = document.getElementById('dynamic-dropdown');
+  const option = document.createElement('option');
+  option.value = `Item ${optionCounter}`;
+  option.textContent = `Item ${optionCounter}`;
+  dropdown.appendChild(option);
+  optionCounter++;
+  updateDynamicOutput();
+}
+
+function removeOption() {
+  const dropdown = document.getElementById('dynamic-dropdown');
+  const selectedIndex = dropdown.selectedIndex;
+  
+  if (selectedIndex >= 0) {
+    dropdown.remove(selectedIndex);
+    updateDynamicOutput();
+  } else {
+    alert('Please select an option to remove');
+  }
+}
+
+function clearOptions() {
+  const dropdown = document.getElementById('dynamic-dropdown');
+  dropdown.innerHTML = '';
+  optionCounter = 1;
+  updateDynamicOutput();
+}
+
+function updateDynamicOutput() {
+  const dropdown = document.getElementById('dynamic-dropdown');
+  const count = dropdown.options.length;
+  const selected = dropdown.value;
+  document.getElementById('dynamic-output').innerHTML = 
+    `<strong>Total Options:</strong> ${count} | <strong>Selected:</strong> ${selected || 'None'}`;
+}
+</script>
+</body>
+</html>

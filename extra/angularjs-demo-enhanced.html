@@ -1,0 +1,365 @@
+<!doctype html>
+<html ng-app="testApp">
+<head>
+<meta charset='utf-8'>
+<title>AngularJS Advanced Demo - LCNC Testing</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+.form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+.form-group label { margin-bottom: 5px; font-weight: bold; }
+.form-group input, .form-group select, .form-group textarea { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+.error { color: red; font-size: 12px; margin-top: 3px; }
+.success { color: green; font-size: 12px; margin-top: 3px; }
+.tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+.tab { padding: 10px 20px; cursor: pointer; border: none; background: none; }
+.tab.active { border-bottom: 3px solid #4CAF50; font-weight: bold; }
+.sortable-item { padding: 10px; margin: 5px 0; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: move; display: flex; justify-content: space-between; align-items: center; }
+.sortable-item:hover { background: #e8e8e8; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+.modal.show { display: flex; align-items: center; justify-content: center; }
+.modal-content { background-color: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; }
+.data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+.data-table th { background-color: #f5f5f5; cursor: pointer; }
+.data-table tr:hover { background-color: #f9f9f9; }
+.progress-bar { width: 100%; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #45a049); transition: width 0.3s; }
+</style>
+</head>
+<body ng-controller="MainController as ctrl">
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<h2>AngularJS Advanced Demo - LCNC Testing</h2>
+<p style='color: #666; margin-bottom: 20px;'>Comprehensive AngularJS demo with forms, tables, modals, and interactive features</p>
+
+<!-- Tabs -->
+<div class='tabs'>
+  <button class='tab' ng-class="{active: ctrl.activeTab === 'form'}" ng-click="ctrl.setTab('form')" data-testid='tab-form'>Multi-Step Form</button>
+  <button class='tab' ng-class="{active: ctrl.activeTab === 'table'}" ng-click="ctrl.setTab('table')" data-testid='tab-table'>Data Table</button>
+  <button class='tab' ng-class="{active: ctrl.activeTab === 'tasks'}" ng-click="ctrl.setTab('tasks')" data-testid='tab-tasks'>Task List</button>
+</div>
+
+<!-- Tab 1: Multi-Step Form -->
+<div ng-show="ctrl.activeTab === 'form'" data-testid='form-tab-content'>
+  <h3>Multi-Step Registration Form</h3>
+  <div class='progress-bar'>
+    <div class='progress-fill' ng-style="{width: ctrl.formProgress + '%'}" data-testid='form-progress'></div>
+  </div>
+  <p>Step {{ctrl.currentStep}} of 3</p>
+
+  <!-- Step 1 -->
+  <div ng-show="ctrl.currentStep === 1">
+    <div class='form-grid'>
+      <div class='form-group'>
+        <label>First Name *</label>
+        <input type='text' ng-model='ctrl.formData.firstName' data-testid='input-firstname'>
+        <span class='error' ng-show="ctrl.errors.firstName">{{ctrl.errors.firstName}}</span>
+      </div>
+      <div class='form-group'>
+        <label>Last Name *</label>
+        <input type='text' ng-model='ctrl.formData.lastName' data-testid='input-lastname'>
+        <span class='error' ng-show="ctrl.errors.lastName">{{ctrl.errors.lastName}}</span>
+      </div>
+      <div class='form-group'>
+        <label>Email *</label>
+        <input type='email' ng-model='ctrl.formData.email' data-testid='input-email'>
+        <span class='error' ng-show="ctrl.errors.email">{{ctrl.errors.email}}</span>
+      </div>
+      <div class='form-group'>
+        <label>Phone</label>
+        <input type='tel' ng-model='ctrl.formData.phone' data-testid='input-phone'>
+      </div>
+    </div>
+    <button class='btn' ng-click='ctrl.nextStep()' data-testid='btn-next-step1'>Next</button>
+  </div>
+
+  <!-- Step 2 -->
+  <div ng-show="ctrl.currentStep === 2">
+    <div class='form-grid'>
+      <div class='form-group'>
+        <label>Country *</label>
+        <select ng-model='ctrl.formData.country' data-testid='select-country'>
+          <option value=''>Select Country</option>
+          <option value='USA'>USA</option>
+          <option value='UK'>UK</option>
+          <option value='Canada'>Canada</option>
+          <option value='India'>India</option>
+        </select>
+        <span class='error' ng-show="ctrl.errors.country">{{ctrl.errors.country}}</span>
+      </div>
+      <div class='form-group'>
+        <label>City *</label>
+        <input type='text' ng-model='ctrl.formData.city' data-testid='input-city'>
+        <span class='error' ng-show="ctrl.errors.city">{{ctrl.errors.city}}</span>
+      </div>
+      <div class='form-group' style='grid-column: 1 / -1;'>
+        <label>Address</label>
+        <textarea ng-model='ctrl.formData.address' rows='3' data-testid='textarea-address'></textarea>
+      </div>
+    </div>
+    <button class='btn' ng-click='ctrl.prevStep()' data-testid='btn-prev-step2'>Previous</button>
+    <button class='btn' ng-click='ctrl.nextStep()' data-testid='btn-next-step2'>Next</button>
+  </div>
+
+  <!-- Step 3 -->
+  <div ng-show="ctrl.currentStep === 3">
+    <div class='form-group'>
+      <label>
+        <input type='checkbox' ng-model='ctrl.formData.newsletter' data-testid='checkbox-newsletter'>
+        Subscribe to newsletter
+      </label>
+    </div>
+    <div class='form-group'>
+      <label>
+        <input type='checkbox' ng-model='ctrl.formData.terms' data-testid='checkbox-terms'>
+        I agree to terms and conditions *
+      </label>
+      <span class='error' ng-show="ctrl.errors.terms">{{ctrl.errors.terms}}</span>
+    </div>
+    <button class='btn' ng-click='ctrl.prevStep()' data-testid='btn-prev-step3'>Previous</button>
+    <button class='btn' ng-click='ctrl.submitForm()' data-testid='btn-submit-form'>Submit</button>
+  </div>
+
+  <div ng-show="ctrl.formSubmitted" class='success' style='margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 4px;' data-testid='form-success'>
+    <strong>✓ Form Submitted Successfully!</strong>
+    <p>Thank you, {{ctrl.formData.firstName}} {{ctrl.formData.lastName}}!</p>
+  </div>
+</div>
+
+<!-- Tab 2: Data Table -->
+<div ng-show="ctrl.activeTab === 'table'" data-testid='table-tab-content'>
+  <h3>User Data Table</h3>
+  <input type='text' ng-model='ctrl.searchQuery' placeholder='Search users...' style='padding: 8px; width: 100%; margin-bottom: 15px;' data-testid='input-search'>
+  
+  <table class='data-table' data-testid='data-table'>
+    <thead>
+      <tr>
+        <th ng-click='ctrl.sortBy("name")' data-testid='th-name'>Name</th>
+        <th ng-click='ctrl.sortBy("email")' data-testid='th-email'>Email</th>
+        <th ng-click='ctrl.sortBy("role")' data-testid='th-role'>Role</th>
+        <th ng-click='ctrl.sortBy("status")' data-testid='th-status'>Status</th>
+        <th data-testid='th-actions'>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="user in ctrl.filteredUsers() | orderBy:ctrl.sortField:ctrl.sortReverse" data-testid='table-row-{{$index}}'>
+        <td>{{user.name}}</td>
+        <td>{{user.email}}</td>
+        <td>{{user.role}}</td>
+        <td>{{user.status}}</td>
+        <td>
+          <button class='small btn' ng-click='ctrl.editUser(user)' data-testid='btn-edit-{{$index}}'>Edit</button>
+          <button class='small btn' ng-click='ctrl.deleteUser(user.id)' data-testid='btn-delete-{{$index}}'>Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Tab 3: Task List -->
+<div ng-show="ctrl.activeTab === 'tasks'" data-testid='tasks-tab-content'>
+  <h3>Task Management</h3>
+  <div style='margin-bottom: 20px;'>
+    <input type='text' ng-model='ctrl.newTask' placeholder='Enter new task...' style='padding: 8px; width: 70%;' data-testid='input-new-task'>
+    <button class='btn' ng-click='ctrl.addTask()' data-testid='btn-add-task'>Add Task</button>
+  </div>
+  
+  <div ng-repeat="task in ctrl.tasks" class='sortable-item' data-testid='task-item-{{$index}}'>
+    <div>
+      <input type='checkbox' ng-model='task.completed' ng-change='ctrl.toggleTask(task)' data-testid='checkbox-task-{{$index}}'>
+      <span ng-style="{textDecoration: task.completed ? 'line-through' : 'none'}">{{task.text}}</span>
+    </div>
+    <button class='small btn' ng-click='ctrl.removeTask($index)' data-testid='btn-remove-task-{{$index}}'>Remove</button>
+  </div>
+  
+  <p style='margin-top: 15px;'>
+    Total: {{ctrl.tasks.length}} | 
+    Completed: {{ctrl.completedCount()}} | 
+    Pending: {{ctrl.pendingCount()}}
+  </p>
+</div>
+
+<!-- Modal -->
+<div class='modal' ng-class="{show: ctrl.showModal}" data-testid='edit-modal'>
+  <div class='modal-content'>
+    <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;'>
+      <h3>Edit User</h3>
+      <span style='font-size: 28px; cursor: pointer;' ng-click='ctrl.closeModal()' data-testid='btn-close-modal'>&times;</span>
+    </div>
+    <div class='form-group'>
+      <label>Name</label>
+      <input type='text' ng-model='ctrl.editingUser.name' data-testid='modal-input-name'>
+    </div>
+    <div class='form-group'>
+      <label>Email</label>
+      <input type='email' ng-model='ctrl.editingUser.email' data-testid='modal-input-email'>
+    </div>
+    <div class='form-group'>
+      <label>Role</label>
+      <select ng-model='ctrl.editingUser.role' data-testid='modal-select-role'>
+        <option value='Admin'>Admin</option>
+        <option value='User'>User</option>
+        <option value='Guest'>Guest</option>
+      </select>
+    </div>
+    <button class='btn' ng-click='ctrl.saveUser()' data-testid='btn-save-user'>Save Changes</button>
+  </div>
+</div>
+
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js'></script>
+<script>
+angular.module('testApp', [])
+    .controller('MainController', ['$timeout', function($timeout) {
+      var vm = this;
+      
+      // Tab management
+      vm.activeTab = 'form';
+      vm.setTab = function(tab) {
+        vm.activeTab = tab;
+      };
+      
+      // Multi-step form
+      vm.currentStep = 1;
+      vm.formData = {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        country: '',
+        city: '',
+        address: '',
+        newsletter: false,
+        terms: false
+      };
+      vm.errors = {};
+      vm.formSubmitted = false;
+      vm.formProgress = 33;
+      
+      vm.nextStep = function() {
+        vm.errors = {};
+        if (vm.currentStep === 1) {
+          if (!vm.formData.firstName) vm.errors.firstName = 'First name is required';
+          if (!vm.formData.lastName) vm.errors.lastName = 'Last name is required';
+          if (!vm.formData.email) vm.errors.email = 'Email is required';
+          if (Object.keys(vm.errors).length === 0) {
+            vm.currentStep = 2;
+            vm.formProgress = 66;
+          }
+        } else if (vm.currentStep === 2) {
+          if (!vm.formData.country) vm.errors.country = 'Country is required';
+          if (!vm.formData.city) vm.errors.city = 'City is required';
+          if (Object.keys(vm.errors).length === 0) {
+            vm.currentStep = 3;
+            vm.formProgress = 100;
+          }
+        }
+      };
+      
+      vm.prevStep = function() {
+        if (vm.currentStep > 1) {
+          vm.currentStep--;
+          vm.formProgress = (vm.currentStep / 3) * 100;
+        }
+      };
+      
+      vm.submitForm = function() {
+        vm.errors = {};
+        if (!vm.formData.terms) {
+          vm.errors.terms = 'You must agree to terms';
+          return;
+        }
+        vm.formSubmitted = true;
+      };
+      
+      // Data table
+      vm.users = [
+        { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
+        { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active' },
+        { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Inactive' },
+        { id: 4, name: 'Alice Williams', email: 'alice@example.com', role: 'Guest', status: 'Active' }
+      ];
+      vm.searchQuery = '';
+      vm.sortField = 'name';
+      vm.sortReverse = false;
+      
+      vm.filteredUsers = function() {
+        if (!vm.searchQuery) return vm.users;
+        return vm.users.filter(function(user) {
+          return user.name.toLowerCase().includes(vm.searchQuery.toLowerCase()) ||
+                 user.email.toLowerCase().includes(vm.searchQuery.toLowerCase()) ||
+                 user.role.toLowerCase().includes(vm.searchQuery.toLowerCase());
+        });
+      };
+      
+      vm.sortBy = function(field) {
+        if (vm.sortField === field) {
+          vm.sortReverse = !vm.sortReverse;
+        } else {
+          vm.sortField = field;
+          vm.sortReverse = false;
+        }
+      };
+      
+      vm.showModal = false;
+      vm.editingUser = {};
+      
+      vm.editUser = function(user) {
+        vm.editingUser = angular.copy(user);
+        vm.showModal = true;
+      };
+      
+      vm.closeModal = function() {
+        vm.showModal = false;
+      };
+      
+      vm.saveUser = function() {
+        var index = vm.users.findIndex(function(u) { return u.id === vm.editingUser.id; });
+        if (index !== -1) {
+          vm.users[index] = angular.copy(vm.editingUser);
+        }
+        vm.closeModal();
+      };
+      
+      vm.deleteUser = function(id) {
+        vm.users = vm.users.filter(function(u) { return u.id !== id; });
+      };
+      
+      // Task list
+      vm.tasks = [
+        { text: 'Complete project documentation', completed: false },
+        { text: 'Review pull requests', completed: true },
+        { text: 'Update test cases', completed: false }
+      ];
+      vm.newTask = '';
+      
+      vm.addTask = function() {
+        if (vm.newTask.trim()) {
+          vm.tasks.push({ text: vm.newTask, completed: false });
+          vm.newTask = '';
+        }
+      };
+      
+      vm.removeTask = function(index) {
+        vm.tasks.splice(index, 1);
+      };
+      
+      vm.toggleTask = function(task) {
+        // Task completion toggled
+      };
+      
+      vm.completedCount = function() {
+        return vm.tasks.filter(function(t) { return t.completed; }).length;
+      };
+      
+      vm.pendingCount = function() {
+        return vm.tasks.filter(function(t) { return !t.completed; }).length;
+      };
+    }]);
+</script>
+</body>
+</html>

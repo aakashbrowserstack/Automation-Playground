@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset='utf-8'><title>ecom-adv</title><link rel='stylesheet' href='/shared/styles.css'></head><body>
+<a href='/index.html' class='small btn'>Back</a>
+<section class='card'><h2>E-commerce Advanced</h2>
+<input id='search' placeholder='search products' /><button id='sbtn' class='btn'>Search</button>
+<div id='plist'></div>
+<div class='output' id='cartout'></div>
+</section>
+<script>
+onReady(()=>{
+  const products = [{id:1,name:'Phone',price:999},{id:2,name:'Case',price:19},{id:3,name:'Charger',price:29}];
+  const plist = el('plist'), cart = {};
+  function render(list){ plist.innerHTML=''; list.forEach(p=>{ const d=document.createElement('div'); d.innerHTML = `<strong>${p.name}</strong> ₹${p.price} <button class='btn add' data-id='${p.id}'>Add</button>`; plist.appendChild(d); }); document.querySelectorAll('.add').forEach(b=> b.addEventListener('click', ()=>{ const id=b.dataset.id; cart[id]=(cart[id]||0)+1; el('cartout').textContent = JSON.stringify(cart); })); }
+  render(products);
+  el('sbtn').addEventListener('click', ()=>{ const q=el('search').value.toLowerCase(); render(products.filter(p=> p.name.toLowerCase().includes(q))); });
+});
+</script>
+<script src='/shared/scripts.js'></script></body></html>

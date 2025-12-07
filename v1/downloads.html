@@ -1,0 +1,366 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Downloads - Enhanced</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+<style>
+.download-container { max-width: 900px; margin: 0 auto; }
+.download-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.download-section h3 { margin-top: 0; color: #333; }
+.btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+.download-info { margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 4px; font-size: 14px; }
+.file-preview { margin-top: 15px; padding: 15px; background: #fff; border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; }
+.file-preview pre { margin: 0; font-size: 12px; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='download-container'>
+<h2>Enhanced Downloads & File Generation</h2>
+<p style='color: #666; margin-bottom: 20px;'>Download various file types including PDF, CSV, Excel, XML, JSON, TXT, and images</p>
+
+<!-- Section 1: Document Downloads -->
+<div class='download-section'>
+  <h3>1. Document Downloads</h3>
+  <div class='btn-grid'>
+    <button class='btn' onclick='downloadPDF()' data-testid='btn-download-pdf'>📄 Download PDF</button>
+    <button class='btn' onclick='downloadTXT()' data-testid='btn-download-txt'>📝 Download TXT</button>
+    <button class='btn' onclick='downloadJSON()' data-testid='btn-download-json'>📋 Download JSON</button>
+    <button class='btn' onclick='downloadXML()' data-testid='btn-download-xml'>📰 Download XML</button>
+  </div>
+  <div class='download-info' data-testid='document-info'>
+    Click any button above to download the corresponding file type. Files are generated dynamically with sample content.
+  </div>
+</div>
+
+<!-- Section 2: Data File Downloads -->
+<div class='download-section'>
+  <h3>2. Data File Downloads (CSV & Excel)</h3>
+  <div class='btn-grid'>
+    <button class='btn' onclick='downloadCSV()' data-testid='btn-download-csv'>📊 Download CSV</button>
+    <button class='btn' onclick='downloadExcel()' data-testid='btn-download-excel'>📈 Download Excel (XLSX)</button>
+    <button class='btn' onclick='downloadTSV()' data-testid='btn-download-tsv'>📉 Download TSV</button>
+  </div>
+  <div class='file-preview' id='dataPreview' data-testid='data-preview'>
+    <strong>Sample Data Preview:</strong>
+    <pre id='dataContent'></pre>
+  </div>
+</div>
+
+<!-- Section 3: Image Downloads -->
+<div class='download-section'>
+  <h3>3. Image Downloads</h3>
+  <div class='btn-grid'>
+    <button class='btn' onclick='downloadPNG()' data-testid='btn-download-png'>🖼️ Download PNG</button>
+    <button class='btn' onclick='downloadSVG()' data-testid='btn-download-svg'>🎨 Download SVG</button>
+  </div>
+  <div class='download-info' data-testid='image-info'>
+    Generated images with sample graphics. PNG is a canvas-based image, SVG is vector graphics.
+  </div>
+</div>
+
+<!-- Section 4: Multiple File Download -->
+<div class='download-section'>
+  <h3>4. Batch Download (Multiple Files)</h3>
+  <p style='color: #666; font-size: 14px;'>Download multiple files at once</p>
+  <div class='btn-grid'>
+    <button class='btn' onclick='downloadMultipleFiles()' data-testid='btn-download-multiple'>📦 Download All Files</button>
+    <button class='btn' onclick='downloadZip()' data-testid='btn-download-zip'>🗜️ Download as ZIP</button>
+  </div>
+  <div class='download-info' data-testid='batch-info'>
+    Batch download will trigger multiple file downloads. ZIP option creates a compressed archive.
+  </div>
+</div>
+
+<!-- Section 5: Custom Content Download -->
+<div class='download-section'>
+  <h3>5. Custom Content Download</h3>
+  <div style='margin-bottom: 15px;'>
+    <label style='display: block; margin-bottom: 5px; font-weight: bold;'>Enter Custom Content:</label>
+    <textarea id='customContent' rows='5' style='width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;' data-testid='textarea-custom-content' placeholder='Enter your custom content here...'></textarea>
+  </div>
+  <div style='margin-bottom: 15px;'>
+    <label style='display: block; margin-bottom: 5px; font-weight: bold;'>File Name:</label>
+    <input type='text' id='customFileName' value='custom-file' style='padding: 10px; width: 100%; border: 1px solid #ddd; border-radius: 4px;' data-testid='input-custom-filename'>
+  </div>
+  <div class='btn-grid'>
+    <button class='btn' onclick='downloadCustom("txt")' data-testid='btn-custom-txt'>Download as TXT</button>
+    <button class='btn' onclick='downloadCustom("json")' data-testid='btn-custom-json'>Download as JSON</button>
+    <button class='btn' onclick='downloadCustom("csv")' data-testid='btn-custom-csv'>Download as CSV</button>
+  </div>
+</div>
+
+<div id='downloadStatus' style='margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 4px; display: none;' data-testid='download-status'>
+  <strong>✓ Download initiated!</strong> <span id='statusMessage'></span>
+</div>
+
+</div>
+</section>
+
+<script src='/shared/scripts.js'></script>
+<script>
+// Sample data for downloads
+const sampleData = [
+  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active' },
+  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Inactive' },
+  { id: 4, name: 'Alice Williams', email: 'alice@example.com', role: 'Manager', status: 'Active' }
+];
+
+onReady(() => {
+  // Display data preview
+  const csvContent = 'ID,Name,Email,Role,Status\n' + 
+    sampleData.map(row => `${row.id},${row.name},${row.email},${row.role},${row.status}`).join('\n');
+  document.getElementById('dataContent').textContent = csvContent;
+});
+
+function showStatus(message) {
+  const status = document.getElementById('downloadStatus');
+  document.getElementById('statusMessage').textContent = message;
+  status.style.display = 'block';
+  setTimeout(() => status.style.display = 'none', 3000);
+}
+
+// PDF Download (using jsPDF-like approach with data URI)
+function downloadPDF() {
+  const pdfContent = `%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/Resources <<
+/Font <<
+/F1 4 0 R
+>>
+>>
+/MediaBox [0 0 612 792]
+/Contents 5 0 R
+>>
+endobj
+4 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+endobj
+5 0 obj
+<<
+/Length 44
+>>
+stream
+BT
+/F1 12 Tf
+100 700 Td
+(Sample PDF Document) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000115 00000 n
+0000000262 00000 n
+0000000341 00000 n
+trailer
+<<
+/Size 6
+/Root 1 0 R
+>>
+startxref
+433
+%%EOF`;
+  
+  makeDownloadFile('sample-document.pdf', pdfContent);
+  showStatus('PDF file downloaded: sample-document.pdf');
+}
+
+// TXT Download
+function downloadTXT() {
+  const content = `Sample Text Document
+====================
+
+This is a sample text file generated for testing purposes.
+
+Features:
+- Plain text format
+- Multiple lines
+- Easy to read
+
+Generated on: ${new Date().toLocaleString()}`;
+  
+  makeDownloadFile('sample-document.txt', content);
+  showStatus('TXT file downloaded: sample-document.txt');
+}
+
+// JSON Download
+function downloadJSON() {
+  const jsonData = {
+    title: 'Sample JSON Data',
+    timestamp: Date.now(),
+    users: sampleData,
+    metadata: {
+      version: '1.0',
+      generated: new Date().toISOString()
+    }
+  };
+  
+  makeDownloadFile('sample-data.json', JSON.stringify(jsonData, null, 2));
+  showStatus('JSON file downloaded: sample-data.json');
+}
+
+// XML Download
+function downloadXML() {
+  const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<users>
+  ${sampleData.map(user => `
+  <user id="${user.id}">
+    <name>${user.name}</name>
+    <email>${user.email}</email>
+    <role>${user.role}</role>
+    <status>${user.status}</status>
+  </user>`).join('')}
+</users>`;
+  
+  makeDownloadFile('sample-data.xml', xmlContent);
+  showStatus('XML file downloaded: sample-data.xml');
+}
+
+// CSV Download
+function downloadCSV() {
+  const csvContent = 'ID,Name,Email,Role,Status\n' + 
+    sampleData.map(row => `${row.id},"${row.name}","${row.email}",${row.role},${row.status}`).join('\n');
+  
+  makeDownloadFile('sample-data.csv', csvContent);
+  showStatus('CSV file downloaded: sample-data.csv');
+}
+
+// Excel Download (CSV with .xlsx extension - simplified)
+function downloadExcel() {
+  const csvContent = 'ID\tName\tEmail\tRole\tStatus\n' + 
+    sampleData.map(row => `${row.id}\t${row.name}\t${row.email}\t${row.role}\t${row.status}`).join('\n');
+  
+  makeDownloadFile('sample-data.xlsx', csvContent);
+  showStatus('Excel file downloaded: sample-data.xlsx (Note: This is a simplified CSV format)');
+}
+
+// TSV Download
+function downloadTSV() {
+  const tsvContent = 'ID\tName\tEmail\tRole\tStatus\n' + 
+    sampleData.map(row => `${row.id}\t${row.name}\t${row.email}\t${row.role}\t${row.status}`).join('\n');
+  
+  makeDownloadFile('sample-data.tsv', tsvContent);
+  showStatus('TSV file downloaded: sample-data.tsv');
+}
+
+// PNG Download (Canvas-based)
+function downloadPNG() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 400;
+  canvas.height = 300;
+  const ctx = canvas.getContext('2d');
+  
+  // Draw sample image
+  ctx.fillStyle = '#4CAF50';
+  ctx.fillRect(0, 0, 400, 300);
+  ctx.fillStyle = '#fff';
+  ctx.font = '30px Arial';
+  ctx.fillText('Sample PNG Image', 50, 150);
+  
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sample-image.png';
+    a.click();
+    URL.revokeObjectURL(url);
+    showStatus('PNG image downloaded: sample-image.png');
+  });
+}
+
+// SVG Download
+function downloadSVG() {
+  const svgContent = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#2196F3"/>
+  <text x="50" y="150" font-family="Arial" font-size="30" fill="white">Sample SVG Image</text>
+  <circle cx="350" cy="50" r="30" fill="#FFC107"/>
+</svg>`;
+  
+  makeDownloadFile('sample-image.svg', svgContent);
+  showStatus('SVG image downloaded: sample-image.svg');
+}
+
+// Multiple Files Download
+function downloadMultipleFiles() {
+  setTimeout(() => downloadTXT(), 100);
+  setTimeout(() => downloadJSON(), 300);
+  setTimeout(() => downloadCSV(), 500);
+  showStatus('Multiple files download initiated (TXT, JSON, CSV)');
+}
+
+// ZIP Download (simulated - creates a text file listing)
+function downloadZip() {
+  const zipContent = `Archive Contents:
+==================
+1. sample-document.txt
+2. sample-data.json
+3. sample-data.csv
+4. sample-data.xml
+
+Note: This is a simulated ZIP file.
+In a real application, you would use a library like JSZip to create actual ZIP archives.
+
+Generated: ${new Date().toLocaleString()}`;
+  
+  makeDownloadFile('archive.zip', zipContent);
+  showStatus('ZIP archive downloaded: archive.zip (simulated)');
+}
+
+// Custom Content Download
+function downloadCustom(format) {
+  const content = document.getElementById('customContent').value;
+  const fileName = document.getElementById('customFileName').value || 'custom-file';
+  
+  if (!content.trim()) {
+    alert('Please enter some content to download');
+    return;
+  }
+  
+  let fileContent = content;
+  let extension = format;
+  
+  if (format === 'json') {
+    try {
+      // Try to format as JSON if it's valid JSON
+      const parsed = JSON.parse(content);
+      fileContent = JSON.stringify(parsed, null, 2);
+    } catch (e) {
+      // If not valid JSON, wrap it
+      fileContent = JSON.stringify({ content: content }, null, 2);
+    }
+  }
+  
+  makeDownloadFile(`${fileName}.${extension}`, fileContent);
+  showStatus(`Custom ${format.toUpperCase()} file downloaded: ${fileName}.${extension}`);
+}
+</script>
+</body>
+</html>

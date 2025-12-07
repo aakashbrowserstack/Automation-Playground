@@ -1,0 +1,6 @@
+<!doctype html><html><head><meta charset='utf-8'><title>angularjs</title><link rel='stylesheet' href='/shared/styles.css'></head><body>
+<a href='/index.html' class='small btn'>Back</a>
+<section class='card'><h2>AngularJS Demo (v1)</h2><div ng-app='app' ng-controller='Ctrl as c'><label>Username<input ng-model='c.user'></label><label>Password<input ng-model='c.pass' type='password'></label><button class='btn' ng-click='c.login()'>Login</button><div class='output'>{{c.msg}}</div></div></section>
+<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js'></script>
+<script>onReady(()=>{ angular.module('app',[]).controller('Ctrl', function($timeout){ var vm=this; vm.user=''; vm.pass=''; vm.msg=''; vm.login=function(){ vm.msg='Logging...'; $timeout(function(){ vm.msg='AngularJS logged '+vm.user; },600); }; }); });</script>
+<script src='/shared/scripts.js'></script></body></html>

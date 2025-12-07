@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset='utf-8'><title>vanilla-deep</title><link rel='stylesheet' href='/shared/styles.css'></head><body>
+<a href='/index.html' class='small btn'>Back</a>
+<section class='card'><h2>Vanilla Deep Interactions</h2>
+<div id='main-form'>
+<label>Search<input id='s'/></label>
+<button id='open-iframe' class='btn'>Open Iframe with Shadow</button>
+</div>
+<div id='out' class='output'></div></section>
+<script>
+onReady(()=>{
+  el('open-iframe').addEventListener('click', ()=>{
+    const ifr = document.createElement('iframe');
+    ifr.width=600; ifr.height=200; ifr.srcdoc = `<div id='wr'></div><script>const host=document.getElementById('wr'); const s=host.attachShadow({mode:'open'}); s.innerHTML = '<div><label>Inner<input id="iinput"></label><button id="ibtn">Go</button><div id="io"></div></div>'; s.getElementById('ibtn').addEventListener('click', ()=> s.getElementById('io').textContent='Inner:'+ s.getElementById('iinput').value);<\/script>`;
+    document.body.appendChild(ifr);
+    el('out').textContent='Iframe added';
+  });
+});
+</script>
+<script src='/shared/scripts.js'></script></body></html>

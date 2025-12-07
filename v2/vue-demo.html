@@ -1,0 +1,467 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Vue Advanced Demo - LCNC Testing</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { margin-bottom: 5px; font-weight: bold; }
+.form-group input, .form-group select, .form-group textarea { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #4CAF50; }
+.error { color: red; font-size: 12px; margin-top: 3px; }
+.success { color: green; font-size: 12px; margin-top: 3px; }
+.tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+.tab { padding: 10px 20px; cursor: pointer; border: none; background: none; }
+.tab.active { border-bottom: 3px solid #4CAF50; font-weight: bold; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #4CAF50; }
+input:checked + .slider:before { transform: translateX(26px); }
+.sortable-item { padding: 10px; margin: 5px 0; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: move; display: flex; justify-content: space-between; align-items: center; }
+.sortable-item:hover { background: #e8e8e8; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); }
+.modal.show { display: flex; align-items: center; justify-content: center; }
+.modal-content { background-color: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.close { font-size: 28px; font-weight: bold; cursor: pointer; }
+.btn-group { display: flex; gap: 10px; margin-top: 20px; }
+.data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+.data-table th { background-color: #f5f5f5; cursor: pointer; user-select: none; }
+.data-table th:hover { background-color: #e8e8e8; }
+.data-table tr:hover { background-color: #f9f9f9; }
+.chip { display: inline-block; padding: 5px 12px; margin: 3px; background: #e0e0e0; border-radius: 16px; font-size: 14px; }
+.chip .remove { margin-left: 8px; cursor: pointer; font-weight: bold; }
+.progress-bar { width: 100%; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #45a049); transition: width 0.3s; }
+.accordion-item { border: 1px solid #ddd; margin-bottom: 10px; border-radius: 4px; }
+.accordion-header { padding: 15px; background: #f5f5f5; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.accordion-header:hover { background: #e8e8e8; }
+.accordion-content { padding: 15px; display: none; }
+.accordion-content.show { display: block; }
+.rating { display: flex; gap: 5px; font-size: 24px; }
+.rating span { cursor: pointer; color: #ddd; }
+.rating span.filled { color: #FFD700; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+<section class='card'>
+<h2>Vue Advanced Demo - LCNC Testing Suite</h2>
+
+<div id='vue-app'>
+  <!-- Tabs Navigation -->
+  <div class='tabs'>
+    <button class='tab' :class='{active: activeTab === "form"}' @click='activeTab = "form"'>Multi-Step Form</button>
+    <button class='tab' :class='{active: activeTab === "list"}' @click='activeTab = "list"'>Dynamic List</button>
+    <button class='tab' :class='{active: activeTab === "table"}' @click='activeTab = "table"'>Data Table</button>
+    <button class='tab' :class='{active: activeTab === "advanced"}' @click='activeTab = "advanced"'>Advanced UI</button>
+  </div>
+
+  <!-- Tab 1: Multi-Step Form -->
+  <div class='tab-content' :class='{active: activeTab === "form"}'>
+    <h3>Step {{formStep}} of 3</h3>
+    <div class='progress-bar'>
+      <div class='progress-fill' :style='{width: (formStep/3*100) + "%"}'></div>
+    </div>
+
+    <!-- Step 1: Personal Info -->
+    <div v-if='formStep === 1'>
+      <div class='form-grid'>
+        <div class='form-group'>
+          <label>First Name *</label>
+          <input v-model='form.firstName' @blur='validateField("firstName")' placeholder='John' data-testid='first-name'>
+          <span class='error' v-if='errors.firstName'>{{errors.firstName}}</span>
+        </div>
+        <div class='form-group'>
+          <label>Last Name *</label>
+          <input v-model='form.lastName' @blur='validateField("lastName")' placeholder='Doe' data-testid='last-name'>
+          <span class='error' v-if='errors.lastName'>{{errors.lastName}}</span>
+        </div>
+        <div class='form-group'>
+          <label>Email *</label>
+          <input type='email' v-model='form.email' @blur='validateField("email")' placeholder='john@example.com' data-testid='email'>
+          <span class='error' v-if='errors.email'>{{errors.email}}</span>
+        </div>
+        <div class='form-group'>
+          <label>Phone</label>
+          <input type='tel' v-model='form.phone' placeholder='(555) 123-4567' data-testid='phone'>
+        </div>
+        <div class='form-group'>
+          <label>Date of Birth</label>
+          <input type='date' v-model='form.dob' data-testid='dob'>
+        </div>
+        <div class='form-group'>
+          <label>Gender</label>
+          <select v-model='form.gender' data-testid='gender'>
+            <option value=''>Select...</option>
+            <option value='male'>Male</option>
+            <option value='female'>Female</option>
+            <option value='other'>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Preferences -->
+    <div v-if='formStep === 2'>
+      <div class='form-grid'>
+        <div class='form-group'>
+          <label>Favorite Color</label>
+          <input type='color' v-model='form.color' data-testid='color'>
+        </div>
+        <div class='form-group'>
+          <label>Experience Level ({{form.experience}})</label>
+          <input type='range' v-model='form.experience' min='1' max='10' data-testid='experience'>
+        </div>
+        <div class='form-group'>
+          <label>Country</label>
+          <select v-model='form.country' data-testid='country'>
+            <option value=''>Select...</option>
+            <option value='us'>United States</option>
+            <option value='uk'>United Kingdom</option>
+            <option value='ca'>Canada</option>
+            <option value='au'>Australia</option>
+          </select>
+        </div>
+        <div class='form-group'>
+          <label>Interests (select multiple)</label>
+          <div>
+            <label><input type='checkbox' v-model='form.interests' value='coding' data-testid='interest-coding'> Coding</label><br>
+            <label><input type='checkbox' v-model='form.interests' value='design' data-testid='interest-design'> Design</label><br>
+            <label><input type='checkbox' v-model='form.interests' value='testing' data-testid='interest-testing'> Testing</label><br>
+            <label><input type='checkbox' v-model='form.interests' value='devops' data-testid='interest-devops'> DevOps</label>
+          </div>
+        </div>
+      </div>
+      <div class='form-group' style='margin-top: 15px;'>
+        <label>Newsletter Subscription</label>
+        <label class='toggle-switch'>
+          <input type='checkbox' v-model='form.newsletter' data-testid='newsletter'>
+          <span class='slider'></span>
+        </label>
+        <span style='margin-left: 10px;'>{{form.newsletter ? 'Subscribed' : 'Not subscribed'}}</span>
+      </div>
+    </div>
+
+    <!-- Step 3: Additional Info -->
+    <div v-if='formStep === 3'>
+      <div class='form-group'>
+        <label>Bio</label>
+        <textarea v-model='form.bio' rows='4' placeholder='Tell us about yourself...' data-testid='bio'></textarea>
+      </div>
+      <div class='form-group' style='margin-top: 15px;'>
+        <label>Rate your experience</label>
+        <div class='rating'>
+          <span v-for='n in 5' :key='n' @click='form.rating = n' :class='{filled: n <= form.rating}' data-testid='rating-star'>★</span>
+        </div>
+        <span style='margin-left: 10px;'>{{form.rating}} / 5</span>
+      </div>
+      <div class='form-group' style='margin-top: 15px;'>
+        <label>
+          <input type='checkbox' v-model='form.terms' data-testid='terms'>
+          I agree to the terms and conditions *
+        </label>
+        <span class='error' v-if='errors.terms'>{{errors.terms}}</span>
+      </div>
+    </div>
+
+    <div class='btn-group'>
+      <button class='btn' @click='prevStep' v-if='formStep > 1' data-testid='prev-btn'>Previous</button>
+      <button class='btn' @click='nextStep' v-if='formStep < 3' data-testid='next-btn'>Next</button>
+      <button class='btn' @click='submitForm' v-if='formStep === 3' data-testid='submit-btn'>Submit</button>
+    </div>
+  </div>
+
+  <!-- Tab 2: Dynamic List -->
+  <div class='tab-content' :class='{active: activeTab === "list"}'>
+    <h3>Sortable Task List</h3>
+    <div class='form-group'>
+      <input v-model='newTask' @keyup.enter='addTask' placeholder='Add new task...' data-testid='task-input'>
+      <button class='btn' @click='addTask' style='margin-top: 10px;' data-testid='add-task-btn'>Add Task</button>
+    </div>
+    <div style='margin-top: 20px;'>
+      <div v-for='(task, index) in tasks' :key='task.id' class='sortable-item' :data-testid='"task-" + task.id' draggable='true' @dragstart='dragStart(index)' @dragover.prevent @drop='drop(index)'>
+        <span>
+          <input type='checkbox' v-model='task.completed' :data-testid='"task-check-" + task.id'>
+          <span :style='{textDecoration: task.completed ? "line-through" : "none", marginLeft: "10px"}'>{{task.text}}</span>
+        </span>
+        <button class='small btn' @click='removeTask(index)' :data-testid='"task-remove-" + task.id'>Remove</button>
+      </div>
+    </div>
+    <p v-if='tasks.length === 0' style='color: #999; text-align: center; margin-top: 20px;'>No tasks yet. Add one above!</p>
+  </div>
+
+  <!-- Tab 3: Data Table -->
+  <div class='tab-content' :class='{active: activeTab === "table"}'>
+    <h3>User Data Table</h3>
+    <div class='form-group'>
+      <input v-model='tableSearch' placeholder='Search users...' data-testid='table-search'>
+    </div>
+    <table class='data-table'>
+      <thead>
+        <tr>
+          <th @click='sortTable("name")' data-testid='sort-name'>Name {{sortKey === "name" ? (sortDir === "asc" ? "↑" : "↓") : ""}}</th>
+          <th @click='sortTable("email")' data-testid='sort-email'>Email {{sortKey === "email" ? (sortDir === "asc" ? "↑" : "↓") : ""}}</th>
+          <th @click='sortTable("role")' data-testid='sort-role'>Role {{sortKey === "role" ? (sortDir === "asc" ? "↑" : "↓") : ""}}</th>
+          <th @click='sortTable("status")' data-testid='sort-status'>Status {{sortKey === "status" ? (sortDir === "asc" ? "↑" : "↓") : ""}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for='user in filteredUsers' :key='user.id' :data-testid='"user-row-" + user.id'>
+          <td>{{user.name}}</td>
+          <td>{{user.email}}</td>
+          <td>{{user.role}}</td>
+          <td><span class='chip'>{{user.status}}</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tab 4: Advanced UI -->
+  <div class='tab-content' :class='{active: activeTab === "advanced"}'>
+    <h3>Advanced Components</h3>
+    
+    <!-- Tags Input -->
+    <div class='form-group'>
+      <label>Tags</label>
+      <div>
+        <span v-for='(tag, index) in tags' :key='index' class='chip' :data-testid='"tag-" + index'>
+          {{tag}}
+          <span class='remove' @click='removeTag(index)'>×</span>
+        </span>
+      </div>
+      <input v-model='newTag' @keyup.enter='addTag' placeholder='Add tag and press Enter' data-testid='tag-input' style='margin-top: 10px;'>
+    </div>
+
+    <!-- Accordion -->
+    <h4 style='margin-top: 30px;'>FAQ Accordion</h4>
+    <div class='accordion-item' v-for='(item, index) in accordion' :key='index'>
+      <div class='accordion-header' @click='toggleAccordion(index)' :data-testid='"accordion-" + index'>
+        <span>{{item.title}}</span>
+        <span>{{item.open ? "−" : "+"}}</span>
+      </div>
+      <div class='accordion-content' :class='{show: item.open}'>
+        {{item.content}}
+      </div>
+    </div>
+
+    <!-- Modal Trigger -->
+    <button class='btn' @click='showModal = true' style='margin-top: 20px;' data-testid='open-modal-btn'>Open Modal</button>
+  </div>
+
+  <!-- Modal -->
+  <div class='modal' :class='{show: showModal}' @click.self='showModal = false'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h3>Confirmation Modal</h3>
+        <span class='close' @click='showModal = false' data-testid='close-modal'>×</span>
+      </div>
+      <p>This is a modal dialog for testing purposes. You can interact with various elements here.</p>
+      <div class='form-group'>
+        <label>Modal Input</label>
+        <input v-model='modalInput' placeholder='Type something...' data-testid='modal-input'>
+      </div>
+      <div class='btn-group'>
+        <button class='btn' @click='confirmModal' data-testid='confirm-modal-btn'>Confirm</button>
+        <button class='btn' @click='showModal = false' data-testid='cancel-modal-btn'>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div v-if='successMessage' style='margin-top: 20px; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;' data-testid='success-message'>
+    {{successMessage}}
+  </div>
+</div>
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script src='https://unpkg.com/vue@3/dist/vue.global.js'></script>
+<script>
+onReady(() => {
+  const { createApp } = Vue;
+  
+  createApp({
+    data() {
+      return {
+        activeTab: 'form',
+        formStep: 1,
+        form: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          dob: '',
+          gender: '',
+          color: '#4CAF50',
+          experience: 5,
+          country: '',
+          interests: [],
+          newsletter: false,
+          bio: '',
+          rating: 0,
+          terms: false
+        },
+        errors: {},
+        newTask: '',
+        tasks: [
+          { id: 1, text: 'Complete form validation', completed: false },
+          { id: 2, text: 'Test drag and drop', completed: false },
+          { id: 3, text: 'Verify table sorting', completed: true }
+        ],
+        draggedIndex: null,
+        tableSearch: '',
+        users: [
+          { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'Active' },
+          { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'User', status: 'Active' },
+          { id: 3, name: 'Carol White', email: 'carol@example.com', role: 'Manager', status: 'Inactive' },
+          { id: 4, name: 'David Brown', email: 'david@example.com', role: 'User', status: 'Active' }
+        ],
+        sortKey: '',
+        sortDir: 'asc',
+        tags: ['Vue', 'Testing', 'LCNC'],
+        newTag: '',
+        accordion: [
+          { title: 'What is LCNC?', content: 'Low-Code/No-Code platforms enable rapid application development with minimal coding.', open: false },
+          { title: 'How to test forms?', content: 'Test forms by validating inputs, checking error messages, and verifying submission.', open: false },
+          { title: 'Why use Vue?', content: 'Vue is a progressive framework that is easy to learn and powerful for building UIs.', open: false }
+        ],
+        showModal: false,
+        modalInput: '',
+        successMessage: ''
+      };
+    },
+    computed: {
+      filteredUsers() {
+        let filtered = this.users;
+        if (this.tableSearch) {
+          const search = this.tableSearch.toLowerCase();
+          filtered = filtered.filter(u => 
+            u.name.toLowerCase().includes(search) ||
+            u.email.toLowerCase().includes(search) ||
+            u.role.toLowerCase().includes(search) ||
+            u.status.toLowerCase().includes(search)
+          );
+        }
+        if (this.sortKey) {
+          filtered = [...filtered].sort((a, b) => {
+            const aVal = a[this.sortKey].toLowerCase();
+            const bVal = b[this.sortKey].toLowerCase();
+            if (this.sortDir === 'asc') {
+              return aVal > bVal ? 1 : -1;
+            } else {
+              return aVal < bVal ? 1 : -1;
+            }
+          });
+        }
+        return filtered;
+      }
+    },
+    methods: {
+      validateField(field) {
+        this.errors[field] = '';
+        if (field === 'firstName' && !this.form.firstName) {
+          this.errors.firstName = 'First name is required';
+        }
+        if (field === 'lastName' && !this.form.lastName) {
+          this.errors.lastName = 'Last name is required';
+        }
+        if (field === 'email') {
+          if (!this.form.email) {
+            this.errors.email = 'Email is required';
+          } else if (!/\S+@\S+\.\S+/.test(this.form.email)) {
+            this.errors.email = 'Email is invalid';
+          }
+        }
+      },
+      nextStep() {
+        if (this.formStep === 1) {
+          this.validateField('firstName');
+          this.validateField('lastName');
+          this.validateField('email');
+          if (this.errors.firstName || this.errors.lastName || this.errors.email) {
+            return;
+          }
+        }
+        this.formStep++;
+      },
+      prevStep() {
+        this.formStep--;
+      },
+      submitForm() {
+        if (!this.form.terms) {
+          this.errors.terms = 'You must agree to the terms';
+          return;
+        }
+        this.successMessage = 'Form submitted successfully! All data validated.';
+        setTimeout(() => {
+          this.successMessage = '';
+          this.formStep = 1;
+          this.form = {
+            firstName: '', lastName: '', email: '', phone: '', dob: '', gender: '',
+            color: '#4CAF50', experience: 5, country: '', interests: [],
+            newsletter: false, bio: '', rating: 0, terms: false
+          };
+        }, 3000);
+      },
+      addTask() {
+        if (this.newTask.trim()) {
+          this.tasks.push({
+            id: Date.now(),
+            text: this.newTask,
+            completed: false
+          });
+          this.newTask = '';
+        }
+      },
+      removeTask(index) {
+        this.tasks.splice(index, 1);
+      },
+      dragStart(index) {
+        this.draggedIndex = index;
+      },
+      drop(index) {
+        const draggedItem = this.tasks[this.draggedIndex];
+        this.tasks.splice(this.draggedIndex, 1);
+        this.tasks.splice(index, 0, draggedItem);
+        this.draggedIndex = null;
+      },
+      sortTable(key) {
+        if (this.sortKey === key) {
+          this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          this.sortKey = key;
+          this.sortDir = 'asc';
+        }
+      },
+      addTag() {
+        if (this.newTag.trim() && !this.tags.includes(this.newTag.trim())) {
+          this.tags.push(this.newTag.trim());
+          this.newTag = '';
+        }
+      },
+      removeTag(index) {
+        this.tags.splice(index, 1);
+      },
+      toggleAccordion(index) {
+        this.accordion[index].open = !this.accordion[index].open;
+      },
+      confirmModal() {
+        this.successMessage = `Modal confirmed with input: "${this.modalInput}"`;
+        this.showModal = false;
+        this.modalInput = '';
+        setTimeout(() => { this.successMessage = ''; }, 3000);
+      }
+    }
+  }).mount('#vue-app');
+});
+</script>
+</body>
+</html>

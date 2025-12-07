@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset='utf-8'><title>react-adv</title><link rel='stylesheet' href='/shared/styles.css'></head><body>
+<a href='/index.html' class='small btn'>Back</a>
+<section class='card'><h2>React — Advanced</h2><div id='react-adv-root'></div></section>
+<script src='https://unpkg.com/react@18/umd/react.development.js'></script>
+<script src='https://unpkg.com/react-dom@18/umd/react-dom.development.js'></script>
+<script>
+onReady(()=>{
+  const e = React.createElement;
+  function App(){
+    const [u,setU]=React.useState(''); const [p,setP]=React.useState(''); const [msg,setMsg]=React.useState(''); const [rows,setRows]=React.useState([{id:1,name:'row1'}]);
+    function login(){ setMsg('Logged '+u); }
+    return e('div',null,
+      e('div',null, e('label',null,'Username'), e('input',{value:u,onChange:ev=>setU(ev.target.value)})),
+      e('div',null, e('label',null,'Password'), e('input',{type:'password',value:p,onChange:ev=>setP(ev.target.value)})),
+      e('div',null, e('button',{className:'btn', onClick:login}, 'Login')),
+      e('div',{className:'output'}, msg),
+      e('h4',null,'Table'), e('table',{className:'table'}, e('thead',null, e('tr',null, e('th',null,'ID'), e('th',null,'Name'), e('th',null,'Actions'))),
+      e('tbody',null, rows.map(r=> e('tr',{key:r.id}, e('td',null,r.id), e('td',null,r.name), e('td',null, e('button',{className:'btn', onClick:()=> setRows(rows.filter(x=>x.id!==r.id))}, 'Remove')))))),
+      e('div',null, e('input',{placeholder:'add name', id:'addname'}), e('button',{className:'btn', onClick:()=>{ const v=document.getElementById('addname').value; if(v){ setRows([...rows,{id:Date.now(),name:v}]); document.getElementById('addname').value=''; } }}, 'Add Row'))
+    );
+  }
+  const root = ReactDOM.createRoot(document.getElementById('react-adv-root'));
+  root.render(e(App));
+});
+</script>
+<script src='/shared/scripts.js'></script></body></html>

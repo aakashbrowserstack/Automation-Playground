@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset='utf-8'><title>shadow-full</title><link rel='stylesheet' href='/shared/styles.css'></head><body>
+<a href='/index.html' class='small btn'>Back</a>
+<section class='card'><h2>Shadow DOM — Full Suite</h2><div id='shadow-root-host'></div>
+<p class='small'>This page contains nested shadow roots, forms, dynamic lists and interaction targets.</p></section>
+<script>
+onReady(()=>{
+  const host = document.getElementById('shadow-root-host');
+  const root1 = host.attachShadow({mode:'open'});
+  root1.innerHTML = `<div><h3>Outer Shadow</h3><div id='outer-out' class='output'></div><div id='inner-host'></div></div>`;
+  const innerHost = root1.getElementById('inner-host');
+  const deep = document.createElement('div');
+  const root2 = deep.attachShadow({mode:'open'});
+  root2.innerHTML = `<div><h4>Inner Shadow Form</h4>
+    <label>U: <input id='s-user'></label>
+    <label>P: <input id='s-pass' type='password'></label>
+    <button id='s-login'>Login</button>
+    <div id='s-out' class='output'></div>
+    <button id='add-item'>Add Item</button>
+    <ul id='s-list'></ul>
+  </div>`;
+  innerHost.appendChild(deep);
+  root2.getElementById('s-login').addEventListener('click', ()=>{
+    root1.getElementById('outer-out').textContent = 'Shadow Login: '+ root2.getElementById('s-user').value;
+  });
+  root2.getElementById('add-item').addEventListener('click', ()=>{
+    const ul = root2.getElementById('s-list');
+    const li = document.createElement('li');
+    li.textContent = 'Item '+ (ul.children.length+1);
+    ul.appendChild(li);
+  });
+});
+</script>
+<script src='/shared/scripts.js'></script></body></html>

@@ -1,0 +1,366 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Drag & Drop - Enhanced</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+<style>
+.dragdrop-container { max-width: 1000px; margin: 0 auto; }
+.dragdrop-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.dragdrop-section h3 { margin-top: 0; color: #333; }
+.draggable { padding: 15px; margin: 10px; background: #4CAF50; color: white; border-radius: 4px; cursor: move; user-select: none; }
+.draggable:hover { background: #45a049; }
+.draggable.dragging { opacity: 0.5; }
+.dropzone { min-height: 100px; padding: 20px; margin: 10px 0; border: 2px dashed #ddd; border-radius: 4px; background: #fff; }
+.dropzone.drag-over { background: #e3f2fd; border-color: #2196F3; }
+.sortable-list { list-style: none; padding: 0; margin: 0; }
+.sortable-item { padding: 15px; margin: 8px 0; background: #fff; border: 1px solid #ddd; border-radius: 4px; cursor: move; display: flex; justify-content: space-between; align-items: center; }
+.sortable-item:hover { background: #f5f5f5; }
+.sortable-item.dragging { opacity: 0.5; }
+.kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.kanban-column { background: #f5f5f5; border-radius: 8px; padding: 15px; min-height: 300px; }
+.kanban-column h4 { margin-top: 0; text-align: center; }
+.kanban-card { padding: 12px; margin: 8px 0; background: white; border-radius: 4px; cursor: move; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.kanban-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+.file-drop-zone { min-height: 200px; padding: 40px; border: 3px dashed #ddd; border-radius: 8px; text-align: center; background: #fafafa; }
+.file-drop-zone.drag-over { background: #e8f5e9; border-color: #4CAF50; }
+.file-list { margin-top: 15px; }
+.file-item { padding: 10px; margin: 5px 0; background: #fff; border: 1px solid #ddd; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='dragdrop-container'>
+<h2>Enhanced Drag & Drop</h2>
+<p style='color: #666; margin-bottom: 20px;'>Comprehensive drag-and-drop scenarios including sortable lists, kanban boards, and file uploads</p>
+
+<!-- Section 1: Basic Drag & Drop -->
+<div class='dragdrop-section'>
+  <h3>1. Basic Drag & Drop</h3>
+  <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 20px;'>
+    <div>
+      <p><strong>Draggable Items:</strong></p>
+      <div class='draggable' draggable='true' data-id='item1' data-testid='drag-item-1'>📦 Item 1</div>
+      <div class='draggable' draggable='true' data-id='item2' data-testid='drag-item-2'>📦 Item 2</div>
+      <div class='draggable' draggable='true' data-id='item3' data-testid='drag-item-3'>📦 Item 3</div>
+    </div>
+    <div>
+      <p><strong>Drop Zone:</strong></p>
+      <div class='dropzone' id='dropzone1' data-testid='dropzone-1'>
+        Drop items here
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 2: Sortable List -->
+<div class='dragdrop-section'>
+  <h3>2. Sortable List (Reorder Items)</h3>
+  <ul class='sortable-list' id='sortableList' data-testid='sortable-list'>
+    <li class='sortable-item' draggable='true' data-testid='sortable-item-1'>
+      <span>🔹 Task 1: Complete project documentation</span>
+      <span style='color: #666;'>☰</span>
+    </li>
+    <li class='sortable-item' draggable='true' data-testid='sortable-item-2'>
+      <span>🔹 Task 2: Review pull requests</span>
+      <span style='color: #666;'>☰</span>
+    </li>
+    <li class='sortable-item' draggable='true' data-testid='sortable-item-3'>
+      <span>🔹 Task 3: Update test cases</span>
+      <span style='color: #666;'>☰</span>
+    </li>
+    <li class='sortable-item' draggable='true' data-testid='sortable-item-4'>
+      <span>🔹 Task 4: Deploy to staging</span>
+      <span style='color: #666;'>☰</span>
+    </li>
+  </ul>
+</div>
+
+<!-- Section 3: Kanban Board -->
+<div class='dragdrop-section'>
+  <h3>3. Kanban Board (Move Cards Between Columns)</h3>
+  <div class='kanban-board'>
+    <div class='kanban-column' data-column='todo' data-testid='kanban-todo'>
+      <h4>📋 To Do</h4>
+      <div class='kanban-card' draggable='true' data-id='card1' data-testid='kanban-card-1'>
+        <strong>Design Homepage</strong>
+        <p style='font-size: 12px; color: #666; margin: 5px 0 0 0;'>Priority: High</p>
+      </div>
+      <div class='kanban-card' draggable='true' data-id='card2' data-testid='kanban-card-2'>
+        <strong>Write API Documentation</strong>
+        <p style='font-size: 12px; color: #666; margin: 5px 0 0 0;'>Priority: Medium</p>
+      </div>
+    </div>
+    
+    <div class='kanban-column' data-column='inprogress' data-testid='kanban-inprogress'>
+      <h4>🔄 In Progress</h4>
+      <div class='kanban-card' draggable='true' data-id='card3' data-testid='kanban-card-3'>
+        <strong>Implement Login</strong>
+        <p style='font-size: 12px; color: #666; margin: 5px 0 0 0;'>Priority: High</p>
+      </div>
+    </div>
+    
+    <div class='kanban-column' data-column='done' data-testid='kanban-done'>
+      <h4>✅ Done</h4>
+      <div class='kanban-card' draggable='true' data-id='card4' data-testid='kanban-card-4'>
+        <strong>Setup Project</strong>
+        <p style='font-size: 12px; color: #666; margin: 5px 0 0 0;'>Priority: High</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 4: File Drag & Drop -->
+<div class='dragdrop-section'>
+  <h3>4. File Drag & Drop Upload</h3>
+  <div class='file-drop-zone' id='fileDropZone' data-testid='file-drop-zone'>
+    <p style='font-size: 18px; margin: 0;'>📁 Drag & Drop Files Here</p>
+    <p style='color: #666; margin: 10px 0;'>or click to browse</p>
+    <input type='file' id='fileInput' multiple style='display: none;' data-testid='file-input'>
+    <button class='btn' onclick='document.getElementById("fileInput").click()' data-testid='btn-browse-files'>Browse Files</button>
+  </div>
+  <div class='file-list' id='fileList' data-testid='file-list'></div>
+</div>
+
+<!-- Section 5: Drag Between Multiple Zones -->
+<div class='dragdrop-section'>
+  <h3>5. Drag Between Multiple Zones</h3>
+  <div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;'>
+    <div class='dropzone' data-zone='zone1' data-testid='multi-zone-1'>
+      <strong>Zone 1</strong>
+      <div class='draggable' draggable='true' data-id='multi1' data-testid='multi-item-1' style='margin-top: 10px;'>Item A</div>
+    </div>
+    <div class='dropzone' data-zone='zone2' data-testid='multi-zone-2'>
+      <strong>Zone 2</strong>
+      <div class='draggable' draggable='true' data-id='multi2' data-testid='multi-item-2' style='margin-top: 10px;'>Item B</div>
+    </div>
+    <div class='dropzone' data-zone='zone3' data-testid='multi-zone-3'>
+      <strong>Zone 3</strong>
+      <div class='draggable' draggable='true' data-id='multi3' data-testid='multi-item-3' style='margin-top: 10px;'>Item C</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<script src='/shared/scripts.js'></script>
+<script>
+let draggedElement = null;
+
+onReady(() => {
+  initBasicDragDrop();
+  initSortableList();
+  initKanbanBoard();
+  initFileDragDrop();
+  initMultiZone();
+});
+
+// Section 1: Basic Drag & Drop
+function initBasicDragDrop() {
+  const draggables = document.querySelectorAll('.draggable[data-id^="item"]');
+  const dropzone = document.getElementById('dropzone1');
+  
+  draggables.forEach(draggable => {
+    draggable.addEventListener('dragstart', (e) => {
+      draggable.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', draggable.innerHTML);
+      e.dataTransfer.setData('text/plain', draggable.dataset.id);
+    });
+    
+    draggable.addEventListener('dragend', () => {
+      draggable.classList.remove('dragging');
+    });
+  });
+  
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('drag-over');
+  });
+  
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('drag-over');
+  });
+  
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    const data = e.dataTransfer.getData('text/plain');
+    const draggedEl = document.querySelector(`[data-id="${data}"]`);
+    if (draggedEl) {
+      dropzone.appendChild(draggedEl.cloneNode(true));
+    }
+  });
+}
+
+// Section 2: Sortable List
+function initSortableList() {
+  const list = document.getElementById('sortableList');
+  const items = list.querySelectorAll('.sortable-item');
+  
+  items.forEach(item => {
+    item.addEventListener('dragstart', () => {
+      draggedElement = item;
+      item.classList.add('dragging');
+    });
+    
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      draggedElement = null;
+    });
+    
+    item.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = getDragAfterElement(list, e.clientY);
+      if (afterElement == null) {
+        list.appendChild(draggedElement);
+      } else {
+        list.insertBefore(draggedElement, afterElement);
+      }
+    });
+  });
+}
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.sortable-item:not(.dragging)')];
+  
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+// Section 3: Kanban Board
+function initKanbanBoard() {
+  const cards = document.querySelectorAll('.kanban-card');
+  const columns = document.querySelectorAll('.kanban-column');
+  
+  cards.forEach(card => {
+    card.addEventListener('dragstart', () => {
+      draggedElement = card;
+      card.style.opacity = '0.5';
+    });
+    
+    card.addEventListener('dragend', () => {
+      card.style.opacity = '1';
+      draggedElement = null;
+    });
+  });
+  
+  columns.forEach(column => {
+    column.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      column.style.background = '#e8f5e9';
+    });
+    
+    column.addEventListener('dragleave', () => {
+      column.style.background = '#f5f5f5';
+    });
+    
+    column.addEventListener('drop', (e) => {
+      e.preventDefault();
+      column.style.background = '#f5f5f5';
+      if (draggedElement && draggedElement.classList.contains('kanban-card')) {
+        column.appendChild(draggedElement);
+      }
+    });
+  });
+}
+
+// Section 4: File Drag & Drop
+function initFileDragDrop() {
+  const dropZone = document.getElementById('fileDropZone');
+  const fileInput = document.getElementById('fileInput');
+  const fileList = document.getElementById('fileList');
+  
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
+  
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('drag-over');
+  });
+  
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    handleFiles(e.dataTransfer.files);
+  });
+  
+  fileInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+  });
+  
+  function handleFiles(files) {
+    fileList.innerHTML = '';
+    Array.from(files).forEach((file, index) => {
+      const fileItem = document.createElement('div');
+      fileItem.className = 'file-item';
+      fileItem.dataset.testid = `file-item-${index}`;
+      fileItem.innerHTML = `
+        <div>
+          <strong>${file.name}</strong>
+          <span style='color: #666; font-size: 12px; margin-left: 10px;'>${formatFileSize(file.size)}</span>
+        </div>
+        <button class='small btn' onclick='this.parentElement.remove()' data-testid='btn-remove-file-${index}'>Remove</button>
+      `;
+      fileList.appendChild(fileItem);
+    });
+  }
+  
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+}
+
+// Section 5: Multi-Zone Drag & Drop
+function initMultiZone() {
+  const zones = document.querySelectorAll('[data-zone]');
+  const items = document.querySelectorAll('[data-id^="multi"]');
+  
+  items.forEach(item => {
+    item.addEventListener('dragstart', () => {
+      draggedElement = item;
+      item.classList.add('dragging');
+    });
+    
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      draggedElement = null;
+    });
+  });
+  
+  zones.forEach(zone => {
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+    
+    zone.addEventListener('dragleave', () => {
+      zone.classList.remove('drag-over');
+    });
+    
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      if (draggedElement) {
+        zone.appendChild(draggedElement);
+      }
+    });
+  });
+}
+</script>
+</body>
+</html>
