@@ -1,1 +1,335 @@
-<!doctype html><html><head><meta charset='utf-8'><title>v2/social.html</title><link rel='stylesheet' href='/shared/styles.css'></head><body><a href='/index.html' class='small btn'>Back</a><section class='card'><h2>Social</h2><div id='gallery'></div><h3>Comments</h3><div id='comments'></div><input id='c' placeholder='Write'/><button id='post' class='btn'>Post</button></section><script>onReady(()=>{ const gallery=el('gallery'), comments=el('comments'); ['/shared/placeholder.png','/shared/placeholder.png'].forEach(src=>{ const i=document.createElement('img'); i.src=src; i.width=120; i.style.margin='6px'; i.addEventListener('click', ()=>{ const m=document.createElement('div'); m.className='modal'; m.innerHTML=`<div class='card'><img src='${src}' width='300'/><br/><button class='btn close'>Close</button></div>`; document.body.appendChild(m); m.querySelector('.close').addEventListener('click', ()=> m.remove()); }); gallery.appendChild(i); }); const cmts=[]; function render(){ comments.innerHTML=''; cmts.forEach(c=>{ const d=document.createElement('div'); d.textContent=c; comments.appendChild(d); }) } el('post').addEventListener('click', ()=>{ const v=el('c').value; if(v){ cmts.push(v); el('c').value=''; render(); } }); });</script><script src='/shared/scripts.js'></script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Social Media - Enhanced</title>
+<link rel='stylesheet' href='/shared/styles.css'>
+<style>
+.social-container { max-width: 800px; margin: 0 auto; }
+.create-post { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.create-post textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; min-height: 80px; font-family: inherit; }
+.create-post-actions { display: flex; gap: 10px; margin-top: 10px; align-items: center; }
+.create-post-actions button { padding: 10px 20px; }
+.post { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.post-header { display: flex; align-items: center; margin-bottom: 15px; }
+.post-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; margin-right: 12px; }
+.post-user-info { flex: 1; }
+.post-username { font-weight: bold; margin-bottom: 2px; }
+.post-time { font-size: 12px; color: #666; }
+.post-content { margin-bottom: 15px; line-height: 1.6; }
+.post-image { width: 100%; border-radius: 8px; margin-top: 10px; cursor: pointer; transition: transform 0.2s; }
+.post-image:hover { transform: scale(1.02); }
+.post-actions { display: flex; gap: 20px; padding-top: 15px; border-top: 1px solid #eee; }
+.post-action { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 12px; border-radius: 4px; transition: background 0.2s; color: #666; }
+.post-action:hover { background: #f5f5f5; }
+.post-action.active { color: #2196F3; }
+.post-action.liked { color: #f44336; }
+.post-comments { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+.comment { display: flex; gap: 12px; margin-bottom: 12px; padding: 10px; border-radius: 4px; background: #f9f9f9; }
+.comment-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; flex-shrink: 0; }
+.comment-content { flex: 1; }
+.comment-username { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.comment-text { font-size: 14px; color: #333; }
+.comment-input { display: flex; gap: 10px; margin-top: 10px; }
+.comment-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; }
+.comment-input button { padding: 8px 16px; border-radius: 20px; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-content { max-width: 90%; max-height: 90%; position: relative; }
+.modal-content img { max-width: 100%; max-height: 90vh; border-radius: 8px; }
+.modal-close { position: absolute; top: 20px; right: 20px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 24px; }
+.image-upload { display: none; }
+.upload-preview { margin-top: 10px; max-width: 200px; border-radius: 4px; }
+.filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.filters button { padding: 8px 16px; border: 1px solid #ddd; background: white; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+.filters button.active { background: #2196F3; color: white; border-color: #2196F3; }
+.user-stats { display: flex; gap: 30px; padding: 15px; background: white; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.stat { text-align: center; }
+.stat-value { font-size: 24px; font-weight: bold; color: #2196F3; }
+.stat-label { font-size: 12px; color: #666; margin-top: 4px; }
+</style>
+</head>
+<body>
+<a href='/index.html' class='small btn'>Back</a>
+
+<div class='social-container'>
+<section class='card'>
+<h2>Social Media Feed - Enhanced</h2>
+
+<!-- User Stats -->
+<div class='user-stats'>
+<div class='stat'>
+<div class='stat-value' id='posts-count' data-testid='posts-count'>0</div>
+<div class='stat-label'>Posts</div>
+</div>
+<div class='stat'>
+<div class='stat-value' id='likes-count' data-testid='likes-count'>0</div>
+<div class='stat-label'>Likes</div>
+</div>
+<div class='stat'>
+<div class='stat-value' id='comments-count' data-testid='comments-count'>0</div>
+<div class='stat-label'>Comments</div>
+</div>
+<div class='stat'>
+<div class='stat-value' id='shares-count' data-testid='shares-count'>0</div>
+<div class='stat-label'>Shares</div>
+</div>
+</div>
+
+<!-- Filters -->
+<div class='filters'>
+<button class='active' data-filter='all' data-testid='filter-all'>All Posts</button>
+<button data-filter='my-posts' data-testid='filter-my-posts'>My Posts</button>
+<button data-filter='liked' data-testid='filter-liked'>Liked Posts</button>
+<button data-filter='with-images' data-testid='filter-images'>With Images</button>
+</div>
+
+<!-- Create Post -->
+<div class='create-post'>
+<textarea id='post-text' placeholder='What's on your mind?' data-testid='post-textarea'></textarea>
+<div class='create-post-actions'>
+<input type='file' id='image-upload' class='image-upload' accept='image/*' data-testid='image-upload'>
+<button class='btn' id='upload-btn' data-testid='upload-button'>📷 Add Photo</button>
+<img id='upload-preview' class='upload-preview' style='display: none;'>
+<button class='btn' id='post-btn' style='margin-left: auto; background: #2196F3; color: white;' data-testid='post-button'>Post</button>
+</div>
+</div>
+
+<!-- Posts Feed -->
+<div id='posts-feed' data-testid='posts-feed'></div>
+</section>
+</div>
+
+<!-- Image Modal -->
+<div class='modal-overlay' id='image-modal'>
+<div class='modal-content'>
+<button class='modal-close' id='modal-close'>✕</button>
+<img id='modal-image' src='' alt=''>
+</div>
+</div>
+
+<script src='/shared/scripts.js'></script>
+<script>
+onReady(() => {
+  const users = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank'];
+  const currentUser = 'You';
+  let posts = [
+    {id: 1, user: 'Alice', content: 'Just finished an amazing book! Highly recommend The Pragmatic Programmer', time: '2 hours ago', likes: 15, comments: [{user: 'Bob', text: 'Great recommendation!'}, {user: 'Charlie', text: 'Added to my reading list!'}], shares: 3, liked: false, image: null},
+    {id: 2, user: 'Bob', content: 'Beautiful sunset today!', time: '4 hours ago', likes: 28, comments: [{user: 'Diana', text: 'Stunning colors!'}], shares: 5, liked: false, image: '/shared/placeholder.png'},
+    {id: 3, user: 'Charlie', content: 'New project launch! Excited to share what we have been working on', time: '6 hours ago', likes: 42, comments: [{user: 'Eve', text: 'Congratulations!'}, {user: 'Frank', text: 'Cannot wait to see it!'}], shares: 8, liked: false, image: null},
+    {id: 4, user: 'Diana', content: 'Coffee and code - Perfect morning!', time: '8 hours ago', likes: 19, comments: [], shares: 2, liked: false, image: '/shared/placeholder.png'},
+    {id: 5, user: 'Eve', content: 'Attended an amazing tech conference today. So many great insights!', time: '10 hours ago', likes: 35, comments: [{user: 'Alice', text: 'Which conference?'}, {user: 'Bob', text: 'Share your notes!'}], shares: 6, liked: false, image: null}
+  ];
+  
+  let currentFilter = 'all';
+  let uploadedImage = null;
+  let nextId = 6;
+
+  function getInitials(name) {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
+
+  function renderPosts() {
+    const feed = el('posts-feed');
+    feed.innerHTML = '';
+    
+    let filteredPosts = posts;
+    if (currentFilter === 'my-posts') {
+      filteredPosts = posts.filter(p => p.user === currentUser);
+    } else if (currentFilter === 'liked') {
+      filteredPosts = posts.filter(p => p.liked);
+    } else if (currentFilter === 'with-images') {
+      filteredPosts = posts.filter(p => p.image);
+    }
+
+    if (filteredPosts.length === 0) {
+      feed.innerHTML = '<p class="small" style="text-align: center; padding: 40px; color: #999;">No posts to show</p>';
+      return;
+    }
+
+    filteredPosts.forEach(post => {
+      const postEl = document.createElement('div');
+      postEl.className = 'post';
+      postEl.setAttribute('data-testid', `post-${post.id}`);
+      
+      const commentsHtml = post.comments.map(c => `
+        <div class='comment'>
+          <div class='comment-avatar'>${getInitials(c.user)}</div>
+          <div class='comment-content'>
+            <div class='comment-username'>${c.user}</div>
+            <div class='comment-text'>${c.text}</div>
+          </div>
+        </div>
+      `).join('');
+
+      postEl.innerHTML = `
+        <div class='post-header'>
+          <div class='post-avatar'>${getInitials(post.user)}</div>
+          <div class='post-user-info'>
+            <div class='post-username' data-testid='post-username-${post.id}'>${post.user}</div>
+            <div class='post-time'>${post.time}</div>
+          </div>
+        </div>
+        <div class='post-content' data-testid='post-content-${post.id}'>${post.content}</div>
+        ${post.image ? `<img src='${post.image}' class='post-image' data-id='${post.id}' data-testid='post-image-${post.id}'>` : ''}
+        <div class='post-actions'>
+          <div class='post-action ${post.liked ? 'liked' : ''}' data-action='like' data-id='${post.id}' data-testid='like-button-${post.id}'>
+            ${post.liked ? '❤️' : '🤍'} <span data-testid='like-count-${post.id}'>${post.likes}</span>
+          </div>
+          <div class='post-action' data-action='comment' data-id='${post.id}' data-testid='comment-button-${post.id}'>
+            💬 <span data-testid='comment-count-${post.id}'>${post.comments.length}</span>
+          </div>
+          <div class='post-action' data-action='share' data-id='${post.id}' data-testid='share-button-${post.id}'>
+            🔄 <span data-testid='share-count-${post.id}'>${post.shares}</span>
+          </div>
+        </div>
+        <div class='post-comments' style='display: none;' data-id='${post.id}'>
+          ${commentsHtml}
+          <div class='comment-input'>
+            <input type='text' placeholder='Write a comment...' data-id='${post.id}' data-testid='comment-input-${post.id}'>
+            <button class='btn' data-id='${post.id}' data-testid='comment-submit-${post.id}'>Post</button>
+          </div>
+        </div>
+      `;
+      feed.appendChild(postEl);
+    });
+
+    // Event listeners
+    document.querySelectorAll('.post-action').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        const id = parseInt(btn.dataset.id);
+        const post = posts.find(p => p.id === id);
+
+        if (action === 'like') {
+          post.liked = !post.liked;
+          post.likes += post.liked ? 1 : -1;
+          renderPosts();
+          updateStats();
+        } else if (action === 'comment') {
+          const commentsEl = document.querySelector(`.post-comments[data-id='${id}']`);
+          commentsEl.style.display = commentsEl.style.display === 'none' ? 'block' : 'none';
+        } else if (action === 'share') {
+          post.shares++;
+          alert(`Post shared! Total shares: ${post.shares}`);
+          renderPosts();
+          updateStats();
+        }
+      });
+    });
+
+    document.querySelectorAll('.post-image').forEach(img => {
+      img.addEventListener('click', () => {
+        el('modal-image').src = img.src;
+        el('image-modal').classList.add('open');
+      });
+    });
+
+    document.querySelectorAll('.comment-input button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.dataset.id);
+        const input = document.querySelector(`.comment-input input[data-id='${id}']`);
+        const text = input.value.trim();
+        if (text) {
+          const post = posts.find(p => p.id === id);
+          post.comments.push({user: currentUser, text});
+          input.value = '';
+          renderPosts();
+          updateStats();
+        }
+      });
+    });
+
+    document.querySelectorAll('.comment-input input').forEach(input => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const id = parseInt(input.dataset.id);
+          const text = input.value.trim();
+          if (text) {
+            const post = posts.find(p => p.id === id);
+            post.comments.push({user: currentUser, text});
+            input.value = '';
+            renderPosts();
+            updateStats();
+          }
+        }
+      });
+    });
+  }
+
+  function updateStats() {
+    el('posts-count').textContent = posts.filter(p => p.user === currentUser).length;
+    el('likes-count').textContent = posts.reduce((sum, p) => sum + (p.liked ? 1 : 0), 0);
+    el('comments-count').textContent = posts.reduce((sum, p) => sum + p.comments.filter(c => c.user === currentUser).length, 0);
+    el('shares-count').textContent = posts.reduce((sum, p) => sum + p.shares, 0);
+  }
+
+  // Create post
+  el('post-btn').addEventListener('click', () => {
+    const text = el('post-text').value.trim();
+    if (text) {
+      posts.unshift({
+        id: nextId++,
+        user: currentUser,
+        content: text,
+        time: 'Just now',
+        likes: 0,
+        comments: [],
+        shares: 0,
+        liked: false,
+        image: uploadedImage
+      });
+      el('post-text').value = '';
+      uploadedImage = null;
+      el('upload-preview').style.display = 'none';
+      renderPosts();
+      updateStats();
+    }
+  });
+
+  // Image upload
+  el('upload-btn').addEventListener('click', () => {
+    el('image-upload').click();
+  });
+
+  el('image-upload').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadedImage = e.target.result;
+        el('upload-preview').src = uploadedImage;
+        el('upload-preview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Filters
+  document.querySelectorAll('.filters button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderPosts();
+    });
+  });
+
+  // Modal
+  el('modal-close').addEventListener('click', () => {
+    el('image-modal').classList.remove('open');
+  });
+
+  el('image-modal').addEventListener('click', (e) => {
+    if (e.target === el('image-modal')) {
+      el('image-modal').classList.remove('open');
+    }
+  });
+
+  // Initial render
+  renderPosts();
+  updateStats();
+});
+</script>
+</body>
+</html>
