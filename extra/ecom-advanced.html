@@ -1,5 +1,5 @@
-<!doctype html><html><head><meta charset='utf-8'><title>ecom-adv</title><link rel='stylesheet' href='/shared/styles.css'></head><body>
-<a href='/index.html' class='small btn'>Back</a>
+<!doctype html><html><head><meta charset='utf-8'><title>ecom-adv</title><link rel='stylesheet' href='../shared/styles.css'></head><body>
+<a href='../index.html' class='small btn'>Back</a>
 <section class='card'><h2>E-commerce Advanced</h2>
 <input id='search' placeholder='search products' /><button id='sbtn' class='btn'>Search</button>
 <div id='plist'></div>
@@ -14,4 +14,4 @@ onReady(()=>{
   el('sbtn').addEventListener('click', ()=>{ const q=el('search').value.toLowerCase(); render(products.filter(p=> p.name.toLowerCase().includes(q))); });
 });
 </script>
-<script src='/shared/scripts.js'></script></body></html>
+<script src='../shared/scripts.js'></script></body></html>
