@@ -1,0 +1,412 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Visual Validation - Image Quality Testing</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.vv-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+.vv-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.vv-section h3 { margin-top: 0; color: #333; }
+.image-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+.image-box { border: 2px solid #2196F3; border-radius: 8px; padding: 15px; background: #fff; }
+.image-box h4 { margin: 0 0 10px 0; color: #2196F3; font-size: 14px; }
+.image-box img { width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; display: block; }
+.image-info { margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 4px; font-size: 12px; }
+.quality-label { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-top: 5px; }
+.high-quality { background: #4CAF50; color: white; }
+.low-quality { background: #FF9800; color: white; }
+.medium-quality { background: #2196F3; color: white; }
+</style>
+</head>
+<body>
+<a href='../index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='vv-container'>
+<h2>Visual Validation - Image Quality Testing</h2>
+<p style='color: #666; margin-bottom: 20px;'>Test page with various images at different quality levels for visual validation and screenshot comparison</p>
+
+<!-- Section 1: High Resolution Images -->
+<div class='vv-section'>
+  <h3>1. High Resolution Images (For High-Quality Screenshots)</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>High-Res Landscape</h4>
+      <img src='https://picsum.photos/800/600?random=1' alt='High resolution landscape' data-testid='img-high-landscape'>
+      <div class='image-info'>
+        <div>Resolution: 800x600px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>High-Res Portrait</h4>
+      <img src='https://picsum.photos/600/800?random=2' alt='High resolution portrait' data-testid='img-high-portrait'>
+      <div class='image-info'>
+        <div>Resolution: 600x800px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>High-Res Square</h4>
+      <img src='https://picsum.photos/700/700?random=3' alt='High resolution square' data-testid='img-high-square'>
+      <div class='image-info'>
+        <div>Resolution: 700x700px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>High-Res Wide</h4>
+      <img src='https://picsum.photos/1000/400?random=4' alt='High resolution wide' data-testid='img-high-wide'>
+      <div class='image-info'>
+        <div>Resolution: 1000x400px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 2: Low Resolution Images -->
+<div class='vv-section'>
+  <h3>2. Low Resolution Images (For Low-Quality Screenshots)</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>Low-Res Landscape</h4>
+      <img src='https://picsum.photos/400/300?random=5' alt='Low resolution landscape' data-testid='img-low-landscape'>
+      <div class='image-info'>
+        <div>Resolution: 400x300px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label low-quality'>LOW QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Low-Res Portrait</h4>
+      <img src='https://picsum.photos/300/400?random=6' alt='Low resolution portrait' data-testid='img-low-portrait'>
+      <div class='image-info'>
+        <div>Resolution: 300x400px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label low-quality'>LOW QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Low-Res Square</h4>
+      <img src='https://picsum.photos/350/350?random=7' alt='Low resolution square' data-testid='img-low-square'>
+      <div class='image-info'>
+        <div>Resolution: 350x350px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label low-quality'>LOW QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Low-Res Wide</h4>
+      <img src='https://picsum.photos/500/200?random=8' alt='Low resolution wide' data-testid='img-low-wide'>
+      <div class='image-info'>
+        <div>Resolution: 500x200px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label low-quality'>LOW QUALITY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 3: Medium Resolution Images -->
+<div class='vv-section'>
+  <h3>3. Medium Resolution Images (For Comparison)</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>Medium-Res Landscape</h4>
+      <img src='https://picsum.photos/600/450?random=9' alt='Medium resolution landscape' data-testid='img-med-landscape'>
+      <div class='image-info'>
+        <div>Resolution: 600x450px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label medium-quality'>MEDIUM QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Medium-Res Portrait</h4>
+      <img src='https://picsum.photos/450/600?random=10' alt='Medium resolution portrait' data-testid='img-med-portrait'>
+      <div class='image-info'>
+        <div>Resolution: 450x600px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label medium-quality'>MEDIUM QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Medium-Res Square</h4>
+      <img src='https://picsum.photos/500/500?random=11' alt='Medium resolution square' data-testid='img-med-square'>
+      <div class='image-info'>
+        <div>Resolution: 500x500px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label medium-quality'>MEDIUM QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Medium-Res Wide</h4>
+      <img src='https://picsum.photos/750/300?random=12' alt='Medium resolution wide' data-testid='img-med-wide'>
+      <div class='image-info'>
+        <div>Resolution: 750x300px</div>
+        <div>Format: JPEG</div>
+        <span class='quality-label medium-quality'>MEDIUM QUALITY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 4: Different Aspect Ratios -->
+<div class='vv-section'>
+  <h3>4. Various Aspect Ratios (High Quality)</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>16:9 Widescreen</h4>
+      <img src='https://picsum.photos/800/450?random=13' alt='16:9 aspect ratio' data-testid='img-ratio-16-9'>
+      <div class='image-info'>
+        <div>Aspect Ratio: 16:9</div>
+        <div>Resolution: 800x450px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>4:3 Standard</h4>
+      <img src='https://picsum.photos/800/600?random=14' alt='4:3 aspect ratio' data-testid='img-ratio-4-3'>
+      <div class='image-info'>
+        <div>Aspect Ratio: 4:3</div>
+        <div>Resolution: 800x600px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>1:1 Square</h4>
+      <img src='https://picsum.photos/700/700?random=15' alt='1:1 aspect ratio' data-testid='img-ratio-1-1'>
+      <div class='image-info'>
+        <div>Aspect Ratio: 1:1</div>
+        <div>Resolution: 700x700px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>21:9 Ultrawide</h4>
+      <img src='https://picsum.photos/1050/450?random=16' alt='21:9 aspect ratio' data-testid='img-ratio-21-9'>
+      <div class='image-info'>
+        <div>Aspect Ratio: 21:9</div>
+        <div>Resolution: 1050x450px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 5: Color Variations -->
+<div class='vv-section'>
+  <h3>5. Color Variations (For Visual Comparison)</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>Grayscale Image</h4>
+      <img src='https://picsum.photos/700/500?random=17&grayscale' alt='Grayscale image' data-testid='img-grayscale'>
+      <div class='image-info'>
+        <div>Type: Grayscale</div>
+        <div>Resolution: 700x500px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Blurred Image</h4>
+      <img src='https://picsum.photos/700/500?random=18&blur=2' alt='Blurred image' data-testid='img-blur'>
+      <div class='image-info'>
+        <div>Type: Blurred (Level 2)</div>
+        <div>Resolution: 700x500px</div>
+        <span class='quality-label medium-quality'>MEDIUM QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Color Image</h4>
+      <img src='https://picsum.photos/700/500?random=19' alt='Color image' data-testid='img-color'>
+      <div class='image-info'>
+        <div>Type: Full Color</div>
+        <div>Resolution: 700x500px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Sepia Tone</h4>
+      <img src='https://picsum.photos/700/500?random=20' alt='Sepia image' data-testid='img-sepia' style='filter: sepia(100%);'>
+      <div class='image-info'>
+        <div>Type: Sepia Filter</div>
+        <div>Resolution: 700x500px</div>
+        <span class='quality-label medium-quality'>MEDIUM QUALITY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 6: Responsive Images -->
+<div class='vv-section'>
+  <h3>6. Responsive Images (Different Sizes)</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>Extra Large (Desktop)</h4>
+      <img src='https://picsum.photos/1200/800?random=21' alt='Extra large image' data-testid='img-xl'>
+      <div class='image-info'>
+        <div>Size: Extra Large</div>
+        <div>Resolution: 1200x800px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Large (Laptop)</h4>
+      <img src='https://picsum.photos/900/600?random=22' alt='Large image' data-testid='img-large'>
+      <div class='image-info'>
+        <div>Size: Large</div>
+        <div>Resolution: 900x600px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Medium (Tablet)</h4>
+      <img src='https://picsum.photos/600/400?random=23' alt='Medium image' data-testid='img-medium'>
+      <div class='image-info'>
+        <div>Size: Medium</div>
+        <div>Resolution: 600x400px</div>
+        <span class='quality-label medium-quality'>MEDIUM QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Small (Mobile)</h4>
+      <img src='https://picsum.photos/400/300?random=24' alt='Small image' data-testid='img-small'>
+      <div class='image-info'>
+        <div>Size: Small</div>
+        <div>Resolution: 400x300px</div>
+        <span class='quality-label low-quality'>LOW QUALITY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 7: Image Loading States -->
+<div class='vv-section'>
+  <h3>7. Image Loading States</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>Lazy Load Image</h4>
+      <img src='https://picsum.photos/700/500?random=25' alt='Lazy loaded image' loading='lazy' data-testid='img-lazy'>
+      <div class='image-info'>
+        <div>Loading: Lazy</div>
+        <div>Resolution: 700x500px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Eager Load Image</h4>
+      <img src='https://picsum.photos/700/500?random=26' alt='Eager loaded image' loading='eager' data-testid='img-eager'>
+      <div class='image-info'>
+        <div>Loading: Eager</div>
+        <div>Resolution: 700x500px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Broken Image (404)</h4>
+      <img src='https://picsum.photos/invalid-url.jpg' alt='Broken image' data-testid='img-broken' onerror='this.style.border="2px solid red"; this.alt="Image failed to load"'>
+      <div class='image-info'>
+        <div>Status: Error (404)</div>
+        <div>Type: Broken Link</div>
+        <span class='quality-label low-quality'>ERROR STATE</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Placeholder Image</h4>
+      <img src='../shared/placeholder.png' alt='Placeholder image' data-testid='img-placeholder'>
+      <div class='image-info'>
+        <div>Type: Placeholder</div>
+        <div>Local Asset</div>
+        <span class='quality-label medium-quality'>PLACEHOLDER</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 8: Image Comparison Grid -->
+<div class='vv-section'>
+  <h3>8. Side-by-Side Comparison (High vs Low Quality)</h3>
+  <div class='image-grid'>
+    <div class='image-box'>
+      <h4>High Quality Version</h4>
+      <img src='https://picsum.photos/800/600?random=27' alt='High quality comparison' data-testid='img-compare-high'>
+      <div class='image-info'>
+        <div>Resolution: 800x600px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Low Quality Version</h4>
+      <img src='https://picsum.photos/400/300?random=27' alt='Low quality comparison' data-testid='img-compare-low'>
+      <div class='image-info'>
+        <div>Resolution: 400x300px</div>
+        <span class='quality-label low-quality'>LOW QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>High Quality Version 2</h4>
+      <img src='https://picsum.photos/800/600?random=28' alt='High quality comparison 2' data-testid='img-compare-high-2'>
+      <div class='image-info'>
+        <div>Resolution: 800x600px</div>
+        <span class='quality-label high-quality'>HIGH QUALITY</span>
+      </div>
+    </div>
+
+    <div class='image-box'>
+      <h4>Low Quality Version 2</h4>
+      <img src='https://picsum.photos/400/300?random=28' alt='Low quality comparison 2' data-testid='img-compare-low-2'>
+      <div class='image-info'>
+        <div>Resolution: 400x300px</div>
+        <span class='quality-label low-quality'>LOW QUALITY</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style='margin-top: 30px; padding: 20px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px;'>
+  <h3 style='margin-top: 0; color: #856404;'>📸 Screenshot Testing Guide</h3>
+  <ul style='color: #856404; line-height: 1.8;'>
+    <li><strong>High Quality Images:</strong> Use for baseline screenshots and high-resolution visual validation</li>
+    <li><strong>Low Quality Images:</strong> Use for testing image degradation and low-bandwidth scenarios</li>
+    <li><strong>Medium Quality Images:</strong> Use for comparison and mid-range quality validation</li>
+    <li><strong>Different Aspect Ratios:</strong> Test responsive layouts and image scaling</li>
+    <li><strong>Color Variations:</strong> Validate color rendering and filter effects</li>
+    <li><strong>Loading States:</strong> Test lazy loading, error handling, and placeholder behavior</li>
+    <li><strong>Side-by-Side Comparison:</strong> Compare high vs low quality rendering in same view</li>
+  </ul>
+</div>
+
+</div>
+</section>
+
+<script src='../shared/scripts.js'></script>
+</body>
+</html>

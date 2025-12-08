@@ -1,0 +1,527 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Dynamic Properties - Replay Testing</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.dynamic-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.dynamic-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.dynamic-section h3 { margin-top: 0; color: #333; }
+.element-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+.element-box { border: 2px solid #2196F3; border-radius: 8px; padding: 15px; background: #fff; }
+.element-box h4 { margin: 0 0 15px 0; color: #2196F3; font-size: 14px; }
+.dynamic-element { padding: 15px; border: 2px solid #ddd; border-radius: 4px; margin: 10px 0; min-height: 60px; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s; }
+.property-info { margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 4px; font-size: 11px; font-family: monospace; }
+.reload-notice { background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.reload-notice h3 { margin-top: 0; color: #856404; }
+</style>
+</head>
+<body>
+<a href='../index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='dynamic-container'>
+<h2>Dynamic Properties - Replay Testing</h2>
+<p style='color: #666; margin-bottom: 20px;'>Elements with properties that change on every page reload - perfect for testing replay functionality</p>
+
+<div class='reload-notice'>
+  <h3>🔄 Reload Testing Instructions</h3>
+  <p><strong>How to test:</strong> Reload this page multiple times and observe how element properties change. This simulates real-world scenarios where content is dynamic.</p>
+  <p><strong>Use case:</strong> Verify that your automation tool can handle elements with changing IDs, classes, text content, and attributes across multiple test runs.</p>
+</div>
+
+<!-- Section 1: Dynamic IDs -->
+<div class='dynamic-section'>
+  <h3>1. Dynamic IDs (Change on Every Reload)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Random ID Button</h4>
+      <button id='btn-random-ID' class='btn' data-testid='btn-dynamic-id'>Click Me</button>
+      <div class='property-info'>
+        Current ID: <span id='display-id'>btn-random-ID</span><br>
+        Reload to see new ID
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Timestamp ID Input</h4>
+      <input type='text' id='input-timestamp-ID' placeholder='Dynamic ID input' data-testid='input-dynamic-id'>
+      <div class='property-info'>
+        Current ID: <span id='display-input-id'>input-timestamp-ID</span><br>
+        Changes every reload
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>UUID ID Div</h4>
+      <div id='div-uuid-ID' class='dynamic-element' data-testid='div-dynamic-id'>
+        Dynamic ID Element
+      </div>
+      <div class='property-info'>
+        Current ID: <span id='display-div-id'>div-uuid-ID</span><br>
+        Unique on each load
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 2: Dynamic Classes -->
+<div class='dynamic-section'>
+  <h3>2. Dynamic Classes (Change on Every Reload)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Random Color Class</h4>
+      <div id='color-box' class='dynamic-element CLASS' data-testid='div-dynamic-class'>
+        Color changes on reload
+      </div>
+      <div class='property-info'>
+        Current class: <span id='display-class'>CLASS</span><br>
+        Possible: color-red, color-blue, color-green
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Size Class</h4>
+      <div id='size-box' class='dynamic-element SIZE-CLASS' data-testid='div-dynamic-size'>
+        Size changes on reload
+      </div>
+      <div class='property-info'>
+        Current class: <span id='display-size'>SIZE-CLASS</span><br>
+        Possible: size-small, size-medium, size-large
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random State Class</h4>
+      <button id='state-btn' class='btn STATE-CLASS' data-testid='btn-dynamic-state'>
+        State Button
+      </button>
+      <div class='property-info'>
+        Current class: <span id='display-state'>STATE-CLASS</span><br>
+        Possible: state-active, state-inactive, state-pending
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 3: Dynamic Text Content -->
+<div class='dynamic-section'>
+  <h3>3. Dynamic Text Content (Changes on Every Reload)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Random Quote</h4>
+      <div class='dynamic-element' data-testid='div-random-quote'>
+        QUOTE
+      </div>
+      <div class='property-info'>
+        Text changes on each reload<br>
+        Current: <span id='display-quote'>QUOTE</span>
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Number</h4>
+      <div class='dynamic-element' data-testid='div-random-number'>
+        NUMBER
+      </div>
+      <div class='property-info'>
+        Random number: <span id='display-number'>NUMBER</span><br>
+        Range: 1-1000
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Timestamp Display</h4>
+      <div class='dynamic-element' data-testid='div-timestamp'>
+        TIMESTAMP
+      </div>
+      <div class='property-info'>
+        Current time: <span id='display-time'>TIMESTAMP</span><br>
+        Updates on reload
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 4: Dynamic Attributes -->
+<div class='dynamic-section'>
+  <h3>4. Dynamic Attributes (Change on Every Reload)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Dynamic Data Attribute</h4>
+      <button class='btn' data-session='SESSION-ID' data-testid='btn-dynamic-attr'>
+        Session Button
+      </button>
+      <div class='property-info'>
+        data-session: <span id='display-session'>SESSION-ID</span><br>
+        Changes every reload
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Dynamic ARIA Label</h4>
+      <button class='btn' aria-label='ARIA-LABEL' data-testid='btn-dynamic-aria'>
+        ARIA Button
+      </button>
+      <div class='property-info'>
+        aria-label: <span id='display-aria'>ARIA-LABEL</span><br>
+        Dynamic accessibility label
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Dynamic Title Attribute</h4>
+      <div class='dynamic-element' title='TITLE-TEXT' data-testid='div-dynamic-title'>
+        Hover for title
+      </div>
+      <div class='property-info'>
+        title: <span id='display-title'>TITLE-TEXT</span><br>
+        Tooltip changes on reload
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 5: Dynamic Styles -->
+<div class='dynamic-section'>
+  <h3>5. Dynamic Inline Styles (Change on Every Reload)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Random Background Color</h4>
+      <div id='bg-color-box' class='dynamic-element' style='BACKGROUND' data-testid='div-dynamic-bg'>
+        Background Color
+      </div>
+      <div class='property-info'>
+        Current color: <span id='display-bg'>BACKGROUND</span><br>
+        Changes on reload
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Font Size</h4>
+      <div id='font-size-box' class='dynamic-element' style='FONT-SIZE' data-testid='div-dynamic-font'>
+        Font Size
+      </div>
+      <div class='property-info'>
+        Current size: <span id='display-font'>FONT-SIZE</span><br>
+        Range: 12px-24px
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Border Style</h4>
+      <div id='border-box' class='dynamic-element' style='BORDER' data-testid='div-dynamic-border'>
+        Border Style
+      </div>
+      <div class='property-info'>
+        Current border: <span id='display-border'>BORDER</span><br>
+        Varies on reload
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 6: Dynamic Visibility -->
+<div class='dynamic-section'>
+  <h3>6. Dynamic Visibility (Random Show/Hide on Reload)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Random Visibility Element</h4>
+      <div id='visibility-box' class='dynamic-element' data-testid='div-random-visibility'>
+        Visibility Element
+      </div>
+      <div class='property-info'>
+        Status: <span id='display-visibility'>VISIBLE</span><br>
+        50% chance to be hidden
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Display Element</h4>
+      <div id='display-box' class='dynamic-element' data-testid='div-random-display'>
+        Display Element
+      </div>
+      <div class='property-info'>
+        Display: <span id='display-display'>BLOCK</span><br>
+        May be display:none
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Opacity Element</h4>
+      <div id='opacity-box' class='dynamic-element' data-testid='div-random-opacity'>
+        Opacity Element
+      </div>
+      <div class='property-info'>
+        Opacity: <span id='display-opacity'>1.0</span><br>
+        Range: 0.3-1.0
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 7: Dynamic Form Values -->
+<div class='dynamic-section'>
+  <h3>7. Dynamic Form Values (Pre-filled with Random Data)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Random Username</h4>
+      <input type='text' id='username-input' value='USERNAME' data-testid='input-random-username'>
+      <div class='property-info'>
+        Current value: <span id='display-username'>USERNAME</span><br>
+        Random username on reload
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Email</h4>
+      <input type='email' id='email-input' value='EMAIL' data-testid='input-random-email'>
+      <div class='property-info'>
+        Current value: <span id='display-email'>EMAIL</span><br>
+        Random email on reload
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Checkbox State</h4>
+      <label>
+        <input type='checkbox' id='checkbox-input' data-testid='checkbox-random-state'>
+        Random Checkbox
+      </label>
+      <div class='property-info'>
+        State: <span id='display-checkbox'>UNCHECKED</span><br>
+        50% chance to be checked
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Section 8: Dynamic List Order -->
+<div class='dynamic-section'>
+  <h3>8. Dynamic List Order (Items Shuffle on Reload)</h3>
+  <div class='element-grid'>
+    <div class='element-box'>
+      <h4>Shuffled List</h4>
+      <ul id='shuffled-list' data-testid='list-shuffled'>
+        <li data-testid='list-item-1'>Item 1</li>
+        <li data-testid='list-item-2'>Item 2</li>
+        <li data-testid='list-item-3'>Item 3</li>
+        <li data-testid='list-item-4'>Item 4</li>
+        <li data-testid='list-item-5'>Item 5</li>
+      </ul>
+      <div class='property-info'>
+        Order changes on each reload<br>
+        Test: Find specific item by text
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Random Item Count</h4>
+      <ul id='random-count-list' data-testid='list-random-count'>
+        <!-- Items added dynamically -->
+      </ul>
+      <div class='property-info'>
+        Item count: <span id='display-count'>0</span><br>
+        Range: 3-8 items
+      </div>
+    </div>
+
+    <div class='element-box'>
+      <h4>Dynamic Priority List</h4>
+      <ul id='priority-list' data-testid='list-priority'>
+        <!-- Items with random priorities -->
+      </ul>
+      <div class='property-info'>
+        Sorted by random priority<br>
+        Order varies on reload
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script>
+// Generate random values on page load
+(function() {
+  // Helper functions
+  function randomId() {
+    return 'id-' + Math.random().toString(36).substr(2, 9);
+  }
+  
+  function randomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  
+  function randomChoice(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+  
+  function randomColor() {
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  // Section 1: Dynamic IDs
+  const btnId = randomId();
+  const inputId = 'input-' + Date.now();
+  const divId = 'div-' + Math.random().toString(36).substr(2, 11);
+  
+  document.querySelector('[data-testid="btn-dynamic-id"]').id = btnId;
+  document.getElementById('display-id').textContent = btnId;
+  
+  document.querySelector('[data-testid="input-dynamic-id"]').id = inputId;
+  document.getElementById('display-input-id').textContent = inputId;
+  
+  document.querySelector('[data-testid="div-dynamic-id"]').id = divId;
+  document.getElementById('display-div-id').textContent = divId;
+
+  // Section 2: Dynamic Classes
+  const colorClasses = ['color-red', 'color-blue', 'color-green'];
+  const sizeClasses = ['size-small', 'size-medium', 'size-large'];
+  const stateClasses = ['state-active', 'state-inactive', 'state-pending'];
+  
+  const colorClass = randomChoice(colorClasses);
+  const sizeClass = randomChoice(sizeClasses);
+  const stateClass = randomChoice(stateClasses);
+  
+  const colorBox = document.getElementById('color-box');
+  colorBox.className = 'dynamic-element ' + colorClass;
+  document.getElementById('display-class').textContent = colorClass;
+  
+  const sizeBox = document.getElementById('size-box');
+  sizeBox.className = 'dynamic-element ' + sizeClass;
+  document.getElementById('display-size').textContent = sizeClass;
+  if (sizeClass === 'size-small') sizeBox.style.fontSize = '12px';
+  else if (sizeClass === 'size-medium') sizeBox.style.fontSize = '16px';
+  else sizeBox.style.fontSize = '20px';
+  
+  const stateBtn = document.getElementById('state-btn');
+  stateBtn.className = 'btn ' + stateClass;
+  document.getElementById('display-state').textContent = stateClass;
+
+  // Section 3: Dynamic Text Content
+  const quotes = [
+    'Testing is an art',
+    'Automation saves time',
+    'Quality matters most',
+    'Code with confidence',
+    'Test early, test often'
+  ];
+  const quote = randomChoice(quotes);
+  document.querySelector('[data-testid="div-random-quote"]').textContent = quote;
+  document.getElementById('display-quote').textContent = quote;
+  
+  const number = randomNumber(1, 1000);
+  document.querySelector('[data-testid="div-random-number"]').textContent = number;
+  document.getElementById('display-number').textContent = number;
+  
+  const timestamp = new Date().toLocaleString();
+  document.querySelector('[data-testid="div-timestamp"]').textContent = timestamp;
+  document.getElementById('display-time').textContent = timestamp;
+
+  // Section 4: Dynamic Attributes
+  const sessionId = 'session-' + Date.now();
+  const btnAttr = document.querySelector('[data-testid="btn-dynamic-attr"]');
+  btnAttr.setAttribute('data-session', sessionId);
+  document.getElementById('display-session').textContent = sessionId;
+  
+  const ariaLabels = ['Click to submit', 'Press to continue', 'Select this option', 'Activate feature'];
+  const ariaLabel = randomChoice(ariaLabels);
+  const btnAria = document.querySelector('[data-testid="btn-dynamic-aria"]');
+  btnAria.setAttribute('aria-label', ariaLabel);
+  document.getElementById('display-aria').textContent = ariaLabel;
+  
+  const titles = ['Hover for info', 'More details here', 'Click for action', 'Important element'];
+  const titleText = randomChoice(titles);
+  const divTitle = document.querySelector('[data-testid="div-dynamic-title"]');
+  divTitle.setAttribute('title', titleText);
+  document.getElementById('display-title').textContent = titleText;
+
+  // Section 5: Dynamic Styles
+  const bgColor = randomColor();
+  const bgBox = document.getElementById('bg-color-box');
+  bgBox.style.backgroundColor = bgColor;
+  bgBox.style.color = '#fff';
+  document.getElementById('display-bg').textContent = bgColor;
+  
+  const fontSize = randomNumber(12, 24) + 'px';
+  const fontBox = document.getElementById('font-size-box');
+  fontBox.style.fontSize = fontSize;
+  document.getElementById('display-font').textContent = fontSize;
+  
+  const borderStyles = ['2px solid red', '3px dashed blue', '4px dotted green', '2px double purple'];
+  const borderStyle = randomChoice(borderStyles);
+  const borderBox = document.getElementById('border-box');
+  borderBox.style.border = borderStyle;
+  document.getElementById('display-border').textContent = borderStyle;
+
+  // Section 6: Dynamic Visibility
+  const visibilityBox = document.getElementById('visibility-box');
+  if (Math.random() > 0.5) {
+    visibilityBox.style.visibility = 'hidden';
+    document.getElementById('display-visibility').textContent = 'HIDDEN';
+  } else {
+    document.getElementById('display-visibility').textContent = 'VISIBLE';
+  }
+  
+  const displayBox = document.getElementById('display-box');
+  if (Math.random() > 0.5) {
+    displayBox.style.display = 'none';
+    document.getElementById('display-display').textContent = 'NONE';
+  } else {
+    document.getElementById('display-display').textContent = 'BLOCK';
+  }
+  
+  const opacity = (Math.random() * 0.7 + 0.3).toFixed(2);
+  const opacityBox = document.getElementById('opacity-box');
+  opacityBox.style.opacity = opacity;
+  document.getElementById('display-opacity').textContent = opacity;
+
+  // Section 7: Dynamic Form Values
+  const usernames = ['user' + randomNumber(100, 999), 'test' + randomNumber(100, 999), 'demo' + randomNumber(100, 999)];
+  const username = randomChoice(usernames);
+  document.getElementById('username-input').value = username;
+  document.getElementById('display-username').textContent = username;
+  
+  const email = username + '@example.com';
+  document.getElementById('email-input').value = email;
+  document.getElementById('display-email').textContent = email;
+  
+  const checkboxInput = document.getElementById('checkbox-input');
+  const isChecked = Math.random() > 0.5;
+  checkboxInput.checked = isChecked;
+  document.getElementById('display-checkbox').textContent = isChecked ? 'CHECKED' : 'UNCHECKED';
+
+  // Section 8: Dynamic List Order
+  const shuffledList = document.getElementById('shuffled-list');
+  const items = Array.from(shuffledList.children);
+  items.sort(() => Math.random() - 0.5);
+  items.forEach(item => shuffledList.appendChild(item));
+  
+  const randomCountList = document.getElementById('random-count-list');
+  const itemCount = randomNumber(3, 8);
+  for (let i = 1; i <= itemCount; i++) {
+    const li = document.createElement('li');
+    li.textContent = 'Dynamic Item ' + i;
+    li.setAttribute('data-testid', 'dynamic-item-' + i);
+    randomCountList.appendChild(li);
+  }
+  document.getElementById('display-count').textContent = itemCount;
+  
+  const priorityList = document.getElementById('priority-list');
+  const priorities = ['High', 'Medium', 'Low', 'Critical', 'Normal'];
+  const shuffledPriorities = priorities.sort(() => Math.random() - 0.5);
+  shuffledPriorities.forEach((priority, index) => {
+    const li = document.createElement('li');
+    li.textContent = priority + ' Priority Task';
+    li.setAttribute('data-testid', 'priority-item-' + index);
+    priorityList.appendChild(li);
+  });
+})();
+</script>
+</body>
+</html>
