@@ -1,0 +1,720 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Iframe Testing - 22 Interactions</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.iframe-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.iframe-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.iframe-section h3 { margin-top: 0; color: #333; }
+.iframe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 20px 0; }
+.iframe-box { border: 2px solid #2196F3; border-radius: 8px; padding: 15px; background: #fff; }
+.iframe-box h4 { margin-top: 0; color: #2196F3; font-size: 16px; }
+.iframe-box iframe { width: 100%; height: 200px; border: 1px solid #ddd; border-radius: 4px; }
+.control-panel { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+.control-panel button { padding: 8px 15px; font-size: 12px; }
+.status-display { margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 4px; font-size: 12px; min-height: 40px; word-wrap: break-word; }
+</style>
+</head>
+<body>
+<a href='../index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='iframe-container'>
+<h2>Iframe Testing - 22 Interactions</h2>
+<p style='color: #666; margin-bottom: 20px;'>Comprehensive iframe testing scenarios with working JavaScript functions</p>
+
+<!-- Section 1: Basic Iframe Operations (6 tests) -->
+<div class='iframe-section'>
+  <h3>1. Basic Iframe Operations (6 Tests)</h3>
+  <div class='iframe-grid'>
+    
+    <div class='iframe-box'>
+      <h4>Test 1: Simple Content Iframe</h4>
+      <iframe id='iframe1' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h2>Simple Iframe</h2><p>Static content inside iframe.</p><button onclick="alert(\"Clicked!\")">Click Me</button></body></html>' data-testid='iframe-simple'></iframe>
+      <div class='control-panel'>
+        <button onclick='reloadIframe("iframe1")' class='btn' data-testid='btn-reload-1'>Reload</button>
+        <button onclick='getIframeContent("iframe1")' class='btn' data-testid='btn-content-1'>Get Content</button>
+      </div>
+      <div class='status-display' id='status1'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 2: Form Inside Iframe</h4>
+      <iframe id='iframe2' srcdoc='<html><body style="padding:20px;font-family:Arial;"><form><label>Name: <input type="text" id="name" value="John"></label><br><br><label>Email: <input type="email" id="email" value="john@test.com"></label></form></body></html>' data-testid='iframe-form'></iframe>
+      <div class='control-panel'>
+        <button onclick='getFormData("iframe2")' class='btn' data-testid='btn-form-2'>Get Form Data</button>
+        <button onclick='fillForm("iframe2")' class='btn' data-testid='btn-fill-2'>Fill Form</button>
+      </div>
+      <div class='status-display' id='status2'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 3: Dynamic Content Loading</h4>
+      <iframe id='iframe3' data-testid='iframe-dynamic'></iframe>
+      <div class='control-panel'>
+        <button onclick='loadContent("iframe3", "html")' class='btn' data-testid='btn-load-html'>Load HTML</button>
+        <button onclick='loadContent("iframe3", "text")' class='btn' data-testid='btn-load-text'>Load Text</button>
+        <button onclick='clearIframe("iframe3")' class='btn' data-testid='btn-clear-3'>Clear</button>
+      </div>
+      <div class='status-display' id='status3'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 4: Table Data Extraction</h4>
+      <iframe id='iframe4' srcdoc='<html><body style="padding:20px;font-family:Arial;"><table border="1" style="width:100%;border-collapse:collapse;"><tr><th>ID</th><th>Name</th></tr><tr><td>1</td><td>Item A</td></tr><tr><td>2</td><td>Item B</td></tr><tr><td>3</td><td>Item C</td></tr></table></body></html>' data-testid='iframe-table'></iframe>
+      <div class='control-panel'>
+        <button onclick='extractTable("iframe4")' class='btn' data-testid='btn-extract-4'>Extract Table</button>
+        <button onclick='countRows("iframe4")' class='btn' data-testid='btn-count-4'>Count Rows</button>
+      </div>
+      <div class='status-display' id='status4'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 5: Iframe Resize</h4>
+      <iframe id='iframe5' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Resizable Iframe</h3><p>Height changes dynamically.</p></body></html>' style='height:150px;' data-testid='iframe-resize'></iframe>
+      <div class='control-panel'>
+        <button onclick='resizeIframe("iframe5", 150)' class='btn' data-testid='btn-small-5'>Small</button>
+        <button onclick='resizeIframe("iframe5", 250)' class='btn' data-testid='btn-medium-5'>Medium</button>
+        <button onclick='resizeIframe("iframe5", 350)' class='btn' data-testid='btn-large-5'>Large</button>
+      </div>
+      <div class='status-display' id='status5'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 6: Source Change</h4>
+      <iframe id='iframe6' data-testid='iframe-source'></iframe>
+      <div class='control-panel'>
+        <button onclick='changeSource("iframe6", "page1")' class='btn' data-testid='btn-page1-6'>Page 1</button>
+        <button onclick='changeSource("iframe6", "page2")' class='btn' data-testid='btn-page2-6'>Page 2</button>
+        <button onclick='changeSource("iframe6", "blank")' class='btn' data-testid='btn-blank-6'>Blank</button>
+      </div>
+      <div class='status-display' id='status6'></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Section 2: Nested Iframes (5 tests) -->
+<div class='iframe-section'>
+  <h3>2. Nested Iframes (5 Tests)</h3>
+  <div class='iframe-grid'>
+    
+    <div class='iframe-box'>
+      <h4>Test 7: Single Level Nested</h4>
+      <iframe id='iframe7' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Parent</h3><iframe srcdoc="<html><body style=\"padding:10px;background:#e3f2fd;\"><h4>Nested Level 1</h4><p>Nested content</p></body></html>" style="width:100%;height:100px;border:1px solid blue;"></iframe></body></html>' data-testid='iframe-nested-1'></iframe>
+      <div class='control-panel'>
+        <button onclick='accessNested("iframe7", 1)' class='btn' data-testid='btn-access-7'>Access Nested</button>
+        <button onclick='countNested("iframe7")' class='btn' data-testid='btn-count-7'>Count Nested</button>
+      </div>
+      <div class='status-display' id='status7'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 8: Double Level Nested</h4>
+      <iframe id='iframe8' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Parent</h3><iframe srcdoc="<html><body style=\"padding:10px;background:#fff3e0;\"><h4>Level 1</h4><iframe srcdoc=\"<html><body style=\\\"padding:10px;background:#e8f5e9;\\\"><h5>Level 2</h5></body></html>\" style=\"width:100%;height:60px;\"></iframe></body></html>" style="width:100%;height:120px;"></iframe></body></html>' data-testid='iframe-nested-2'></iframe>
+      <div class='control-panel'>
+        <button onclick='getDepth("iframe8")' class='btn' data-testid='btn-depth-8'>Get Depth</button>
+        <button onclick='accessNested("iframe8", 2)' class='btn' data-testid='btn-access2-8'>Access Level 2</button>
+      </div>
+      <div class='status-display' id='status8'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 9: Multiple Siblings</h4>
+      <iframe id='iframe9' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Parent with Siblings</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><iframe srcdoc="<html><body style=\"padding:10px;background:#ffebee;\"><h4>Child 1</h4></body></html>" style="width:100%;height:70px;"></iframe><iframe srcdoc="<html><body style=\"padding:10px;background:#e8eaf6;\"><h4>Child 2</h4></body></html>" style="width:100%;height:70px;"></iframe></div></body></html>' data-testid='iframe-siblings'></iframe>
+      <div class='control-panel'>
+        <button onclick='countSiblings("iframe9")' class='btn' data-testid='btn-siblings-9'>Count Siblings</button>
+        <button onclick='accessSiblings("iframe9")' class='btn' data-testid='btn-access-9'>Access All</button>
+      </div>
+      <div class='status-display' id='status9'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 10: Dynamic Nested Creation</h4>
+      <iframe id='iframe10' data-testid='iframe-dynamic-nested'></iframe>
+      <div class='control-panel'>
+        <button onclick='createNested("iframe10", 1)' class='btn' data-testid='btn-create1-10'>Create 1 Level</button>
+        <button onclick='createNested("iframe10", 2)' class='btn' data-testid='btn-create2-10'>Create 2 Levels</button>
+        <button onclick='removeNested("iframe10")' class='btn' data-testid='btn-remove-10'>Remove</button>
+      </div>
+      <div class='status-display' id='status10'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 11: Nested Communication</h4>
+      <iframe id='iframe11' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Parent Frame</h3><button onclick="window.parent.postMessage({from:\"parent\",msg:\"Hello\"}, \"*\")">Send to Top</button><iframe id="child" srcdoc="<html><body style=\"padding:10px;background:#e3f2fd;\"><h4>Child Frame</h4><button onclick=\"window.parent.postMessage({from:\'child\',msg:\'Hi\'}, \'*\')\">Send to Parent</button></body></html>" style="width:100%;height:100px;"></iframe></body></html>' data-testid='iframe-comm'></iframe>
+      <div class='control-panel'>
+        <button onclick='setupListener("iframe11")' class='btn' data-testid='btn-listen-11'>Setup Listener</button>
+        <button onclick='sendToNested("iframe11")' class='btn' data-testid='btn-send-11'>Send Message</button>
+      </div>
+      <div class='status-display' id='status11'></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Section 3: PostMessage Communication (5 tests) -->
+<div class='iframe-section'>
+  <h3>3. PostMessage Communication (5 Tests)</h3>
+  <div class='iframe-grid'>
+    
+    <div class='iframe-box'>
+      <h4>Test 12: Basic PostMessage</h4>
+      <iframe id='iframe12' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>PostMessage Test</h3><button onclick="window.parent.postMessage({type:\"greeting\",text:\"Hello Parent!\"}, \"*\")">Send to Parent</button><div id="received" style="margin-top:10px;padding:10px;background:#e3f2fd;"></div><script>window.addEventListener("message", (e) => { document.getElementById("received").textContent = "Received: " + e.data.text; });</script></body></html>' data-testid='iframe-postmsg'></iframe>
+      <div class='control-panel'>
+        <button onclick='sendMessage("iframe12", "Hello Iframe!")' class='btn' data-testid='btn-send-12'>Send Message</button>
+        <button onclick='listenMessages("iframe12")' class='btn' data-testid='btn-listen-12'>Listen</button>
+      </div>
+      <div class='status-display' id='status12'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 13: Data Exchange</h4>
+      <iframe id='iframe13' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Data Exchange</h3><button onclick="window.parent.postMessage({action:\"getData\",id:123}, \"*\")">Request Data</button><div id="data" style="margin-top:10px;padding:10px;background:#fff3e0;"></div><script>window.addEventListener("message", (e) => { if(e.data.action === "sendData") { document.getElementById("data").textContent = JSON.stringify(e.data.payload); } });</script></body></html>' data-testid='iframe-data'></iframe>
+      <div class='control-panel'>
+        <button onclick='setupDataHandler("iframe13")' class='btn' data-testid='btn-setup-13'>Setup Handler</button>
+        <button onclick='sendData("iframe13")' class='btn' data-testid='btn-data-13'>Send Data</button>
+      </div>
+      <div class='status-display' id='status13'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 14: Bidirectional Chat</h4>
+      <iframe id='iframe14' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Chat</h3><input type="text" id="msg" placeholder="Message" style="width:100%;padding:5px;"><button onclick="window.parent.postMessage({type:\"chat\",text:document.getElementById(\"msg\").value}, \"*\"); document.getElementById(\"msg\").value=\"\";">Send</button><div id="log" style="margin-top:10px;padding:10px;background:#e8f5e9;max-height:80px;overflow-y:auto;font-size:11px;"></div><script>window.addEventListener("message", (e) => { if(e.data.type === "chat") { document.getElementById("log").innerHTML += "<div>" + e.data.text + "</div>"; } });</script></body></html>' data-testid='iframe-chat'></iframe>
+      <div class='control-panel'>
+        <button onclick='startChat("iframe14")' class='btn' data-testid='btn-start-14'>Start Chat</button>
+        <button onclick='sendChat("iframe14", "Hi there!")' class='btn' data-testid='btn-chat-14'>Send "Hi!"</button>
+      </div>
+      <div class='status-display' id='status14'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 15: Event Broadcasting</h4>
+      <iframe id='iframe15' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Events</h3><button onclick="window.parent.postMessage({event:\"click\",target:\"btn1\",time:Date.now()}, \"*\")">Broadcast Click</button><button onclick="window.parent.postMessage({event:\"submit\",target:\"form1\",time:Date.now()}, \"*\")">Broadcast Submit</button><div id="events" style="margin-top:10px;padding:10px;background:#fce4ec;font-size:11px;max-height:80px;overflow-y:auto;"></div><script>window.addEventListener("message", (e) => { if(e.data.broadcast) { document.getElementById("events").innerHTML += "<div>" + e.data.broadcast + "</div>"; } });</script></body></html>' data-testid='iframe-events'></iframe>
+      <div class='control-panel'>
+        <button onclick='setupEvents("iframe15")' class='btn' data-testid='btn-setup-15'>Setup Listener</button>
+        <button onclick='broadcast("iframe15", "Global event!")' class='btn' data-testid='btn-broadcast-15'>Broadcast</button>
+      </div>
+      <div class='status-display' id='status15'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 16: Message Queue</h4>
+      <iframe id='iframe16' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Message Queue</h3><div id="queue" style="padding:10px;background:#e3f2fd;max-height:120px;overflow-y:auto;font-size:11px;"></div><script>let count = 0; window.addEventListener("message", (e) => { count++; document.getElementById("queue").innerHTML += "<div>" + count + ". " + e.data.text + "</div>"; });</script></body></html>' data-testid='iframe-queue'></iframe>
+      <div class='control-panel'>
+        <button onclick='sendMultiple("iframe16", 3)' class='btn' data-testid='btn-multi-16'>Send 3 Messages</button>
+        <button onclick='sendMultiple("iframe16", 5)' class='btn' data-testid='btn-multi5-16'>Send 5 Messages</button>
+      </div>
+      <div class='status-display' id='status16'></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Section 4: Advanced Scenarios (6 tests) -->
+<div class='iframe-section'>
+  <h3>4. Advanced Scenarios (6 Tests)</h3>
+  <div class='iframe-grid'>
+    
+    <div class='iframe-box'>
+      <h4>Test 17: Create/Destroy Iframe</h4>
+      <div id='container17' data-testid='container-17'></div>
+      <div class='control-panel'>
+        <button onclick='createIframe("container17")' class='btn' data-testid='btn-create-17'>Create Iframe</button>
+        <button onclick='destroyIframe("container17")' class='btn' data-testid='btn-destroy-17'>Destroy</button>
+        <button onclick='checkExists("container17")' class='btn' data-testid='btn-check-17'>Check Exists</button>
+      </div>
+      <div class='status-display' id='status17'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 18: Clone Iframe</h4>
+      <iframe id='iframe18' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Original</h3><p>This can be cloned.</p></body></html>' data-testid='iframe-original'></iframe>
+      <div id='clone-container18'></div>
+      <div class='control-panel'>
+        <button onclick='cloneIframe("iframe18", "clone-container18")' class='btn' data-testid='btn-clone-18'>Clone</button>
+        <button onclick='removeClones("clone-container18")' class='btn' data-testid='btn-remove-18'>Remove Clones</button>
+      </div>
+      <div class='status-display' id='status18'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 19: Loading States</h4>
+      <iframe id='iframe19' data-testid='iframe-loading'></iframe>
+      <div class='control-panel'>
+        <button onclick='loadWithDelay("iframe19", 1000)' class='btn' data-testid='btn-delay1-19'>Load (1s)</button>
+        <button onclick='loadWithDelay("iframe19", 3000)' class='btn' data-testid='btn-delay3-19'>Load (3s)</button>
+        <button onclick='loadInstant("iframe19")' class='btn' data-testid='btn-instant-19'>Instant</button>
+      </div>
+      <div class='status-display' id='status19'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 20: Error Handling</h4>
+      <iframe id='iframe20' data-testid='iframe-error'></iframe>
+      <div class='control-panel'>
+        <button onclick='loadValid("iframe20")' class='btn' data-testid='btn-valid-20'>Load Valid</button>
+        <button onclick='loadInvalid("iframe20")' class='btn' data-testid='btn-invalid-20'>Load Invalid</button>
+        <button onclick='handleError("iframe20")' class='btn' data-testid='btn-handle-20'>Handle Error</button>
+      </div>
+      <div class='status-display' id='status20'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 21: Scroll Control</h4>
+      <iframe id='iframe21' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Scrollable</h3><div style="height:500px;background:linear-gradient(to bottom, #e3f2fd, #fff3e0);"><p>Scroll down...</p><div style="margin-top:400px;padding:20px;background:#4CAF50;color:white;"><h4>Bottom</h4></div></div></body></html>' style='height:200px;' data-testid='iframe-scroll'></iframe>
+      <div class='control-panel'>
+        <button onclick='scrollTo("iframe21", "top")' class='btn' data-testid='btn-top-21'>Top</button>
+        <button onclick='scrollTo("iframe21", "middle")' class='btn' data-testid='btn-mid-21'>Middle</button>
+        <button onclick='scrollTo("iframe21", "bottom")' class='btn' data-testid='btn-bot-21'>Bottom</button>
+      </div>
+      <div class='status-display' id='status21'></div>
+    </div>
+
+    <div class='iframe-box'>
+      <h4>Test 22: Focus Management</h4>
+      <iframe id='iframe22' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Focus Test</h3><input type="text" id="input1" placeholder="Input 1" style="width:100%;padding:5px;margin:5px 0;"><input type="text" id="input2" placeholder="Input 2" style="width:100%;padding:5px;margin:5px 0;"><button id="btn1">Button 1</button></body></html>' data-testid='iframe-focus'></iframe>
+      <div class='control-panel'>
+        <button onclick='focusElement("iframe22", "input1")' class='btn' data-testid='btn-focus1-22'>Focus Input 1</button>
+        <button onclick='focusElement("iframe22", "btn1")' class='btn' data-testid='btn-focus2-22'>Focus Button</button>
+        <button onclick='blurAll("iframe22")' class='btn' data-testid='btn-blur-22'>Blur All</button>
+      </div>
+      <div class='status-display' id='status22'></div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script>
+// Helper function to update status
+function updateStatus(id, message, isError = false) {
+  const statusEl = document.getElementById('status' + id);
+  if (statusEl) {
+    statusEl.textContent = message;
+    statusEl.style.background = isError ? '#ffebee' : '#e3f2fd';
+  }
+}
+
+// Section 1: Basic Iframe Operations
+
+function reloadIframe(id) {
+  const iframe = document.getElementById(id);
+  if (iframe) {
+    iframe.src = iframe.src;
+    updateStatus(1, 'Iframe reloaded successfully');
+  }
+}
+
+function getIframeContent(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const content = iframe.contentDocument || iframe.contentWindow.document;
+    const text = content.body.textContent.substring(0, 50);
+    updateStatus(1, 'Content: ' + text + '...');
+  } catch (e) {
+    updateStatus(1, 'Error: ' + e.message, true);
+  }
+}
+
+function getFormData(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const name = doc.getElementById('name').value;
+    const email = doc.getElementById('email').value;
+    updateStatus(2, 'Name: ' + name + ', Email: ' + email);
+  } catch (e) {
+    updateStatus(2, 'Error: ' + e.message, true);
+  }
+}
+
+function fillForm(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.getElementById('name').value = 'Test User';
+    doc.getElementById('email').value = 'test@example.com';
+    updateStatus(2, 'Form filled successfully');
+  } catch (e) {
+    updateStatus(2, 'Error: ' + e.message, true);
+  }
+}
+
+function loadContent(id, type) {
+  const iframe = document.getElementById(id);
+  if (type === 'html') {
+    iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h2>Dynamic HTML</h2><p>Loaded dynamically!</p></body></html>';
+    updateStatus(3, 'HTML content loaded');
+  } else {
+    iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><p>Simple text content loaded.</p></body></html>';
+    updateStatus(3, 'Text content loaded');
+  }
+}
+
+function clearIframe(id) {
+  const iframe = document.getElementById(id);
+  iframe.srcdoc = '';
+  updateStatus(3, 'Iframe cleared');
+}
+
+function extractTable(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const rows = doc.querySelectorAll('tr');
+    const data = [];
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td, th');
+      if (cells.length > 0) {
+        data.push(Array.from(cells).map(c => c.textContent).join(', '));
+      }
+    });
+    updateStatus(4, 'Extracted: ' + data.join(' | '));
+  } catch (e) {
+    updateStatus(4, 'Error: ' + e.message, true);
+  }
+}
+
+function countRows(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const rows = doc.querySelectorAll('tr');
+    updateStatus(4, 'Total rows: ' + rows.length);
+  } catch (e) {
+    updateStatus(4, 'Error: ' + e.message, true);
+  }
+}
+
+function resizeIframe(id, height) {
+  const iframe = document.getElementById(id);
+  iframe.style.height = height + 'px';
+  updateStatus(5, 'Resized to ' + height + 'px');
+}
+
+function changeSource(id, page) {
+  const iframe = document.getElementById(id);
+  if (page === 'page1') {
+    iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h2>Page 1</h2><p>This is page 1 content.</p></body></html>';
+    updateStatus(6, 'Loaded Page 1');
+  } else if (page === 'page2') {
+    iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h2>Page 2</h2><p>This is page 2 content.</p></body></html>';
+    updateStatus(6, 'Loaded Page 2');
+  } else {
+    iframe.srcdoc = '';
+    updateStatus(6, 'Loaded blank page');
+  }
+}
+
+// Section 2: Nested Iframes
+
+function accessNested(id, level) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const nested = doc.querySelector('iframe');
+    if (nested) {
+      updateStatus(id.replace('iframe', ''), 'Found nested iframe at level ' + level);
+    } else {
+      updateStatus(id.replace('iframe', ''), 'No nested iframe found', true);
+    }
+  } catch (e) {
+    updateStatus(id.replace('iframe', ''), 'Error: ' + e.message, true);
+  }
+}
+
+function countNested(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const nested = doc.querySelectorAll('iframe');
+    updateStatus(id.replace('iframe', ''), 'Found ' + nested.length + ' nested iframe(s)');
+  } catch (e) {
+    updateStatus(id.replace('iframe', ''), 'Error: ' + e.message, true);
+  }
+}
+
+function getDepth(id) {
+  try {
+    let depth = 0;
+    const iframe = document.getElementById(id);
+    let doc = iframe.contentDocument || iframe.contentWindow.document;
+    while (doc.querySelector('iframe')) {
+      depth++;
+      const nested = doc.querySelector('iframe');
+      doc = nested.contentDocument || nested.contentWindow.document;
+    }
+    updateStatus(id.replace('iframe', ''), 'Nesting depth: ' + depth + ' levels');
+  } catch (e) {
+    updateStatus(id.replace('iframe', ''), 'Depth: 1+ (access restricted)');
+  }
+}
+
+function countSiblings(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const siblings = doc.querySelectorAll('iframe');
+    updateStatus(id.replace('iframe', ''), 'Found ' + siblings.length + ' sibling iframe(s)');
+  } catch (e) {
+    updateStatus(id.replace('iframe', ''), 'Error: ' + e.message, true);
+  }
+}
+
+function accessSiblings(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const siblings = doc.querySelectorAll('iframe');
+    const info = [];
+    siblings.forEach((sib, idx) => {
+      info.push('Sibling ' + (idx + 1));
+    });
+    updateStatus(id.replace('iframe', ''), 'Accessed: ' + info.join(', '));
+  } catch (e) {
+    updateStatus(id.replace('iframe', ''), 'Error: ' + e.message, true);
+  }
+}
+
+function createNested(id, levels) {
+  const iframe = document.getElementById(id);
+  if (levels === 1) {
+    iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h3>Parent</h3><iframe srcdoc="<html><body style=\\"padding:10px;background:#e3f2fd;\\"><h4>Nested Level 1</h4></body></html>" style="width:100%;height:100px;"></iframe></body></html>';
+    updateStatus(id.replace('iframe', ''), 'Created 1 level nested iframe');
+  } else {
+    iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h3>Parent</h3><iframe srcdoc="<html><body style=\\"padding:10px;background:#fff3e0;\\"><h4>Level 1</h4><iframe srcdoc=\\"<html><body style=\\\\\\\"padding:10px;background:#e8f5e9;\\\\\\"><h5>Level 2</h5></body></html>\\" style=\\"width:100%;height:60px;\\"></iframe></body></html>" style="width:100%;height:120px;"></iframe></body></html>';
+    updateStatus(id.replace('iframe', ''), 'Created 2 level nested iframe');
+  }
+}
+
+function removeNested(id) {
+  const iframe = document.getElementById(id);
+  iframe.srcdoc = '';
+  updateStatus(id.replace('iframe', ''), 'Removed nested iframes');
+}
+
+function setupListener(id) {
+  window.addEventListener('message', (e) => {
+    updateStatus(id.replace('iframe', ''), 'Received: ' + JSON.stringify(e.data));
+  });
+  updateStatus(id.replace('iframe', ''), 'Listener setup complete');
+}
+
+function sendToNested(id) {
+  const iframe = document.getElementById(id);
+  iframe.contentWindow.postMessage({from: 'top', text: 'Hello from top!'}, '*');
+  updateStatus(id.replace('iframe', ''), 'Message sent to nested iframe');
+}
+
+// Section 3: PostMessage Communication
+
+function sendMessage(id, text) {
+  const iframe = document.getElementById(id);
+  iframe.contentWindow.postMessage({type: 'message', text: text}, '*');
+  updateStatus(id.replace('iframe', ''), 'Sent: ' + text);
+}
+
+function listenMessages(id) {
+  window.addEventListener('message', (e) => {
+    if (e.data.type === 'greeting') {
+      updateStatus(id.replace('iframe', ''), 'Received: ' + e.data.text);
+    }
+  });
+  updateStatus(id.replace('iframe', ''), 'Listening for messages...');
+}
+
+function setupDataHandler(id) {
+  window.addEventListener('message', (e) => {
+    if (e.data.action === 'getData') {
+      const iframe = document.getElementById(id);
+      iframe.contentWindow.postMessage({
+        action: 'sendData',
+        payload: {id: e.data.id, name: 'Test Data', value: 123}
+      }, '*');
+      updateStatus(id.replace('iframe', ''), 'Data handler setup, sent response');
+    }
+  });
+  updateStatus(id.replace('iframe', ''), 'Data handler ready');
+}
+
+function sendData(id) {
+  const iframe = document.getElementById(id);
+  iframe.contentWindow.postMessage({
+    action: 'sendData',
+    payload: {name: 'Sample', value: 456}
+  }, '*');
+  updateStatus(id.replace('iframe', ''), 'Data sent to iframe');
+}
+
+function startChat(id) {
+  window.addEventListener('message', (e) => {
+    if (e.data.type === 'chat') {
+      updateStatus(id.replace('iframe', ''), 'Chat message: ' + e.data.text);
+    }
+  });
+  updateStatus(id.replace('iframe', ''), 'Chat started');
+}
+
+function sendChat(id, text) {
+  const iframe = document.getElementById(id);
+  iframe.contentWindow.postMessage({type: 'chat', text: text}, '*');
+  updateStatus(id.replace('iframe', ''), 'Sent: ' + text);
+}
+
+function setupEvents(id) {
+  window.addEventListener('message', (e) => {
+    if (e.data.event) {
+      updateStatus(id.replace('iframe', ''), 'Event: ' + e.data.event + ' on ' + e.data.target);
+    }
+  });
+  updateStatus(id.replace('iframe', ''), 'Event listener setup');
+}
+
+function broadcast(id, text) {
+  const iframe = document.getElementById(id);
+  iframe.contentWindow.postMessage({broadcast: text}, '*');
+  updateStatus(id.replace('iframe', ''), 'Broadcasted: ' + text);
+}
+
+function sendMultiple(id, count) {
+  const iframe = document.getElementById(id);
+  for (let i = 1; i <= count; i++) {
+    iframe.contentWindow.postMessage({text: 'Message ' + i}, '*');
+  }
+  updateStatus(id.replace('iframe', ''), 'Sent ' + count + ' messages');
+}
+
+// Section 4: Advanced Scenarios
+
+function createIframe(containerId) {
+  const container = document.getElementById(containerId);
+  const iframe = document.createElement('iframe');
+  iframe.id = 'dynamic-iframe';
+  iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h3>Dynamic Iframe</h3><p>Created dynamically!</p></body></html>';
+  iframe.style.width = '100%';
+  iframe.style.height = '200px';
+  iframe.style.border = '1px solid #ddd';
+  iframe.style.borderRadius = '4px';
+  container.appendChild(iframe);
+  updateStatus(17, 'Iframe created');
+}
+
+function destroyIframe(containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  updateStatus(17, 'Iframe destroyed');
+}
+
+function checkExists(containerId) {
+  const container = document.getElementById(containerId);
+  const exists = container.querySelector('iframe') !== null;
+  updateStatus(17, 'Iframe exists: ' + exists);
+}
+
+function cloneIframe(id, containerId) {
+  const iframe = document.getElementById(id);
+  const clone = iframe.cloneNode(true);
+  clone.id = 'cloned-iframe-' + Date.now();
+  document.getElementById(containerId).appendChild(clone);
+  updateStatus(18, 'Iframe cloned');
+}
+
+function removeClones(containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  updateStatus(18, 'Clones removed');
+}
+
+function loadWithDelay(id, delay) {
+  updateStatus(19, 'Loading... (' + (delay/1000) + 's)');
+  setTimeout(() => {
+    const iframe = document.getElementById(id);
+    iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h2>Loaded!</h2><p>Content loaded after ' + (delay/1000) + ' seconds.</p></body></html>';
+    updateStatus(19, 'Loaded after ' + (delay/1000) + 's');
+  }, delay);
+}
+
+function loadInstant(id) {
+  const iframe = document.getElementById(id);
+  iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h2>Instant Load</h2><p>Loaded immediately!</p></body></html>';
+  updateStatus(19, 'Loaded instantly');
+}
+
+function loadValid(id) {
+  const iframe = document.getElementById(id);
+  iframe.srcdoc = '<html><body style="padding:20px;font-family:Arial;"><h2>Valid Content</h2><p>This is valid HTML content.</p></body></html>';
+  updateStatus(20, 'Valid content loaded');
+}
+
+function loadInvalid(id) {
+  const iframe = document.getElementById(id);
+  iframe.srcdoc = '<html><body><h2>Invalid<p>Missing closing tags';
+  updateStatus(20, 'Invalid content loaded (check console)');
+}
+
+function handleError(id) {
+  try {
+    const iframe = document.getElementById(id);
+    iframe.addEventListener('error', () => {
+      updateStatus(20, 'Error handler triggered');
+    });
+    updateStatus(20, 'Error handler attached');
+  } catch (e) {
+    updateStatus(20, 'Error: ' + e.message, true);
+  }
+}
+
+function scrollTo(id, position) {
+  try {
+    const iframe = document.getElementById(id);
+    const win = iframe.contentWindow;
+    if (position === 'top') {
+      win.scrollTo(0, 0);
+      updateStatus(21, 'Scrolled to top');
+    } else if (position === 'middle') {
+      win.scrollTo(0, win.document.body.scrollHeight / 2);
+      updateStatus(21, 'Scrolled to middle');
+    } else {
+      win.scrollTo(0, win.document.body.scrollHeight);
+      updateStatus(21, 'Scrolled to bottom');
+    }
+  } catch (e) {
+    updateStatus(21, 'Error: ' + e.message, true);
+  }
+}
+
+function focusElement(id, elementId) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    const element = doc.getElementById(elementId);
+    if (element) {
+      element.focus();
+      updateStatus(22, 'Focused: ' + elementId);
+    }
+  } catch (e) {
+    updateStatus(22, 'Error: ' + e.message, true);
+  }
+}
+
+function blurAll(id) {
+  try {
+    const iframe = document.getElementById(id);
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    if (doc.activeElement) {
+      doc.activeElement.blur();
+    }
+    updateStatus(22, 'All elements blurred');
+  } catch (e) {
+    updateStatus(22, 'Error: ' + e.message, true);
+  }
+}
+</script>
+</body>
+</html>
