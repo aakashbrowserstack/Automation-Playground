@@ -144,7 +144,7 @@
 
     <div class='iframe-box'>
       <h4>Test 11: Nested Communication</h4>
-      <iframe id='iframe11' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Parent Frame</h3><button onclick="window.parent.postMessage({from:\"parent\",msg:\"Hello\"}, \"*\")">Send to Top</button><iframe id="child" srcdoc="<html><body style=\"padding:10px;background:#e3f2fd;\"><h4>Child Frame</h4><button onclick=\"window.parent.postMessage({from:\'child\',msg:\'Hi\'}, \'*\')\">Send to Parent</button></body></html>" style="width:100%;height:100px;"></iframe></body></html>' data-testid='iframe-comm'></iframe>
+      <iframe id='iframe11' srcdoc='<html><body style="padding:20px;font-family:Arial;"><h3>Parent Frame</h3><button onclick="window.parent.postMessage({from:&quot;parent&quot;,msg:&quot;Hello&quot;}, &quot;*&quot;)">Send to Top</button><iframe id="child" srcdoc="&lt;html&gt;&lt;body style=&quot;padding:10px;background:#e3f2fd;&quot;&gt;&lt;h4&gt;Child Frame&lt;/h4&gt;&lt;button onclick=&quot;window.parent.postMessage({from:&apos;child&apos;,msg:&apos;Hi&apos;}, &apos;*&apos;)&quot;&gt;Send to Parent&lt;/button&gt;&lt;/body&gt;&lt;/html&gt;" style="width:100%;height:100px;"></iframe></body></html>' data-testid='iframe-comm'></iframe>
       <div class='control-panel'>
         <button onclick='setupListener("iframe11")' class='btn' data-testid='btn-listen-11'>Setup Listener</button>
         <button onclick='sendToNested("iframe11")' class='btn' data-testid='btn-send-11'>Send Message</button>
