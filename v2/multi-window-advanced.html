@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Window Advanced - QA Playground</title>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .window-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 15px 0;
+        }
+        .window-card h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .warning-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .success-box {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .window-list {
+            list-style: none;
+            padding: 0;
+        }
+        .window-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .window-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-open { background: #4caf50; }
+        .status-closed { background: #f44336; }
+        .resolution-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #2196f3;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 0 5px;
+        }
+        .message-log {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .message-log div {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .scenario-step {
+            background: #e8f5e9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #4caf50;
+        }
+        .viewport-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #673ab7;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Multi-Window Advanced Testing</h1>
+            <div class="small">Complex multi-tab/window scenarios based on LCNC ticket analysis (LCNC-10141, LCNC-10490)</div>
+        </div>
+        <nav>
+            <a href="../index.html">Home</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Current Window Info -->
+        <section class="card">
+            <h2>📊 Current Window Information</h2>
+            <div class="info-box">
+                <p><strong>Window Name:</strong> <span id="windowName" data-testid="window-name">main</span></p>
+                <p><strong>Window ID:</strong> <span id="windowId" data-testid="window-id">-</span></p>
+                <p><strong>Viewport Size:</strong> <span id="viewportSize" data-testid="viewport-size">-</span></p>
+                <p><strong>Device Type:</strong> <span id="deviceType" data-testid="device-type">Desktop</span></p>
+                <p><strong>Open Windows:</strong> <span id="openWindowCount" data-testid="open-window-count">1</span></p>
+            </div>
+        </section>
+
+        <!-- Resolution Change with Multi-Tabs (LCNC-10141, LCNC-10490) -->
+        <section class="card">
+            <div class="window-card">
+                <h3>📱 Resolution Changes with Multiple Tabs (LCNC-10141, LCNC-10490)</h3>
+                <p class="small">Test iPad viewport changes during multi-tab sessions</p>
+                
+                <div class="warning-box">
+                    <strong>⚠️ Edge Case:</strong> iPad multiple tab + browser resolution changes causing test failures
+                </div>
+
+                <div class="grid-3">
+                    <button class="btn" id="openTabDesktop" data-testid="open-tab-desktop">
+                        Open Tab (Desktop)
+                    </button>
+                    <button class="btn" id="openTabTablet" data-testid="open-tab-tablet">
+                        Open Tab (Tablet)
+                    </button>
+                    <button class="btn" id="openTabMobile" data-testid="open-tab-mobile">
+                        Open Tab (Mobile)
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <strong>Current Resolution:</strong> 
+                    <span class="viewport-indicator" id="currentResolution" data-testid="current-resolution">
+                        Desktop (1920x1080)
+                    </span>
+                </div>
+
+                <button class="btn" id="changeResolution" data-testid="change-resolution">
+                    Simulate Resolution Change
+                </button>
+
+                <div class="message-log" id="resolutionLog" data-testid="resolution-log">
+                    <div>Resolution change log will appear here...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Complex Tab Switching Scenarios -->
+        <section class="card">
+            <div class="window-card">
+                <h3>🔄 Complex Tab Switching Workflows</h3>
+                <p class="small">Test tab switching with form data and state management</p>
+
+                <div class="scenario-step">
+                    <strong>Scenario 1:</strong> Open 3 tabs → Fill form in Tab 1 → Switch to Tab 2 → Return to Tab 1 → Verify data
+                </div>
+
+                <div class="form-group">
+                    <label for="formData">Test Data:</label>
+                    <input type="text" id="formData" data-testid="form-data" 
+                           placeholder="Enter data to persist across tabs">
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn" id="startScenario1" data-testid="start-scenario-1">
+                        Start Scenario 1
+                    </button>
+                    <button class="btn" id="verifyScenario1" data-testid="verify-scenario-1">
+                        Verify Data Persistence
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <strong>Scenario Status:</strong> <span id="scenario1Status" data-testid="scenario1-status">Ready</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Parent-Child Window Communication -->
+        <section class="card">
+            <div class="window-card">
+                <h3>👨‍👦 Parent-Child Window Communication</h3>
+                <p class="small">Test window.opener and cross-window messaging</p>
+
+                <button class="btn" id="openChildWindow" data-testid="open-child-window">
+                    Open Child Window
+                </button>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label for="messageToChild">Message to Child:</label>
+                    <input type="text" id="messageToChild" data-testid="message-to-child" 
+                           placeholder="Enter message for child window">
+                </div>
+
+                <button class="btn" id="sendToChild" data-testid="send-to-child">
+                    Send to Child Window
+                </button>
+
+                <div class="message-log" id="parentMessages" data-testid="parent-messages">
+                    <div>Messages from child window will appear here...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Multiple Windows with Different Content -->
+        <section class="card">
+            <div class="window-card">
+                <h3>🪟 Multiple Windows with Different Content</h3>
+                <p class="small">Open multiple windows with different pages and test coordination</p>
+
+                <div class="grid-3">
+                    <button class="btn" id="openLoginWindow" data-testid="open-login-window">
+                        Open Login Window
+                    </button>
+                    <button class="btn" id="openFormWindow" data-testid="open-form-window">
+                        Open Form Window
+                    </button>
+                    <button class="btn" id="openDashboard" data-testid="open-dashboard">
+                        Open Dashboard
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <h4>Open Windows:</h4>
+                    <ul class="window-list" id="windowList" data-testid="window-list">
+                        <li>
+                            <span><span class="window-status status-open"></span>Main Window</span>
+                            <span>Active</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="btn" id="closeAllWindows" data-testid="close-all-windows">
+                    Close All Child Windows
+                </button>
+            </div>
+        </section>
+
+        <!-- Tab-Specific State with LocalStorage -->
+        <section class="card">
+            <div class="window-card">
+                <h3>💾 Tab-Specific State Management</h3>
+                <p class="small">Test SessionStorage (tab-specific) vs LocalStorage (shared)</p>
+
+                <div class="grid-2">
+                    <div>
+                        <h4>SessionStorage (Tab-Specific)</h4>
+                        <input type="text" id="sessionData" data-testid="session-data" 
+                               placeholder="Tab-specific data">
+                        <button class="btn" id="saveSession" data-testid="save-session">
+                            Save to Session
+                        </button>
+                        <div class="info-box">
+                            <strong>Stored:</strong> <span id="sessionValue" data-testid="session-value">None</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4>LocalStorage (Shared)</h4>
+                        <input type="text" id="localData" data-testid="local-data" 
+                               placeholder="Shared data">
+                        <button class="btn" id="saveLocal" data-testid="save-local">
+                            Save to Local
+                        </button>
+                        <div class="info-box">
+                            <strong>Stored:</strong> <span id="localValue" data-testid="local-value">None</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" id="openStorageTest" data-testid="open-storage-test">
+                    Open New Tab to Test Storage
+                </button>
+            </div>
+        </section>
+
+        <!-- Cross-Tab Synchronization -->
+        <section class="card">
+            <div class="window-card">
+                <h3>🔄 Cross-Tab Synchronization</h3>
+                <p class="small">Test real-time data sync across multiple tabs</p>
+
+                <div class="form-group">
+                    <label for="syncCounter">Shared Counter:</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <button class="btn" id="decrementSync" data-testid="decrement-sync">-</button>
+                        <span id="syncCounter" data-testid="sync-counter" 
+                              style="font-size: 24px; font-weight: bold; min-width: 50px; text-align: center;">0</span>
+                        <button class="btn" id="incrementSync" data-testid="increment-sync">+</button>
+                    </div>
+                </div>
+
+                <button class="btn" id="openSyncTab" data-testid="open-sync-tab">
+                    Open Synchronized Tab
+                </button>
+
+                <div class="info-box">
+                    <strong>Sync Status:</strong> <span id="syncStatus" data-testid="sync-status">Active</span><br>
+                    <small>Counter updates will sync across all open tabs in real-time</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Window with Specific Features -->
+        <section class="card">
+            <div class="window-card">
+                <h3>⚙️ Window Features Testing</h3>
+                <p class="small">Open windows with specific features (toolbar, menubar, etc.)</p>
+
+                <div class="grid-3">
+                    <button class="btn" id="openMinimal" data-testid="open-minimal">
+                        Minimal Window
+                    </button>
+                    <button class="btn" id="openFullFeature" data-testid="open-full-feature">
+                        Full Features
+                    </button>
+                    <button class="btn" id="openCustomSize" data-testid="open-custom-size">
+                        Custom Size (800x600)
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <strong>Last Opened:</strong> <span id="lastWindowFeatures" data-testid="last-window-features">None</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab Order and Focus Management -->
+        <section class="card">
+            <div class="window-card">
+                <h3>🎯 Tab Order and Focus Management</h3>
+                <p class="small">Test tab focus, blur events, and visibility changes</p>
+
+                <button class="btn" id="openFocusTest" data-testid="open-focus-test">
+                    Open Tab for Focus Testing
+                </button>
+
+                <div class="message-log" id="focusLog" data-testid="focus-log">
+                    <div>Focus events will be logged here...</div>
+                </div>
+
+                <div class="info-box">
+                    <strong>Current Tab Visible:</strong> <span id="tabVisible" data-testid="tab-visible">Yes</span><br>
+                    <strong>Document Focus:</strong> <span id="docFocus" data-testid="doc-focus">Yes</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Complex Workflow Scenario -->
+        <section class="card">
+            <div class="window-card">
+                <h3>🎬 Complete Workflow Scenario</h3>
+                <p class="small">End-to-end multi-window workflow based on real tickets</p>
+
+                <div class="scenario-step">
+                    <strong>Step 1:</strong> Open login window → Authenticate
+                </div>
+                <div class="scenario-step">
+                    <strong>Step 2:</strong> Open form window → Fill data
+                </div>
+                <div class="scenario-step">
+                    <strong>Step 3:</strong> Switch back to main → Verify sync
+                </div>
+                <div class="scenario-step">
+                    <strong>Step 4:</strong> Change resolution → Verify responsive behavior
+                </div>
+                <div class="scenario-step">
+                    <strong>Step 5:</strong> Close all windows → Verify cleanup
+                </div>
+
+                <button class="btn" id="startWorkflow" data-testid="start-workflow">
+                    Start Complete Workflow
+                </button>
+
+                <div class="info-box">
+                    <strong>Workflow Progress:</strong> <span id="workflowProgress" data-testid="workflow-progress">Not started</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Track opened windows
+        let openedWindows = [];
+        let windowCounter = 0;
+
+        // Generate unique window ID
+        const windowId = 'window-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        document.getElementById('windowId').textContent = windowId;
+
+        // Update viewport size
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            document.getElementById('viewportSize').textContent = `${width}x${height}`;
+            
+            let deviceType = 'Desktop';
+            if (width <= 768) deviceType = 'Mobile';
+            else if (width <= 1024) deviceType = 'Tablet';
+            document.getElementById('deviceType').textContent = deviceType;
+        }
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+
+        // Resolution change with multi-tabs (LCNC-10141, LCNC-10490)
+        function logResolution(message) {
+            const log = document.getElementById('resolutionLog');
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        document.getElementById('openTabDesktop').addEventListener('click', function() {
+            const newTab = window.open(window.location.href, '_blank');
+            if (newTab) {
+                openedWindows.push(newTab);
+                logResolution('Opened new tab (Desktop resolution)');
+                updateWindowCount();
+            }
+        });
+
+        document.getElementById('openTabTablet').addEventListener('click', function() {
+            const newTab = window.open(window.location.href, '_blank');
+            if (newTab) {
+                openedWindows.push(newTab);
+                logResolution('Opened new tab (Tablet resolution - 1024x768)');
+                updateWindowCount();
+            }
+        });
+
+        document.getElementById('openTabMobile').addEventListener('click', function() {
+            const newTab = window.open(window.location.href, '_blank');
+            if (newTab) {
+                openedWindows.push(newTab);
+                logResolution('Opened new tab (Mobile resolution - 390x844)');
+                updateWindowCount();
+            }
+        });
+
+        document.getElementById('changeResolution').addEventListener('click', function() {
+            const resolutions = [
+                { name: 'Desktop', width: 1920, height: 1080 },
+                { name: 'Tablet', width: 1024, height: 768 },
+                { name: 'iPad', width: 820, height: 1180 },
+                { name: 'Mobile', width: 390, height: 844 }
+            ];
+            const random = resolutions[Math.floor(Math.random() * resolutions.length)];
+            
+            logResolution(`Simulated resolution change to ${random.name} (${random.width}x${random.height})`);
+            document.getElementById('currentResolution').textContent = `${random.name} (${random.width}x${random.height})`;
+        });
+
+        // Complex tab switching scenario
+        document.getElementById('startScenario1').addEventListener('click', function() {
+            const data = document.getElementById('formData').value;
+            if (!data) {
+                alert('Please enter test data first');
+                return;
+            }
+            
+            sessionStorage.setItem('scenario1Data', data);
+            
+            // Open 3 tabs
+            for (let i = 0; i < 3; i++) {
+                const tab = window.open(window.location.href, '_blank');
+                if (tab) openedWindows.push(tab);
+            }
+            
+            document.getElementById('scenario1Status').textContent = 'Running - 3 tabs opened with data';
+            updateWindowCount();
+        });
+
+        document.getElementById('verifyScenario1').addEventListener('click', function() {
+            const stored = sessionStorage.getItem('scenario1Data');
+            const current = document.getElementById('formData').value;
+            
+            if (stored === current) {
+                document.getElementById('scenario1Status').textContent = '✓ Data verified successfully';
+            } else {
+                document.getElementById('scenario1Status').textContent = '✗ Data mismatch detected';
+            }
+        });
+
+        // Parent-Child window communication
+        let childWindow = null;
+
+        document.getElementById('openChildWindow').addEventListener('click', function() {
+            childWindow = window.open('', 'childWindow', 'width=600,height=400');
+            if (childWindow) {
+                childWindow.document.write(`
+                    <html>
+                    <head><title>Child Window</title></head>
+                    <body style="font-family: Arial; padding: 20px;">
+                        <h2>Child Window</h2>
+                        <p>This is a child window. Messages from parent will appear below:</p>
+                        <div id="messages" style="background: #f0f0f0; padding: 10px; margin: 10px 0;"></div>
+                        <input type="text" id="replyMsg" placeholder="Reply to parent" style="width: 100%; padding: 8px;">
+                        <button onclick="sendToParent()" style="margin-top: 10px; padding: 8px 16px;">Send to Parent</button>
+                        <script>
+                            function sendToParent() {
+                                const msg = document.getElementById('replyMsg').value;
+                                if (window.opener && msg) {
+                                    window.opener.postMessage({ from: 'child', message: msg }, '*');
+                                    document.getElementById('replyMsg').value = '';
+                                }
+                            }
+                            
+                            window.addEventListener('message', function(event) {
+                                if (event.data.from === 'parent') {
+                                    const div = document.getElementById('messages');
+                                    div.innerHTML += '<div>Parent: ' + event.data.message + '</div>';
+                                }
+                            });
+                        </script>
+                    </body>
+                    </html>
+                `);
+                openedWindows.push(childWindow);
+                updateWindowCount();
+            }
+        });
+
+        document.getElementById('sendToChild').addEventListener('click', function() {
+            const msg = document.getElementById('messageToChild').value;
+            if (childWindow && !childWindow.closed && msg) {
+                childWindow.postMessage({ from: 'parent', message: msg }, '*');
+                document.getElementById('messageToChild').value = '';
+            } else {
+                alert('Please open child window first');
+            }
+        });
+
+        // Listen for messages from child
+        window.addEventListener('message', function(event) {
+            if (event.data.from === 'child') {
+                const log = document.getElementById('parentMessages');
+                const div = document.createElement('div');
+                div.textContent = 'Child: ' + event.data.message;
+                log.appendChild(div);
+            }
+        });
+
+        // Multiple windows with different content
+        document.getElementById('openLoginWindow').addEventListener('click', function() {
+            const win = window.open('../v1/login.html', 'loginWindow', 'width=500,height=600');
+            if (win) {
+                openedWindows.push(win);
+                addWindowToList('Login Window', 'loginWindow');
+            }
+        });
+
+        document.getElementById('openFormWindow').addEventListener('click', function() {
+            const win = window.open('../v2/advanced-forms.html', 'formWindow', 'width=800,height=600');
+            if (win) {
+                openedWindows.push(win);
+                addWindowToList('Form Window', 'formWindow');
+            }
+        });
+
+        document.getElementById('openDashboard').addEventListener('click', function() {
+            const win = window.open('../extra/dashboard.html', 'dashboardWindow', 'width=1200,height=800');
+            if (win) {
+                openedWindows.push(win);
+                addWindowToList('Dashboard Window', 'dashboardWindow');
+            }
+        });
+
+        function addWindowToList(name, id) {
+            const list = document.getElementById('windowList');
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span><span class="window-status status-open"></span>${name}</span>
+                <span>${id}</span>
+            `;
+            list.appendChild(li);
+            updateWindowCount();
+        }
+
+        document.getElementById('closeAllWindows').addEventListener('click', function() {
+            openedWindows.forEach(win => {
+                if (win && !win.closed) {
+                    win.close();
+                }
+            });
+            openedWindows = [];
+            updateWindowCount();
+            
+            // Reset window list
+            const list = document.getElementById('windowList');
+            list.innerHTML = '<li><span><span class="window-status status-open"></span>Main Window</span><span>Active</span></li>';
+        });
+
+        // Storage testing
+        document.getElementById('saveSession').addEventListener('click', function() {
+            const data = document.getElementById('sessionData').value;
+            sessionStorage.setItem('testSession', data);
+            document.getElementById('sessionValue').textContent = data;
+        });
+
+        document.getElementById('saveLocal').addEventListener('click', function() {
+            const data = document.getElementById('localData').value;
+            localStorage.setItem('testLocal', data);
+            document.getElementById('localValue').textContent = data;
+        });
+
+        document.getElementById('openStorageTest').addEventListener('click', function() {
+            const tab = window.open(window.location.href, '_blank');
+            if (tab) openedWindows.push(tab);
+        });
+
+        // Load stored values on page load
+        const sessionVal = sessionStorage.getItem('testSession');
+        const localVal = localStorage.getItem('testLocal');
+        if (sessionVal) document.getElementById('sessionValue').textContent = sessionVal;
+        if (localVal) document.getElementById('localValue').textContent = localVal;
+
+        // Cross-tab synchronization
+        let syncCounter = parseInt(localStorage.getItem('syncCounter') || '0');
+        document.getElementById('syncCounter').textContent = syncCounter;
+
+        document.getElementById('incrementSync').addEventListener('click', function() {
+            syncCounter++;
+            localStorage.setItem('syncCounter', syncCounter);
+            document.getElementById('syncCounter').textContent = syncCounter;
+        });
+
+        document.getElementById('decrementSync').addEventListener('click', function() {
+            syncCounter--;
+            localStorage.setItem('syncCounter', syncCounter);
+            document.getElementById('syncCounter').textContent = syncCounter;
+        });
+
+        // Listen for storage changes from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'syncCounter') {
+                syncCounter = parseInt(e.newValue || '0');
+                document.getElementById('syncCounter').textContent = syncCounter;
+                document.getElementById('syncStatus').textContent = 'Synced from another tab';
+                setTimeout(() => {
+                    document.getElementById('syncStatus').textContent = 'Active';
+                }, 2000);
+            }
+        });
+
+        document.getElementById('openSyncTab').addEventListener('click', function() {
+            const tab = window.open(window.location.href, '_blank');
+            if (tab) openedWindows.push(tab);
+        });
+
+        // Window features testing
+        document.getElementById('openMinimal').addEventListener('click', function() {
+            const win = window.open(window.location.href, 'minimal', 
+                'width=400,height=300,toolbar=no,menubar=no,scrollbars=yes');
+            if (win) {
+                openedWindows.push(win);
+                document.getElementById('lastWindowFeatures').textContent = 'Minimal (no toolbar/menubar)';
+            }
+        });
+
+        document.getElementById('openFullFeature').addEventListener('click', function() {
+            const win = window.open(window.location.href, 'fullFeature', 
+                'width=800,height=600,toolbar=yes,menubar=yes,scrollbars=yes,resizable=yes');
+            if (win) {
+                openedWindows.push(win);
+                document.getElementById('lastWindowFeatures').textContent = 'Full features enabled';
+            }
+        });
+
+        document.getElementById('openCustomSize').addEventListener('click', function() {
+            const win = window.open(window.location.href, 'customSize', 
+                'width=800,height=600,left=100,top=100');
+            if (win) {
+                openedWindows.push(win);
+                document.getElementById('lastWindowFeatures').textContent = 'Custom 800x600 at position 100,100';
+            }
+        });
+
+        // Focus management
+        document.getElementById('openFocusTest').addEventListener('click', function() {
+            const tab = window.open(window.location.href, '_blank');
+            if (tab) openedWindows.push(tab);
+        });
+
+        function logFocus(message) {
+            const log = document.getElementById('focusLog');
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        window.addEventListener('focus', () => logFocus('Window gained focus'));
+        window.addEventListener('blur', () => logFocus('Window lost focus'));
+        
+        document.addEventListener('visibilitychange', function() {
+            const visible = !document.hidden;
+            document.getElementById('tabVisible').textContent = visible ? 'Yes' : 'No';
+            logFocus(visible ? 'Tab became visible' : 'Tab became hidden');
+        });
+
+        window.addEventListener('focus', function() {
+            document.getElementById('docFocus').textContent = 'Yes';
+        });
+
+        window.addEventListener('blur', function() {
+            document.getElementById('docFocus').textContent = 'No';
+        });
+
+        // Complete workflow
+        document.getElementById('startWorkflow').addEventListener('click', function() {
+            const progress = document.getElementById('workflowProgress');
+            progress.textContent = 'Step 1: Opening login window...';
+            
+            // Step 1: Open login window
+            setTimeout(() => {
+                const loginWin = window.open('../v1/login.html', 'workflowLogin', 'width=500,height=600');
+                if (loginWin) openedWindows.push(loginWin);
+                
+                progress.textContent = 'Step 2: Opening form window...';
+                
+                // Step 2: Open form window
+                setTimeout(() => {
+                    const formWin = window.open('../v2/advanced-forms.html', 'workflowForm', 'width=800,height=600');
+                    if (formWin) openedWindows.push(formWin);
+                    
+                    progress.textContent = 'Step 3: Verifying synchronization...';
+                    
+                    // Step 3: Verify sync
+                    setTimeout(() => {
+                        progress.textContent = 'Step 4: Simulating resolution change...';
+                        
+                        // Step 4: Resolution change
+                        setTimeout(() => {
+                            logResolution('Workflow: Resolution changed to Tablet');
+                            progress.textContent = 'Step 5: Workflow complete! Check opened windows.';
+                            updateWindowCount();
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        });
+
+        // Helper function to update window count
+        function updateWindowCount() {
+            const count = openedWindows.filter(win => win && !win.closed).length + 1;
+            document.getElementById('openWindowCount').textContent = count;
+        }
+    </script>
+</body>
+</html>

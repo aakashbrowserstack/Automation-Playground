@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robust Algorithm Testing - QA Playground</title>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .test-scenario {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-scenario h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .warning-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .element-box {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+        }
+        .element-modified {
+            border-color: #ff9800;
+            background: #fff3e0;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .attribute-list {
+            font-family: monospace;
+            font-size: 12px;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .attribute-list div {
+            padding: 3px 0;
+        }
+        .attr-changed {
+            background: #ffeb3b;
+            padding: 2px 4px;
+        }
+        .similar-element {
+            background: #e8f5e9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 2px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Robust Algorithm Testing</h1>
+            <div class="small">Test LCNC's robust element detection algorithm with various DOM changes</div>
+        </div>
+        <nav>
+            <a href="../index.html">Home</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Introduction -->
+        <section class="card">
+            <h2>📋 About Robust Algorithm</h2>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> The robust algorithm ensures test replay adapts to website changes by intelligently identifying elements even when their attributes, position, or structure changes.</p>
+                <p><strong>Key Features:</strong></p>
+                <ul>
+                    <li>XPath and CSS path fallback</li>
+                    <li>Attribute-based filtering (50% match threshold)</li>
+                    <li>Test identity and identity attribute prioritization</li>
+                    <li>Shadow DOM support</li>
+                    <li>Dynamic attribute handling</li>
+                    <li>Longest Common Prefix (LCP) tiebreaker</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Scenario 1: Attribute Changes -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>🔄 Scenario 1: Attribute Value Changes</h3>
+                <p class="small">Test element detection when attribute values change but element remains functionally the same</p>
+                
+                <div class="warning-box">
+                    <strong>Test:</strong> Record interaction with button, then modify its attributes and verify detection
+                </div>
+
+                <div class="element-box" id="attr-test-box">
+                    <button 
+                        id="attr-test-btn"
+                        class="btn primary-btn"
+                        data-testid="submit-button"
+                        data-action="submit"
+                        aria-label="Submit Form"
+                        type="button"
+                        tabindex="0">
+                        Submit Form
+                    </button>
+                </div>
+
+                <div class="attribute-list" id="attr-display">
+                    <strong>Current Attributes:</strong>
+                    <div>id: attr-test-btn</div>
+                    <div>class: btn primary-btn</div>
+                    <div>data-testid: submit-button</div>
+                    <div>data-action: submit</div>
+                    <div>aria-label: Submit Form</div>
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn" onclick="modifyAttributes()">
+                        Modify Attributes
+                    </button>
+                    <button class="btn" onclick="resetAttributes()">
+                        Reset Attributes
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 2: XPath Changes -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>📍 Scenario 2: XPath/Position Changes</h3>
+                <p class="small">Test element detection when DOM structure changes but element attributes remain similar</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> Record interaction, then move element to different DOM position
+                </div>
+
+                <div id="xpath-container-1" class="element-box">
+                    <div>
+                        <div>
+                            <button 
+                                id="xpath-test-btn"
+                                class="btn"
+                                data-testid="action-button"
+                                data-cy="action-btn">
+                                Action Button
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="xpath-container-2" class="element-box" style="display:none;">
+                    <section>
+                        <article>
+                            <!-- Button will be moved here -->
+                        </article>
+                    </section>
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn" onclick="moveElement()">
+                        Move to Different Path
+                    </button>
+                    <button class="btn" onclick="resetPosition()">
+                        Reset Position
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 3: Dynamic Test Identity -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>🔢 Scenario 3: Dynamic Test Identity Attributes</h3>
+                <p class="small">Test handling of dynamic values in test identity attributes (e.g., yui_3_8_1_1_13679224741219_543)</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> Elements with dynamic IDs should use "contains" check for static parts
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="ext-gen-1234567890"
+                        class="btn"
+                        data-testid="dynamic-btn-9876543210"
+                        data-component="button">
+                        Dynamic ID Button
+                    </button>
+
+                    <button 
+                        id="yui_3_8_1_1_13679224741219_543"
+                        class="btn"
+                        data-testid="yui-button"
+                        data-component="button">
+                        YUI Pattern Button
+                    </button>
+
+                    <button 
+                        id="ProductGrid-gVjGQiI"
+                        class="btn"
+                        data-testid="product-grid-btn"
+                        data-component="button">
+                        Product Grid Button
+                    </button>
+                </div>
+
+                <button class="btn" onclick="regenerateDynamicIds()">
+                    Regenerate Dynamic IDs
+                </button>
+
+                <div class="info-box">
+                    <strong>Current IDs:</strong>
+                    <div id="dynamic-ids-display"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 4: Similar Elements (50% Match) -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>👥 Scenario 4: Multiple Similar Elements</h3>
+                <p class="small">Test 50% attribute matching and scoring when multiple elements are similar</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> Algorithm should pick correct element based on attribute scoring (Category 1 > Category 2)
+                </div>
+
+                <div class="similar-element">
+                    <button 
+                        id="target-btn"
+                        class="btn action-btn primary"
+                        data-testid="target-action"
+                        data-action="submit"
+                        name="submitBtn"
+                        aria-label="Submit Action"
+                        type="button">
+                        Target Button (Record This)
+                    </button>
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="similar-btn-1"
+                        class="btn action-btn secondary"
+                        data-action="submit"
+                        name="submitBtn"
+                        type="button">
+                        Similar Button 1 (50% match)
+                    </button>
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="similar-btn-2"
+                        class="btn action-btn"
+                        data-testid="other-action"
+                        data-action="cancel"
+                        aria-label="Cancel Action"
+                        type="button">
+                        Similar Button 2 (Different action)
+                    </button>
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="similar-btn-3"
+                        class="btn primary"
+                        data-testid="target-action"
+                        name="submitBtn"
+                        aria-label="Submit Action"
+                        type="button">
+                        Similar Button 3 (High match, different class)
+                    </button>
+                </div>
+
+                <button class="btn" onclick="shuffleSimilarElements()">
+                    Shuffle Element Order
+                </button>
+            </div>
+        </section>
+
+        <!-- Scenario 5: Obfuscated Classes -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>🎭 Scenario 5: Obfuscated Class Names</h3>
+                <p class="small">Test handling of obfuscated/minified class names (>50% obfuscated = ignore in matching)</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> If >50% classes are obfuscated, class attribute should be ignored in matching
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="obfuscated-btn"
+                        class="css-1dbjc4n r-1awozwy r-18u37iz r-1777fci btn-primary"
+                        data-testid="obfuscated-button"
+                        data-component="button"
+                        aria-label="Obfuscated Button">
+                        Button with Obfuscated Classes
+                    </button>
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="normal-btn"
+                        class="button primary-button submit-btn action-button"
+                        data-testid="normal-button"
+                        data-component="button"
+                        aria-label="Normal Button">
+                        Button with Normal Classes
+                    </button>
+                </div>
+
+                <button class="btn" onclick="toggleObfuscation()">
+                    Toggle Class Obfuscation
+                </button>
+
+                <div class="info-box" id="obfuscation-status">
+                    <strong>Obfuscation Analysis:</strong>
+                    <div id="obfuscation-details"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 6: Text Attribute Changes -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>📝 Scenario 6: Text Attribute Matching</h3>
+                <p class="small">Test text attribute matching (first 100 characters for innerText/textContent)</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> Text attributes should match first 100 characters only
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="text-btn"
+                        class="btn"
+                        data-testid="text-button"
+                        title="Click to submit the form">
+                        <span id="btn-text">Submit</span>
+                    </button>
+                </div>
+
+                <div class="element-box">
+                    <input 
+                        type="text"
+                        id="text-input"
+                        class="form-control"
+                        data-testid="text-input"
+                        placeholder="Enter your name"
+                        value="John Doe"
+                        aria-label="Name Input">
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn" onclick="changeButtonText()">
+                        Change Button Text
+                    </button>
+                    <button class="btn" onclick="changeInputValue()">
+                        Change Input Value
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <strong>Current Text Values:</strong>
+                    <div id="text-values-display"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 7: Shadow DOM -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>🌑 Scenario 7: Shadow DOM Elements</h3>
+                <p class="small">Test element detection within Shadow DOM (LCP calculated from Shadow Host)</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> Algorithm should traverse shadow roots and find elements correctly
+                </div>
+
+                <div class="element-box">
+                    <div id="shadow-host-1" data-testid="shadow-container">
+                        <!-- Shadow root will be attached here -->
+                    </div>
+                </div>
+
+                <button class="btn" onclick="createShadowDOM()">
+                    Create Shadow DOM
+                </button>
+
+                <button class="btn" onclick="modifyShadowContent()">
+                    Modify Shadow Content
+                </button>
+
+                <div class="info-box">
+                    <strong>Shadow DOM Status:</strong>
+                    <div id="shadow-status">Not created</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 8: Closest Reliable Parent (CRP) -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>🎯 Scenario 8: Closest Reliable Parent</h3>
+                <p class="small">Test CRP fallback when target element has no Category 1 attributes</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> If target has no Category 1 attrs, find CRP first, then search within its scope
+                </div>
+
+                <div class="element-box">
+                    <div 
+                        id="crp-parent"
+                        class="parent-container"
+                        data-testid="reliable-parent"
+                        data-component="container">
+                        <div class="wrapper">
+                            <div class="inner">
+                                <button 
+                                    class="btn"
+                                    style="background: #2196f3; color: white;">
+                                    Button with No Test ID
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="modifyCRPStructure()">
+                    Modify Parent Structure
+                </button>
+
+                <div class="info-box">
+                    <strong>Note:</strong> Target button has no test identity or ID attributes. Algorithm should use CRP (parent with data-testid) as reference point.
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 9: Longest Common Prefix (LCP) Tiebreaker -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>🏆 Scenario 9: LCP Tiebreaker</h3>
+                <p class="small">Test LCP calculation when multiple elements pass 50% check</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> Element with longest matching XPath prefix should be selected
+                </div>
+
+                <div class="info-box">
+                    <strong>Recorded XPath:</strong> /html/body/main/section/div/div/button
+                </div>
+
+                <div class="element-box">
+                    <main>
+                        <section>
+                            <div>
+                                <div>
+                                    <button 
+                                        class="btn action"
+                                        data-action="submit"
+                                        type="button">
+                                        Target (LCP=6)
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+
+                <div class="element-box">
+                    <main>
+                        <section>
+                            <div>
+                                <span>
+                                    <button 
+                                        class="btn action"
+                                        data-action="submit"
+                                        type="button">
+                                        Similar (LCP=5)
+                                    </button>
+                                </span>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+
+                <div class="element-box">
+                    <main>
+                        <section>
+                            <ul>
+                                <li>
+                                    <span>
+                                        <button 
+                                            class="btn action"
+                                            data-action="submit"
+                                            type="button">
+                                            Different (LCP=4)
+                                        </button>
+                                    </span>
+                                </li>
+                            </ul>
+                        </section>
+                    </main>
+                </div>
+
+                <div class="info-box">
+                    <strong>LCP Lengths:</strong>
+                    <ul>
+                        <li>Target: /html/body/main/section/div/div = 6 elements</li>
+                        <li>Similar: /html/body/main/section/div = 5 elements</li>
+                        <li>Different: /html/body/main/section = 4 elements</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario 10: Volatile Attributes -->
+        <section class="card">
+            <div class="test-scenario">
+                <h3>⚡ Scenario 10: Volatile Attributes (Ignored in Matching)</h3>
+                <p class="small">Test that volatile attributes (style, height, width, offsetWidth, offsetHeight, tabindex) are ignored</p>
+
+                <div class="warning-box">
+                    <strong>Test:</strong> Changes to volatile attributes should not affect element detection
+                </div>
+
+                <div class="element-box">
+                    <button 
+                        id="volatile-btn"
+                        class="btn"
+                        data-testid="volatile-button"
+                        style="background: blue; width: 200px; height: 50px;"
+                        tabindex="1">
+                        Volatile Attributes Button
+                    </button>
+                </div>
+
+                <button class="btn" onclick="modifyVolatileAttrs()">
+                    Modify Volatile Attributes
+                </button>
+
+                <div class="attribute-list" id="volatile-display">
+                    <strong>Current Volatile Attributes:</strong>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Scenario 1: Attribute Changes
+        function modifyAttributes() {
+            const btn = document.getElementById('attr-test-btn');
+            btn.className = 'btn secondary-btn modified';
+            btn.setAttribute('data-action', 'update');
+            btn.setAttribute('aria-label', 'Update Form');
+            btn.setAttribute('data-version', '2.0');
+            
+            updateAttributeDisplay();
+        }
+
+        function resetAttributes() {
+            const btn = document.getElementById('attr-test-btn');
+            btn.className = 'btn primary-btn';
+            btn.setAttribute('data-action', 'submit');
+            btn.setAttribute('aria-label', 'Submit Form');
+            btn.removeAttribute('data-version');
+            
+            updateAttributeDisplay();
+        }
+
+        function updateAttributeDisplay() {
+            const btn = document.getElementById('attr-test-btn');
+            const display = document.getElementById('attr-display');
+            const attrs = btn.attributes;
+            let html = '<strong>Current Attributes:</strong>';
+            
+            for (let i = 0; i < attrs.length; i++) {
+                html += `<div>${attrs[i].name}: ${attrs[i].value}</div>`;
+            }
+            
+            display.innerHTML = html;
+        }
+
+        // Scenario 2: XPath Changes
+        function moveElement() {
+            const btn = document.getElementById('xpath-test-btn');
+            const container2 = document.querySelector('#xpath-container-2 article');
+            
+            document.getElementById('xpath-container-1').style.display = 'none';
+            document.getElementById('xpath-container-2').style.display = 'block';
+            
+            container2.appendChild(btn);
+        }
+
+        function resetPosition() {
+            const btn = document.getElementById('xpath-test-btn');
+            const container1 = document.querySelector('#xpath-container-1 > div > div');
+            
+            document.getElementById('xpath-container-1').style.display = 'block';
+            document.getElementById('xpath-container-2').style.display = 'none';
+            
+            container1.appendChild(btn);
+        }
+
+        // Scenario 3: Dynamic IDs
+        function regenerateDynamicIds() {
+            const btns = [
+                { el: document.querySelector('[id^="ext-gen"]'), prefix: 'ext-gen-' },
+                { el: document.querySelector('[id^="yui"]'), prefix: 'yui_3_8_1_1_' },
+                { el: document.querySelector('[id^="ProductGrid"]'), prefix: 'ProductGrid-' }
+            ];
+            
+            btns.forEach(btn => {
+                if (btn.el) {
+                    const randomId = Math.random().toString(36).substr(2, 10);
+                    btn.el.id = btn.prefix + randomId;
+                }
+            });
+            
+            displayDynamicIds();
+        }
+
+        function displayDynamicIds() {
+            const display = document.getElementById('dynamic-ids-display');
+            const btns = document.querySelectorAll('[id^="ext-gen"], [id^="yui"], [id^="ProductGrid"]');
+            let html = '';
+            
+            btns.forEach(btn => {
+                html += `<div>${btn.textContent}: <code>${btn.id}</code></div>`;
+            });
+            
+            display.innerHTML = html;
+        }
+
+        // Scenario 4: Similar Elements
+        function shuffleSimilarElements() {
+            const container = document.querySelector('.test-scenario');
+            const elements = Array.from(container.querySelectorAll('.element-box, .similar-element'));
+            
+            // Shuffle array
+            for (let i = elements.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [elements[i], elements[j]] = [elements[j], elements[i]];
+            }
+            
+            // Re-append in new order
+            const parent = elements[0].parentNode;
+            elements.forEach(el => parent.appendChild(el));
+        }
+
+        // Scenario 5: Obfuscated Classes
+        function toggleObfuscation() {
+            const btn = document.getElementById('obfuscated-btn');
+            const currentClasses = btn.className;
+            
+            if (currentClasses.includes('css-')) {
+                btn.className = 'button primary-button submit-btn action-button';
+            } else {
+                btn.className = 'css-1dbjc4n r-1awozwy r-18u37iz r-1777fci btn-primary';
+            }
+            
+            analyzeObfuscation();
+        }
+
+        function analyzeObfuscation() {
+            const btn = document.getElementById('obfuscated-btn');
+            const classes = btn.className.split(' ');
+            const obfuscatedPattern = /^(css-|r-|_)[a-z0-9]+$/i;
+            
+            const obfuscatedCount = classes.filter(c => obfuscatedPattern.test(c)).length;
+            const percentage = (obfuscatedCount / classes.length * 100).toFixed(0);
+            
+            const display = document.getElementById('obfuscation-details');
+            display.innerHTML = `
+                <div>Total classes: ${classes.length}</div>
+                <div>Obfuscated: ${obfuscatedCount}</div>
+                <div>Percentage: ${percentage}%</div>
+                <div><strong>${percentage > 50 ? 'Class attribute will be IGNORED in matching' : 'Class attribute will be USED in matching'}</strong></div>
+            `;
+        }
+
+        // Scenario 6: Text Attributes
+        function changeButtonText() {
+            const span = document.getElementById('btn-text');
+            const texts = ['Submit', 'Send', 'Save', 'Update', 'Confirm'];
+            const current = span.textContent;
+            const next = texts[(texts.indexOf(current) + 1) % texts.length];
+            span.textContent = next;
+            
+            updateTextDisplay();
+        }
+
+        function changeInputValue() {
+            const input = document.getElementById('text-input');
+            const values = ['John Doe', 'Jane Smith', 'Bob Johnson', 'Alice Williams'];
+            const current = input.value;
+            const next = values[(values.indexOf(current) + 1) % values.length];
+            input.value = next;
+            
+            updateTextDisplay();
+        }
+
+        function updateTextDisplay() {
+            const btn = document.getElementById('btn-text');
+            const input = document.getElementById('text-input');
+            const display = document.getElementById('text-values-display');
+            
+            display.innerHTML = `
+                <div>Button text: "${btn.textContent}"</div>
+                <div>Input value: "${input.value}"</div>
+                <div>Input placeholder: "${input.placeholder}"</div>
+            `;
+        }
+
+        // Scenario 7: Shadow DOM
+        function createShadowDOM() {
+            const host = document.getElementById('shadow-host-1');
+            
+            if (!host.shadowRoot) {
+                const shadow = host.attachShadow({ mode: 'open' });
+                shadow.innerHTML = `
+                    <style>
+                        .shadow-btn {
+                            padding: 10px 20px;
+                            background: #673ab7;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        }
+                    </style>
+                    <div data-testid="shadow-wrapper">
+                        <button 
+                            class="shadow-btn"
+                            data-testid="shadow-button"
+                            id="shadow-btn">
+                            Shadow DOM Button
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('shadow-status').textContent = 'Shadow DOM created successfully';
+            }
+        }
+
+        function modifyShadowContent() {
+            const host = document.getElementById('shadow-host-1');
+            
+            if (host.shadowRoot) {
+                const btn = host.shadowRoot.querySelector('button');
+                btn.textContent = 'Modified Shadow Button';
+                btn.className = 'shadow-btn modified';
+                
+                document.getElementById('shadow-status').textContent = 'Shadow DOM content modified';
+            } else {
+                alert('Create Shadow DOM first');
+            }
+        }
+
+        // Scenario 8: CRP
+        function modifyCRPStructure() {
+            const parent = document.getElementById('crp-parent');
+            const btn = parent.querySelector('button');
+            
+            // Change structure but keep CRP
+            parent.innerHTML = `
+                <div class="new-wrapper">
+                    <section class="new-section">
+                        ${btn.outerHTML}
+                    </section>
+                </div>
+            `;
+        }
+
+        // Scenario 10: Volatile Attributes
+        function modifyVolatileAttrs() {
+            const btn = document.getElementById('volatile-btn');
+            const colors = ['blue', 'red', 'green', 'purple', 'orange'];
+            const widths = [200, 250, 300, 150, 180];
+            const heights = [50, 60, 40, 55, 45];
+            
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const randomWidth = widths[Math.floor(Math.random() * widths.length)];
+            const randomHeight = heights[Math.floor(Math.random() * heights.length)];
+            const randomTabindex = Math.floor(Math.random() * 10);
+            
+            btn.style.background = randomColor;
+            btn.style.width = randomWidth + 'px';
+            btn.style.height = randomHeight + 'px';
+            btn.tabIndex = randomTabindex;
+            
+            updateVolatileDisplay();
+        }
+
+        function updateVolatileDisplay() {
+            const btn = document.getElementById('volatile-btn');
+            const display = document.getElementById('volatile-display');
+            
+            display.innerHTML = `
+                <strong>Current Volatile Attributes (Should be IGNORED):</strong>
+                <div>style: ${btn.getAttribute('style')}</div>
+                <div>tabindex: ${btn.tabIndex}</div>
+                <div>offsetWidth: ${btn.offsetWidth}px</div>
+                <div>offsetHeight: ${btn.offsetHeight}px</div>
+            `;
+        }
+
+        // Initialize displays on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            updateAttributeDisplay();
+            displayDynamicIds();
+            analyzeObfuscation();
+            updateTextDisplay();
+            updateVolatileDisplay();
+        });
+    </script>
+</body>
+</html>
