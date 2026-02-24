@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robust Algorithm Enhancement Test Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .test-section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
+        }
+
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .test-section h3 {
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .test-description {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 3px solid #ffc107;
+        }
+
+        .test-description strong {
+            color: #d32f2f;
+        }
+
+        .test-case {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .test-case h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #764ba2;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #63408a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .element-box {
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .element-box.highlighted {
+            border-color: #ffc107;
+            background: #fff9e6;
+        }
+
+        .attribute-list {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .attribute-list code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        svg {
+            margin: 10px;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .class-demo {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+
+        .obfuscated-abc123 {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+        }
+
+        .user-card {
+            background: #f1f8e9;
+            border: 2px solid #8bc34a;
+        }
+
+        .product-item {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+        }
+
+        .nav-link {
+            background: #fce4ec;
+            border: 2px solid #e91e63;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .xpath-demo {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge-test {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-aria {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-form {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Robust Algorithm Enhancement Test Suite</h1>
+            <p>Comprehensive test scenarios for Tiebreaker Logic, Attribute Filtering, and LCP Scoring</p>
+        </div>
+
+        <div class="content">
+            <!-- Section 1: Tiebreaker Logic - Hidden Element Filtering -->
+            <div class="test-section">
+                <h2>1️⃣ Tiebreaker Logic: Hidden Element Filtering</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Verify that when multiple elements match selective filtering (same test identity/innerText), hidden elements are filtered out first.
+                </div>
+
+                <h3>Test Case 1.1: Multiple Elements with Same data-testid</h3>
+                <div class="test-case">
+                    <h4>Scenario: 3 buttons with data-testid="submit-btn", one is hidden</h4>
+                    <div class="button-group">
+                        <button class="btn-primary" data-testid="submit-btn">Visible Submit Button 1</button>
+                        <button class="btn-primary hidden" data-testid="submit-btn">Hidden Submit Button</button>
+                        <button class="btn-primary" data-testid="submit-btn">Visible Submit Button 2</button>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Algorithm should filter out the hidden button and use LCP to choose between the two visible ones.
+                    </div>
+                </div>
+
+                <h3>Test Case 1.2: Multiple Elements with Same InnerText</h3>
+                <div class="test-case">
+                    <h4>Scenario: 4 buttons with text "Click Me", two are hidden</h4>
+                    <div class="button-group">
+                        <button class="btn-secondary">Click Me</button>
+                        <button class="btn-secondary hidden">Click Me</button>
+                        <button class="btn-secondary hidden">Click Me</button>
+                        <button class="btn-secondary">Click Me</button>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Algorithm should filter out both hidden buttons and use LCP between the two visible ones.
+                    </div>
+                </div>
+
+                <h3>Test Case 1.3: All Elements Hidden Except One</h3>
+                <div class="test-case">
+                    <h4>Scenario: 3 elements with data-test="action", only one visible</h4>
+                    <div class="button-group">
+                        <button class="btn-success hidden" data-test="action">Hidden Action 1</button>
+                        <button class="btn-success" data-test="action">Visible Action</button>
+                        <button class="btn-success hidden" data-test="action">Hidden Action 2</button>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Algorithm should return the single visible element immediately.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Tiebreaker Logic - LCP (Longest Common Prefix) -->
+            <div class="test-section">
+                <h2>2️⃣ Tiebreaker Logic: Longest Common Prefix (LCP)</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Verify LCP calculation based on XPath matching from root to target element.
+                </div>
+
+                <h3>Test Case 2.1: Different XPath Depths</h3>
+                <div class="test-case">
+                    <h4>Scenario: Buttons at different nesting levels with same data-testid</h4>
+                    <div class="xpath-demo">Recorded XPath: /html/body/div/main/section/div/div/button</div>
+                    
+                    <main>
+                        <section>
+                            <div>
+                                <div>
+                                    <!-- Target 1: LCP length = 6 (/html/body/div/main/section/div/div) -->
+                                    <button class="btn-primary" data-testid="lcp-test">Button at Exact Path (LCP=6)</button>
+                                </div>
+                                <div>
+                                    <div>
+                                        <!-- Target 2: LCP length = 6 (/html/body/div/main/section/div/div) -->
+                                        <button class="btn-primary" data-testid="lcp-test">Button Deeper (LCP=6)</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <span>
+                                    <!-- Target 3: LCP length = 5 (/html/body/div/main/section/div) -->
+                                    <button class="btn-primary" data-testid="lcp-test">Button Different Branch (LCP=5)</button>
+                                </span>
+                            </div>
+                        </section>
+                        <ul>
+                            <li>
+                                <span>
+                                    <!-- Target 4: LCP length = 3 (/html/body/div/main) -->
+                                    <button class="btn-primary" data-testid="lcp-test">Button Far Branch (LCP=3)</button>
+                                </span>
+                            </li>
+                        </ul>
+                    </main>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Algorithm should prefer buttons with highest LCP score (first or second button with LCP=6).
+                    </div>
+                </div>
+
+                <h3>Test Case 2.2: XPath with Indexing</h3>
+                <div class="test-case">
+                    <h4>Scenario: Testing LCP with indexed elements</h4>
+                    <div class="xpath-demo">Recorded XPath: /html/body/div/div[1]/div[1]/button</div>
+                    
+                    <div>
+                        <div>
+                            <!-- LCP = /html/body/div/div[1]/div[1] = length 5 -->
+                            <button class="btn-secondary" data-cy="indexed-btn">Button at div[1]/div[1] (LCP=5)</button>
+                        </div>
+                        <div>
+                            <!-- LCP = /html/body/div/div[1] = length 4 (div[2] doesn't match) -->
+                            <button class="btn-secondary" data-cy="indexed-btn">Button at div[1]/div[2] (LCP=4)</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <!-- LCP = /html/body/div = length 3 (div[2] doesn't match) -->
+                            <button class="btn-secondary" data-cy="indexed-btn">Button at div[2]/div[1] (LCP=3)</button>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> First button should win (LCP=5). Note: indexation matters - div[1] ≠ div[2].
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Revised Attribute Categories -->
+            <div class="test-section">
+                <h2>3️⃣ Revised Attribute Categories & Filtering</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Verify new attribute categorization and filtering logic.
+                </div>
+
+                <h3>Test Case 3.1: aria-label as Trustable Attribute (Category 1)</h3>
+                <div class="test-case">
+                    <h4>Scenario: Elements with aria-label should be prioritized</h4>
+                    <div class="button-group">
+                        <button class="btn-primary" aria-label="Save document" data-testid="save-btn">
+                            <span class="badge badge-aria">aria-label</span> Save
+                        </button>
+                        <button class="btn-primary" data-testid="save-btn">
+                            Save (no aria-label)
+                        </button>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> First button with aria-label should score higher in Category 1 (Trustable Attributes).
+                    </div>
+                </div>
+
+                <h3>Test Case 3.2: Form Attributes (New Category 2)</h3>
+                <div class="test-case">
+                    <h4>Scenario: Form attributes downgraded from Category 1 to Category 2</h4>
+                    <div class="form-group">
+                        <label>Email Input with Form Attributes:</label>
+                        <input 
+                            type="email" 
+                            name="user-email"
+                            autocomplete="email"
+                            required
+                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                            maxlength="100"
+                            placeholder="Enter your email"
+                            data-testid="email-input"
+                            class="badge-form"
+                        />
+                        <div class="attribute-list">
+                            <strong>Form Attributes (Category 2):</strong> 
+                            <code>type</code>, <code>name</code>, <code>autocomplete</code>, 
+                            <code>required</code>, <code>pattern</code>, <code>maxlength</code>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Form attributes contribute to scoring but with lower priority than Category 1.
+                    </div>
+                </div>
+
+                <h3>Test Case 3.3: Removed Volatile Attributes</h3>
+                <div class="test-case">
+                    <h4>Scenario: Size and volatile attributes should be ignored</h4>
+                    <div class="element-box">
+                        <button 
+                            class="btn-info" 
+                            data-testid="dynamic-btn"
+                            style="width: 200px; height: 50px; font-weight: bold;"
+                            tabindex="5"
+                        >
+                            Dynamic Button
+                        </button>
+                        <div class="attribute-list">
+                            <strong>Ignored Attributes:</strong> 
+                            <code>style</code>, <code>width</code>, <code>height</code>, 
+                            <code>offsetWidth</code>, <code>offsetHeight</code>, <code>tabindex</code>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Changes to these attributes should NOT affect element matching.
+                    </div>
+                </div>
+
+                <h3>Test Case 3.4: Data Attributes (Category 2)</h3>
+                <div class="test-case">
+                    <h4>Scenario: Custom data attributes for filtering</h4>
+                    <div class="button-group">
+                        <button 
+                            class="btn-primary" 
+                            data-user-id="12345"
+                            data-role="admin"
+                            data-section="dashboard"
+                            data-testid="user-action"
+                        >
+                            <span class="badge badge-test">data-*</span> User Action
+                        </button>
+                    </div>
+                    <div class="attribute-list">
+                        <strong>Data Attributes (Category 2):</strong> 
+                        <code>data-user-id</code>, <code>data-role</code>, <code>data-section</code>
+                        (excluding test attributes like data-testid)
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Custom data-* attributes contribute to Category 2 scoring.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: 50% Class Matching -->
+            <div class="test-section">
+                <h2>4️⃣ 50% Class Matching Logic</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Verify that class matching succeeds if at least 50% of recorded classes are present during replay.
+                </div>
+
+                <h3>Test Case 4.1: Exact 50% Class Match</h3>
+                <div class="test-case">
+                    <h4>Scenario: Element has 4 classes, 2 match recorded (50%)</h4>
+                    <div class="class-demo user-card product-item">
+                        <p><strong>Recorded Classes:</strong> user-card, product-item, nav-link, active-state</p>
+                        <p><strong>Current Classes:</strong> user-card, product-item, new-class, another-class</p>
+                        <p><strong>Match:</strong> 2 out of 4 = 50% ✅</p>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Should PASS - exactly 50% of recorded classes present.
+                    </div>
+                </div>
+
+                <h3>Test Case 4.2: More than 50% Class Match</h3>
+                <div class="test-case">
+                    <h4>Scenario: Element has 4 classes, 3 match recorded (75%)</h4>
+                    <div class="class-demo user-card product-item nav-link">
+                        <p><strong>Recorded Classes:</strong> user-card, product-item, nav-link, active-state</p>
+                        <p><strong>Current Classes:</strong> user-card, product-item, nav-link, different-class</p>
+                        <p><strong>Match:</strong> 3 out of 4 = 75% ✅</p>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Should PASS - more than 50% of recorded classes present.
+                    </div>
+                </div>
+
+                <h3>Test Case 4.3: Less than 50% Class Match</h3>
+                <div class="test-case">
+                    <h4>Scenario: Element has 4 classes, only 1 matches recorded (25%)</h4>
+                    <div class="class-demo user-card">
+                        <p><strong>Recorded Classes:</strong> user-card, product-item, nav-link, active-state</p>
+                        <p><strong>Current Classes:</strong> user-card, completely-new, different-class, another-new</p>
+                        <p><strong>Match:</strong> 1 out of 4 = 25% ❌</p>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Should FAIL - less than 50% of recorded classes present.
+                    </div>
+                </div>
+
+                <h3>Test Case 4.4: Obfuscated Classes</h3>
+                <div class="test-case">
+                    <h4>Scenario: Testing with obfuscated class names</h4>
+                    <div class="class-demo obfuscated-abc123">
+                        <p><strong>Recorded Classes:</strong> obfuscated-abc123, obfuscated-def456</p>
+                        <p><strong>Current Classes:</strong> obfuscated-xyz789, obfuscated-qwe321</p>
+                        <p><strong>Match:</strong> 0 out of 2 = 0% (obfuscated classes changed)</p>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Obfuscated classes should be handled specially - may be excluded from strict matching.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: SVG Elements -->
+            <div class="test-section">
+                <h2>5️⃣ SVG Element Testing</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Verify innerHTML matching for SVG elements.
+                </div>
+
+                <h3>Test Case 5.1: SVG with data-testid</h3>
+                <div class="test-case">
+                    <h4>Scenario: Multiple SVG icons with same test attribute</h4>
+                    <div class="button-group">
+                        <svg width="50" height="50" data-testid="icon-svg">
+                            <circle cx="25" cy="25" r="20" fill="#667eea"/>
+                        </svg>
+                        <svg width="50" height="50" data-testid="icon-svg">
+                            <rect x="5" y="5" width="40" height="40" fill="#764ba2"/>
+                        </svg>
+                        <svg width="50" height="50" data-testid="icon-svg">
+                            <polygon points="25,5 45,45 5,45" fill="#28a745"/>
+                        </svg>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Algorithm should use innerHTML to differentiate between SVG elements.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Multiple Tiebreaker Scenarios -->
+            <div class="test-section">
+                <h2>6️⃣ Complete Tiebreaker Flow</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Test the complete tiebreaker sequence: Same XPath → Filter Hidden → LCP
+                </div>
+
+                <h3>Test Case 6.1: Full Tiebreaker Sequence</h3>
+                <div class="test-case">
+                    <h4>Scenario: Multiple elements passing 50% check</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Element</th>
+                                <th>Same XPath?</th>
+                                <th>Hidden?</th>
+                                <th>LCP Score</th>
+                                <th>Expected Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Button A</td>
+                                <td>❌ No</td>
+                                <td>✅ Visible</td>
+                                <td>8</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Button B</td>
+                                <td>❌ No</td>
+                                <td>❌ Hidden</td>
+                                <td>7</td>
+                                <td>Filtered out</td>
+                            </tr>
+                            <tr>
+                                <td>Button C</td>
+                                <td>❌ No</td>
+                                <td>✅ Visible</td>
+                                <td>9</td>
+                                <td>✅ Selected (Highest LCP)</td>
+                            </tr>
+                            <tr>
+                                <td>Button D</td>
+                                <td>❌ No</td>
+                                <td>✅ Visible</td>
+                                <td>6</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 20px;">
+                        <div>
+                            <div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <div>
+                                                <div>
+                                                    <div>
+                                                        <!-- Button A: LCP = 8 -->
+                                                        <button class="btn-primary" data-testid="tiebreaker-test">Button A (LCP=8)</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <div>
+                                                <div>
+                                                    <!-- Button B: Hidden, LCP = 7 -->
+                                                    <button class="btn-primary hidden" data-testid="tiebreaker-test">Button B (Hidden, LCP=7)</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <div>
+                                                <div>
+                                                    <div>
+                                                        <div>
+                                                            <!-- Button C: LCP = 9 (WINNER) -->
+                                                            <button class="btn-success" data-testid="tiebreaker-test">Button C (LCP=9) ⭐ WINNER</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <div>
+                                                <!-- Button D: LCP = 6 -->
+                                                <button class="btn-primary" data-testid="tiebreaker-test">Button D (LCP=6)</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected Flow:</strong>
+                        <ol style="margin-top: 10px; margin-left: 20px;">
+                            <li>Check for same XPath - None match exactly</li>
+                            <li>Filter hidden elements - Button B removed</li>
+                            <li>Calculate LCP scores - Button C has highest (9)</li>
+                            <li>Return Button C as the winner</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7: Edge Cases -->
+            <div class="test-section">
+                <h2>7️⃣ Edge Cases & Complex Scenarios</h2>
+                
+                <h3>Test Case 7.1: All Attributes Ignored</h3>
+                <div class="test-case">
+                    <h4>Scenario: Element with only ignored attributes</h4>
+                    <button 
+                        class="btn-danger" 
+                        style="width: 150px; height: 40px;"
+                        tabindex="3"
+                        data-testid="ignored-attrs"
+                    >
+                        Only Ignored Attributes
+                    </button>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Should still match based on test identity (data-testid).
+                    </div
