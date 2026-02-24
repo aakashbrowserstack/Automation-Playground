@@ -759,11 +759,179 @@
                 </div>
             </div>
 
-            <!-- Section 7: Edge Cases -->
+            <!-- Section 7: 100% Attribute Check Workflow -->
             <div class="test-section">
-                <h2>7️⃣ Edge Cases & Complex Scenarios</h2>
+                <h2>7️⃣ 100% Attribute Check Workflow</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Verify the 3-step 100% attribute check process: Strict Check → Loose Check → Special Class/InnerText Handling
+                </div>
+
+                <h3>Test Case 7.1: Strict 100% Check - All Attributes Match</h3>
+                <div class="test-case">
+                    <h4>Scenario: Element at recorded XPath with all attributes matching (excluding obfuscated classes)</h4>
+                    <button 
+                        class="btn-primary" 
+                        id="strict-match-btn"
+                        data-testid="strict-check"
+                        aria-label="Submit form"
+                        type="button"
+                    >
+                        Strict Match Button
+                    </button>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 passes - All attributes match exactly. Element returned immediately.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.2: Loose 100% Check - Volatile Attributes Changed</h3>
+                <div class="test-case">
+                    <h4>Scenario: Element with changed style, tabindex, or size attributes</h4>
+                    <button 
+                        class="btn-secondary" 
+                        id="loose-match-btn"
+                        data-testid="loose-check"
+                        style="width: 180px; height: 45px; background-color: #764ba2;"
+                        tabindex="7"
+                    >
+                        Loose Match Button
+                    </button>
+                    <div class="attribute-list">
+                        <strong>Changed Attributes (Should be Ignored):</strong>
+                        <code>style</code> (changed), <code>tabindex</code> (changed)
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 fails (style/tabindex changed) → Step 2 passes (loose check ignores these). Element returned.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.3: Loose 100% Check - Obfuscated Classes Changed</h3>
+                <div class="test-case">
+                    <h4>Scenario: Element with obfuscated class names that changed between builds</h4>
+                    <div class="element-box obfuscated-abc123">
+                        <p id="obfuscated-elem" data-testid="obfuscated-check">
+                            <strong>Recorded Classes:</strong> obfuscated-abc123, obfuscated-def456<br>
+                            <strong>Current Classes:</strong> obfuscated-xyz789, obfuscated-qwe321
+                        </p>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 fails (obfuscated classes changed) → Step 2 passes (loose check excludes obfuscated classes). Element returned.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.4: Step 3a - 50% Class Match Success</h3>
+                <div class="test-case">
+                    <h4>Scenario: Non-obfuscated classes with 50%+ match</h4>
+                    <div class="element-box user-card product-item">
+                        <p id="class-50-match" data-testid="class-50-check">
+                            <strong>Recorded Classes:</strong> user-card, product-item, nav-link, active-state (4 classes)<br>
+                            <strong>Current Classes:</strong> user-card, product-item, new-class, another-class (2 match = 50%)
+                        </p>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 & 2 fail (class mismatch) → Step 3a: 50% class check passes. Element returned.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.5: Step 3a - InnerText Mismatch with Unique Tag</h3>
+                <div class="test-case">
+                    <h4>Scenario: InnerText changed but no other element has same tag+text</h4>
+                    <button 
+                        class="btn-success" 
+                        id="innertext-unique"
+                        data-testid="innertext-check"
+                    >
+                        Updated Button Text (Original: "Submit Form")
+                    </button>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 & 2 fail (innerText mismatch) → Step 3a: No other button with same tag+text exists. Element returned.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.6: Step 3a - Both Class and InnerText Checks Pass</h3>
+                <div class="test-case">
+                    <h4>Scenario: Both class (50%+) and innerText (unique) conditions met</h4>
+                    <div class="element-box user-card nav-link">
+                        <p id="combined-check" data-testid="combined-check">
+                            <strong>Recorded:</strong> Classes: user-card, nav-link, active-state (3 classes) | Text: "Original Content"<br>
+                            <strong>Current:</strong> Classes: user-card, nav-link, new-class (2 match = 67%) | Text: "Modified Content"
+                        </p>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 & 2 fail → Step 3a: Class 50% check ✓ AND innerText unique ✓. Element returned.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.7: Fallback to Selective Filtering</h3>
+                <div class="test-case">
+                    <h4>Scenario: All 100% checks fail, proceed to selective filtering</h4>
+                    <button 
+                        class="btn-danger" 
+                        id="fallback-btn"
+                        data-testid="fallback-check"
+                    >
+                        Fallback Button
+                    </button>
+                    <button 
+                        class="btn-danger" 
+                        id="fallback-btn-2"
+                        data-testid="fallback-check"
+                    >
+                        Fallback Button (Duplicate)
+                    </button>
+                    <div class="info-box">
+                        <strong>Expected:</strong> All 100% checks fail → Algorithm proceeds to selective filtering stage using test identity attributes.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.8: Aria Attributes Excluded (Except aria-label)</h3>
+                <div class="test-case">
+                    <h4>Scenario: aria-* attributes changed (except aria-label)</h4>
+                    <button 
+                        class="btn-info" 
+                        id="aria-check-btn"
+                        data-testid="aria-check"
+                        aria-label="Save document"
+                        aria-expanded="false"
+                        aria-controls="menu-123"
+                    >
+                        Aria Attributes Button
+                    </button>
+                    <div class="attribute-list">
+                        <strong>Recorded:</strong> aria-expanded="true", aria-controls="menu-456"<br>
+                        <strong>Current:</strong> aria-expanded="false", aria-controls="menu-123"
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 fails (aria-* changed) → Step 2 passes (loose check excludes aria-* except aria-label). Element returned.
+                    </div>
+                </div>
+
+                <h3>Test Case 7.9: Absolute Numerical Values Excluded</h3>
+                <div class="test-case">
+                    <h4>Scenario: Attributes with absolute numerical values changed</h4>
+                    <input 
+                        type="range" 
+                        id="numerical-check"
+                        data-testid="numerical-check"
+                        min="0"
+                        max="100"
+                        value="75"
+                        step="5"
+                    />
+                    <div class="attribute-list">
+                        <strong>Recorded:</strong> value="50"<br>
+                        <strong>Current:</strong> value="75"
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Step 1 fails (value changed) → Step 2 passes (loose check excludes absolute numerical values). Element returned.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 8: Edge Cases -->
+            <div class="test-section">
+                <h2>8️⃣ Edge Cases & Complex Scenarios</h2>
                 
-                <h3>Test Case 7.1: All Attributes Ignored</h3>
+                <h3>Test Case 8.1: All Attributes Ignored</h3>
                 <div class="test-case">
                     <h4>Scenario: Element with only ignored attributes</h4>
                     <button 
