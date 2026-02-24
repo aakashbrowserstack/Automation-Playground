@@ -927,11 +927,155 @@
                 </div>
             </div>
 
-            <!-- Section 8: Edge Cases -->
+            <!-- Section 8: Real-World Scenarios -->
             <div class="test-section">
-                <h2>8️⃣ Edge Cases & Complex Scenarios</h2>
+                <h2>8️⃣ Real-World Scenarios: Multiple Login Buttons</h2>
+                <div class="test-description">
+                    <strong>Test Objective:</strong> Verify algorithm correctly disambiguates between multiple login buttons (common in responsive designs with desktop/mobile versions)
+                </div>
+
+                <h3>Test Case 8.1: Duplicate Login Buttons - Desktop vs Mobile</h3>
+                <div class="test-case">
+                    <h4>Scenario: Two "Login" buttons with same text, one hidden for mobile</h4>
+                    <div style="border: 2px solid #ddd; padding: 20px; margin: 10px 0; border-radius: 6px;">
+                        <p style="margin-bottom: 15px;"><strong>Desktop Navigation (Visible)</strong></p>
+                        <div class="button-group">
+                            <button class="btn-primary" data-testid="login-btn" aria-label="Login to account">Login</button>
+                        </div>
+                    </div>
+                    <div style="border: 2px solid #ddd; padding: 20px; margin: 10px 0; border-radius: 6px;">
+                        <p style="margin-bottom: 15px;"><strong>Mobile Navigation (Hidden on Desktop)</strong></p>
+                        <div class="button-group">
+                            <button class="btn-primary hidden" data-testid="login-btn" aria-label="Login to account">Login</button>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Algorithm filters out hidden mobile button → Returns visible desktop button.
+                        <br><strong>Real-World Example:</strong> Similar to staging.kingsportscasino.com where multiple login buttons exist for different viewports.
+                    </div>
+                </div>
+
+                <h3>Test Case 8.2: Multiple Login Buttons - Different Contexts</h3>
+                <div class="test-case">
+                    <h4>Scenario: Login buttons in header and modal, both visible</h4>
+                    <div style="border: 2px solid #667eea; padding: 20px; margin: 10px 0; border-radius: 6px;">
+                        <p style="margin-bottom: 15px;"><strong>Header Login (Primary)</strong></p>
+                        <nav>
+                            <div>
+                                <div>
+                                    <button class="btn-primary" data-testid="login-btn" aria-label="Login to account">Login</button>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                    <div style="border: 2px solid #764ba2; padding: 20px; margin: 10px 0; border-radius: 6px;">
+                        <p style="margin-bottom: 15px;"><strong>Modal Login (Secondary - Deeper in DOM)</strong></p>
+                        <div>
+                            <div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <button class="btn-secondary" data-testid="login-btn" aria-label="Login to account">Login</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Both visible → Algorithm uses LCP to prefer header button (shorter XPath, closer to root).
+                        <br><strong>Tiebreaker:</strong> Header button has higher LCP score (fewer nesting levels).
+                    </div>
+                </div>
+
+                <h3>Test Case 8.3: Login Buttons with Different Attributes</h3>
+                <div class="test-case">
+                    <h4>Scenario: Multiple login buttons, one with aria-label (trustable attribute)</h4>
+                    <div class="button-group">
+                        <button class="btn-primary" data-testid="login-btn" aria-label="Login to your account">
+                            <span class="badge badge-aria">aria-label</span> Login
+                        </button>
+                        <button class="btn-primary" data-testid="login-btn">
+                            Login (no aria-label)
+                        </button>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> First button with aria-label scores higher (Category 1 - Trustable Attributes) → Selected.
+                        <br><strong>Attribute Priority:</strong> aria-label is now a trustable attribute, giving it higher weight.
+                    </div>
+                </div>
+
+                <h3>Test Case 8.4: Login Form with Submit Button Confusion</h3>
+                <div class="test-case">
+                    <h4>Scenario: Login form with multiple submit-type buttons</h4>
+                    <div style="border: 2px solid #ddd; padding: 20px; border-radius: 6px;">
+                        <div class="form-group">
+                            <label>Username:</label>
+                            <input type="text" placeholder="Enter username" data-testid="username-input" />
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" placeholder="Enter password" data-testid="password-input" />
+                        </div>
+                        <div class="button-group">
+                            <button class="btn-success" type="submit" data-testid="login-submit" aria-label="Submit login form">
+                                Login
+                            </button>
+                            <button class="btn-secondary" type="button" data-testid="forgot-password">
+                                Forgot Password?
+                            </button>
+                            <button class="btn-info hidden" type="submit" data-testid="login-submit">
+                                Login (Hidden Duplicate)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> 
+                        <ol style="margin-top: 10px; margin-left: 20px;">
+                            <li>Filter hidden duplicate login button</li>
+                            <li>Distinguish between "Login" (submit) and "Forgot Password?" (different text)</li>
+                            <li>Return visible "Login" button with aria-label</li>
+                        </ol>
+                        <strong>Real-World:</strong> Prevents clicking wrong button when multiple buttons exist in login forms.
+                    </div>
+                </div>
+
+                <h3>Test Case 8.5: Responsive Login - Same XPath Different Visibility</h3>
+                <div class="test-case">
+                    <h4>Scenario: Identical XPath structure, visibility controlled by CSS</h4>
+                    <div class="xpath-demo">Recorded XPath: /html/body/div/header/nav/div/button</div>
+                    <div style="border: 2px solid #28a745; padding: 20px; margin: 10px 0; border-radius: 6px;">
+                        <p style="margin-bottom: 15px;"><strong>Desktop View (Visible)</strong></p>
+                        <header>
+                            <nav>
+                                <div>
+                                    <button class="btn-success" data-testid="login-btn">Login - Desktop</button>
+                                </div>
+                            </nav>
+                        </header>
+                    </div>
+                    <div style="border: 2px solid #dc3545; padding: 20px; margin: 10px 0; border-radius: 6px;">
+                        <p style="margin-bottom: 15px;"><strong>Mobile View (Hidden via CSS)</strong></p>
+                        <header>
+                            <nav>
+                                <div>
+                                    <button class="btn-danger hidden" data-testid="login-btn">Login - Mobile</button>
+                                </div>
+                            </nav>
+                        </header>
+                    </div>
+                    <div class="info-box">
+                        <strong>Expected:</strong> Same XPath structure → Hidden element filtered → Desktop button selected.
+                        <br><strong>CSS Hiding:</strong> Algorithm correctly handles display:none, visibility:hidden, and other CSS hiding methods.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 9: Edge Cases -->
+            <div class="test-section">
+                <h2>9️⃣ Edge Cases & Complex Scenarios</h2>
                 
-                <h3>Test Case 8.1: All Attributes Ignored</h3>
+                <h3>Test Case 9.1: All Attributes Ignored</h3>
                 <div class="test-case">
                     <h4>Scenario: Element with only ignored attributes</h4>
                     <button 
