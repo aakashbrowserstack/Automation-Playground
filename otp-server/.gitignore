@@ -1,0 +1,25 @@
+# Environment variables (NEVER commit to git!)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+.vscode/
+.idea/
+
+# IDE
+*.swp
+*.swo
+*~
+
+# Test results
+coverage/
