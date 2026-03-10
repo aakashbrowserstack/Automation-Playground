@@ -1,1 +1,513 @@
-<!doctype html><html><head><meta charset='utf-8'><title>v1/mfa.html</title><link rel='stylesheet' href='../shared/styles.css'></head><body><a href='../index.html' class='small btn'>Back</a><section class='card'><h2>MFA</h2><label>Code<input id='mfa' maxlength='6'/></label><button id='verify' class='btn'>Verify</button><div id='mout' class='small'></div></section><script>onReady(function(){ el('verify').addEventListener('click', ()=> el('mout').textContent = (el('mfa').value==='123456') ? 'Verified' : 'Invalid'); });</script><script src='../shared/scripts.js'></script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>MFA & Email Verification - Enhanced</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.mfa-container { max-width: 600px; margin: 0 auto; }
+.mfa-section { margin: 30px 0; padding: 25px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.mfa-section h3 { margin-top: 0; color: #333; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+.form-group {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+}
+.form-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+.form-input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
+}
+.form-input.error {
+  border-color: #f44336;
+  box-shadow: 0 0 8px rgba(244, 67, 54, 0.3);
+}
+.form-input.success {
+  border-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+.btn-primary {
+  padding: 12px 20px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+.btn-primary:hover {
+  background: #1976d2;
+}
+.btn-primary:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+.btn-secondary {
+  padding: 10px 15px;
+  background: #757575;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 10px;
+}
+.btn-secondary:hover {
+  background: #616161;
+}
+.status-message {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 4px;
+  display: none;
+  font-weight: bold;
+}
+.status-message.show { display: block; }
+.status-success {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+.status-error {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  border-left: 4px solid #f44336;
+}
+.status-info {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+  border-left: 4px solid #17a2b8;
+}
+.status-warning {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+.info-box {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #2196f3;
+  margin: 15px 0;
+  font-size: 14px;
+}
+.otp-display {
+  background: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  margin: 10px 0;
+  border: 2px solid #2196f3;
+  font-family: monospace;
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+  color: #1976d2;
+  letter-spacing: 2px;
+  display: none;
+}
+.otp-display.show { display: block; }
+.resend-timer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.progress-indicator {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+.progress-step {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border-radius: 4px;
+  background: #f5f5f5;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+.progress-step.active {
+  background: #2196f3;
+  color: white;
+}
+.progress-step.completed {
+  background: #4caf50;
+  color: white;
+}
+</style>
+</head>
+<body>
+<a href='../index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='mfa-container'>
+<h2>🔐 MFA & Email Verification - Enhanced</h2>
+<p style='color: #666; margin-bottom: 20px;'>End-to-end email verification with OTP generation and MFA testing</p>
+
+<!-- Progress Indicator -->
+<div class='progress-indicator'>
+  <div class='progress-step active' id='step1'>1. Email</div>
+  <div class='progress-step' id='step2'>2. OTP</div>
+  <div class='progress-step' id='step3'>3. Verify</div>
+</div>
+
+<!-- Section 1: Email Verification -->
+<div class='mfa-section'>
+  <h3>1. Email Verification</h3>
+  
+  <div class='info-box'>
+    📧 Enter your email address to receive a one-time password (OTP)
+  </div>
+
+  <div class='form-group'>
+    <label class='form-label'>Email Address</label>
+    <input 
+      type='email' 
+      id='emailInput' 
+      class='form-input' 
+      placeholder='Enter your email (e.g., user@example.com)'
+      data-testid='email-input'
+    />
+  </div>
+
+  <div class='button-group'>
+    <button class='btn-primary' id='sendOtpBtn' onclick='sendOTP()' data-testid='btn-send-otp'>
+      📧 Send OTP
+    </button>
+    <button class='btn-secondary' onclick='resetForm()' data-testid='btn-reset'>
+      Reset
+    </button>
+  </div>
+
+  <div class='status-message' id='emailStatus' data-testid='email-status'></div>
+
+  <!-- OTP Display (for testing purposes) -->
+  <div class='otp-display' id='otpDisplay' data-testid='otp-display'>
+    OTP will appear here
+  </div>
+
+  <div class='resend-timer' id='resendTimer'></div>
+</div>
+
+<!-- Section 2: OTP Entry & Verification -->
+<div class='mfa-section'>
+  <h3>2. Enter OTP</h3>
+
+  <div class='info-box'>
+    🔑 Enter the 6-digit OTP sent to your email
+  </div>
+
+  <div class='form-group'>
+    <label class='form-label'>One-Time Password (OTP)</label>
+    <input 
+      type='text' 
+      id='otpInput' 
+      class='form-input' 
+      placeholder='Enter 6-digit OTP'
+      maxlength='6'
+      pattern='[0-9]{6}'
+      data-testid='otp-input'
+      disabled
+    />
+    <small style='margin-top: 5px; color: #666;'>OTP will be enabled after sending verification code</small>
+  </div>
+
+  <div class='button-group'>
+    <button class='btn-primary' id='verifyBtn' onclick='verifyOTP()' data-testid='btn-verify-otp' disabled>
+      ✓ Verify OTP
+    </button>
+    <button class='btn-secondary' id='resendBtn' onclick='resendOTP()' data-testid='btn-resend-otp' disabled>
+      Resend
+    </button>
+  </div>
+
+  <div class='status-message' id='otpStatus' data-testid='otp-status'></div>
+</div>
+
+<!-- Section 3: Traditional MFA (for comparison) -->
+<div class='mfa-section'>
+  <h3>3. Traditional MFA Verification</h3>
+
+  <div class='info-box'>
+    🔐 Traditional 6-digit MFA code verification (for testing existing flows)
+  </div>
+
+  <div class='form-group'>
+    <label class='form-label'>MFA Code</label>
+    <input 
+      type='text' 
+      id='mfaInput' 
+      class='form-input' 
+      placeholder='Enter 6-digit MFA code'
+      maxlength='6'
+      pattern='[0-9]{6}'
+      data-testid='mfa-input'
+    />
+    <small style='margin-top: 5px; color: #666;'>Test code: <strong>123456</strong></small>
+  </div>
+
+  <button class='btn-primary' onclick='verifyMFA()' data-testid='btn-verify-mfa'>
+    ✓ Verify MFA
+  </button>
+
+  <div class='status-message' id='mfaStatus' data-testid='mfa-status'></div>
+</div>
+
+<!-- Section 4: Test Scenarios -->
+<div class='mfa-section' style='background: #f0f7ff;'>
+  <h3>4. Test Scenarios</h3>
+  
+  <div style='font-size: 14px; line-height: 1.8;'>
+    <p><strong>✓ Scenario 1: Valid Email & OTP</strong></p>
+    <ul style='margin: 5px 0; margin-left: 20px;'>
+      <li>Enter any email address</li>
+      <li>Click "Send OTP"</li>
+      <li>Copy the generated OTP (shown in blue box)</li>
+      <li>Enter OTP and click "Verify OTP"</li>
+    </ul>
+
+    <p><strong>✓ Scenario 2: Invalid Email Format</strong></p>
+    <ul style='margin: 5px 0; margin-left: 20px;'>
+      <li>Try entering invalid email (e.g., "notanemail")</li>
+      <li>Click "Send OTP"</li>
+      <li>System should show validation error</li>
+    </ul>
+
+    <p><strong>✓ Scenario 3: Wrong OTP</strong></p>
+    <ul style='margin: 5px 0; margin-left: 20px;'>
+      <li>Send OTP to email</li>
+      <li>Enter wrong 6-digit code</li>
+      <li>Click "Verify OTP"</li>
+      <li>System should show error</li>
+    </ul>
+
+    <p><strong>✓ Scenario 4: Traditional MFA</strong></p>
+    <ul style='margin: 5px 0; margin-left: 20px;'>
+      <li>Enter code: <strong>123456</strong></li>
+      <li>Click "Verify MFA"</li>
+      <li>Should show success</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script>
+let generatedOTP = null;
+let otpSentTime = null;
+let resendCountdown = 0;
+let emailVerified = false;
+
+onReady(() => {
+  initEmailInput();
+  initOTPInput();
+});
+
+function initEmailInput() {
+  const emailInput = document.getElementById('emailInput');
+  emailInput.addEventListener('input', () => {
+    emailInput.classList.remove('error', 'success');
+    document.getElementById('emailStatus').classList.remove('show');
+  });
+}
+
+function initOTPInput() {
+  const otpInput = document.getElementById('otpInput');
+  otpInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    otpInput.classList.remove('error', 'success');
+  });
+}
+
+function sendOTP() {
+  const emailInput = document.getElementById('emailInput');
+  const email = emailInput.value.trim();
+  const emailStatus = document.getElementById('emailStatus');
+
+  // Validate email
+  if (!email) {
+    showStatus(emailStatus, 'Please enter your email address', 'error');
+    emailInput.classList.add('error');
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showStatus(emailStatus, '❌ Invalid email format', 'error');
+    emailInput.classList.add('error');
+    return;
+  }
+
+  // Generate OTP
+  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  otpSentTime = Date.now();
+
+  // Show success
+  showStatus(emailStatus, `✅ OTP sent to ${email}`, 'success');
+  emailInput.classList.add('success');
+
+  // Display OTP (for testing)
+  displayOTPForTesting();
+
+  // Enable OTP input & verify button
+  document.getElementById('otpInput').disabled = false;
+  document.getElementById('verifyBtn').disabled = false;
+  document.getElementById('resendBtn').disabled = false;
+
+  // Update progress
+  document.getElementById('step1').classList.add('completed');
+  document.getElementById('step2').classList.add('active');
+
+  // Start resend countdown
+  startResendCountdown();
+}
+
+function displayOTPForTesting() {
+  const otpDisplay = document.getElementById('otpDisplay');
+  otpDisplay.textContent = generatedOTP;
+  otpDisplay.classList.add('show');
+
+  // Auto-hide after 10 seconds
+  setTimeout(() => {
+    otpDisplay.classList.remove('show');
+  }, 10000);
+}
+
+function startResendCountdown() {
+  let countdown = 30;
+  const resendBtn = document.getElementById('resendBtn');
+  const resendTimer = document.getElementById('resendTimer');
+
+  resendBtn.disabled = true;
+  const interval = setInterval(() => {
+    countdown--;
+    resendTimer.textContent = `Resend OTP in ${countdown}s`;
+
+    if (countdown <= 0) {
+      clearInterval(interval);
+      resendBtn.disabled = false;
+      resendTimer.textContent = '';
+    }
+  }, 1000);
+}
+
+function resendOTP() {
+  sendOTP();
+}
+
+function verifyOTP() {
+  const otpInput = document.getElementById('otpInput');
+  const enteredOTP = otpInput.value.trim();
+  const otpStatus = document.getElementById('otpStatus');
+
+  if (!enteredOTP) {
+    showStatus(otpStatus, 'Please enter the OTP', 'error');
+    otpInput.classList.add('error');
+    return;
+  }
+
+  if (enteredOTP.length !== 6) {
+    showStatus(otpStatus, 'OTP must be 6 digits', 'error');
+    otpInput.classList.add('error');
+    return;
+  }
+
+  if (enteredOTP === generatedOTP) {
+    showStatus(otpStatus, '✅ Email verified successfully!', 'success');
+    otpInput.classList.add('success');
+    emailVerified = true;
+
+    document.getElementById('step2').classList.add('completed');
+    document.getElementById('step3').classList.add('active');
+
+    // Disable inputs after verification
+    otpInput.disabled = true;
+    document.getElementById('verifyBtn').disabled = true;
+    document.getElementById('resendBtn').disabled = true;
+  } else {
+    showStatus(otpStatus, '❌ Invalid OTP. Please try again.', 'error');
+    otpInput.classList.add('error');
+  }
+}
+
+function verifyMFA() {
+  const mfaInput = document.getElementById('mfaInput');
+  const mfaCode = mfaInput.value.trim();
+  const mfaStatus = document.getElementById('mfaStatus');
+
+  if (!mfaCode) {
+    showStatus(mfaStatus, 'Please enter the MFA code', 'error');
+    mfaInput.classList.add('error');
+    return;
+  }
+
+  if (mfaCode === '123456') {
+    showStatus(mfaStatus, '✅ MFA verified successfully!', 'success');
+    mfaInput.classList.add('success');
+  } else {
+    showStatus(mfaStatus, '❌ Invalid MFA code. Try 123456 for testing.', 'error');
+    mfaInput.classList.add('error');
+  }
+}
+
+function resetForm() {
+  document.getElementById('emailInput').value = '';
+  document.getElementById('otpInput').value = '';
+  document.getElementById('mfaInput').value = '';
+  
+  document.getElementById('emailStatus').classList.remove('show');
+  document.getElementById('otpStatus').classList.remove('show');
+  document.getElementById('mfaStatus').classList.remove('show');
+  document.getElementById('otpDisplay').classList.remove('show');
+  
+  document.getElementById('emailInput').classList.remove('error', 'success');
+  document.getElementById('otpInput').classList.remove('error', 'success');
+  document.getElementById('mfaInput').classList.remove('error', 'success');
+  
+  document.getElementById('otpInput').disabled = true;
+  document.getElementById('verifyBtn').disabled = true;
+  document.getElementById('resendBtn').disabled = true;
+  
+  document.getElementById('step1').classList.remove('completed', 'active');
+  document.getElementById('step1').classList.add('active');
+  document.getElementById('step2').classList.remove('completed', 'active');
+  document.getElementById('step3').classList.remove('completed', 'active');
+  
+  generatedOTP = null;
+  emailVerified = false;
+}
+
+function showStatus(element, message, type) {
+  element.textContent = message;
+  element.className = 'status-message show status-' + type;
+}
+</script>
+</body>
+</html>

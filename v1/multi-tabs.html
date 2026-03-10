@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Tab Testing - QA Playground</title>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .tab-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .tab-list {
+            list-style: none;
+            padding: 0;
+        }
+        .tab-list li {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-active { background: #4caf50; }
+        .status-inactive { background: #9e9e9e; }
+        .message-box {
+            min-height: 100px;
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #ffc107;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Multi-Tab Testing</h1>
+            <div class="small">Test automation tools with multiple tabs and windows scenarios</div>
+        </div>
+        <nav>
+            <a href="../index.html">Home</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Basic Tab Operations</h2>
+            
+            <div class="tab-info">
+                <h3>Current Tab Info</h3>
+                <p><strong>Tab ID:</strong> <span id="currentTabId">main-tab</span></p>
+                <p><strong>Window Name:</strong> <span id="windowName">-</span></p>
+                <p><strong>Opened Tabs:</strong> <span id="tabCount">1</span></p>
+            </div>
+
+            <div class="grid-2">
+                <button class="btn" id="openNewTab" data-testid="open-new-tab">
+                    Open New Tab
+                </button>
+                <button class="btn" id="openNewWindow" data-testid="open-new-window">
+                    Open New Window
+                </button>
+                <button class="btn" id="openMultipleTabs" data-testid="open-multiple-tabs">
+                    Open 3 Tabs
+                </button>
+                <button class="btn" id="openWithDelay" data-testid="open-with-delay">
+                    Open Tab (2s delay)
+                </button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Tab Communication</h2>
+            <p class="small">Test cross-tab messaging and state synchronization</p>
+            
+            <div class="form-group">
+                <label for="messageInput">Message to Send:</label>
+                <input type="text" id="messageInput" data-testid="message-input" 
+                       placeholder="Enter message for other tabs" value="Hello from main tab!">
+            </div>
+
+            <button class="btn" id="sendMessage" data-testid="send-message">
+                Broadcast Message
+            </button>
+
+            <div class="message-box" id="messageBox" data-testid="message-box">
+                <strong>Received Messages:</strong>
+                <div id="messages"></div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Tab-Specific Actions</h2>
+            
+            <div class="form-group">
+                <label for="tabData">Tab-Specific Data:</label>
+                <input type="text" id="tabData" data-testid="tab-data" 
+                       placeholder="Enter data for this tab">
+            </div>
+
+            <button class="btn" id="saveTabData" data-testid="save-tab-data">
+                Save to SessionStorage
+            </button>
+            <button class="btn" id="loadTabData" data-testid="load-tab-data">
+                Load from SessionStorage
+            </button>
+
+            <div class="tab-info">
+                <p><strong>Stored Data:</strong> <span id="storedData" data-testid="stored-data">None</span></p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Tab State Management</h2>
+            
+            <div class="grid-2">
+                <button class="btn" id="incrementCounter" data-testid="increment-counter">
+                    Increment Counter
+                </button>
+                <button class="btn" id="resetCounter" data-testid="reset-counter">
+                    Reset Counter
+                </button>
+            </div>
+
+            <div class="tab-info">
+                <p><strong>Counter Value:</strong> <span id="counterValue" data-testid="counter-value">0</span></p>
+                <p class="small">Counter is shared across all tabs via localStorage</p>
+            </div>
+        </section>
+
+        <section class="card">

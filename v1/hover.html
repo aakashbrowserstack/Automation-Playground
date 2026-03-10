@@ -1,1 +1,351 @@
-<!doctype html><html><head><meta charset='utf-8'><title>v1/hover.html</title><link rel='stylesheet' href='../shared/styles.css'></head><body><a href='../index.html' class='small btn'>Back</a><section class='card'><h2>Hover</h2><div id='hb' class='hover-box' style='width:220px;height:90px;display:flex;align-items:center;justify-content:center'>Hover me</div><div id='hbout' class='small'></div></section><script>onReady(function(){ el('hb').addEventListener('mouseenter', ()=> el('hbout').textContent='Hovered'); el('hb').addEventListener('mouseleave', ()=> el('hbout').textContent=''); });</script><script src='../shared/scripts.js'></script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Hover Interactions - Enhanced</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.hover-container { max-width: 1000px; margin: 0 auto; }
+.hover-section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.hover-section h3 { margin-top: 0; color: #333; }
+
+/* Hover Box 1: Simple Text Change */
+.hover-box {
+  padding: 20px;
+  margin: 15px 0;
+  background: #e3f2fd;
+  border: 2px solid #2196f3;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  color: #1976d2;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+.hover-box:hover {
+  background: #bbdefb;
+  border-color: #1565c0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+/* Hover Box 2: Color Change */
+.color-box {
+  padding: 20px;
+  margin: 15px 0;
+  background: #fff3e0;
+  border: 2px solid #ff9800;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  color: #e65100;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.color-box:hover {
+  background: #ffe0b2;
+  border-color: #e65100;
+  box-shadow: 0 4px 8px rgba(230, 81, 0, 0.3);
+}
+
+/* Hover Box 3: Scale & Shadow */
+.scale-box {
+  padding: 20px;
+  margin: 15px 0;
+  background: #f3e5f5;
+  border: 2px solid #9c27b0;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  color: #6a1b9a;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.scale-box:hover {
+  background: #e1bee7;
+  border-color: #6a1b9a;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(156, 39, 176, 0.3);
+}
+
+/* Hover Box 4: Reveal Content */
+.reveal-box {
+  padding: 20px;
+  margin: 15px 0;
+  background: #e8f5e9;
+  border: 2px solid #4caf50;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.reveal-box-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  color: #2e7d32;
+}
+.reveal-box:hover .reveal-box-content {
+  height: auto;
+  opacity: 1;
+  padding-top: 10px;
+}
+.reveal-box-title {
+  font-weight: bold;
+  color: #2e7d32;
+  margin: 0;
+}
+
+/* Hover Box 5: Icon Change */
+.icon-box {
+  padding: 20px;
+  margin: 15px 0;
+  background: #fce4ec;
+  border: 2px solid #e91e63;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.icon-box-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+.icon-box:hover .icon-box-icon {
+  font-size: 48px;
+  transform: rotate(20deg);
+}
+.icon-box-text {
+  font-weight: bold;
+  color: #c2185b;
+}
+
+/* Grid Layout */
+.hover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+  margin: 15px 0;
+}
+
+/* Status Output */
+.hover-status {
+  margin-top: 15px;
+  padding: 12px;
+  background: #fff;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  min-height: 24px;
+  font-family: monospace;
+}
+
+/* Animated Underline */
+.underline-box {
+  padding: 15px 0;
+  margin: 15px 0;
+  position: relative;
+  cursor: pointer;
+  font-weight: bold;
+  color: #1976d2;
+  text-align: center;
+}
+.underline-box::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #1976d2;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+.underline-box:hover::after {
+  width: 100%;
+}
+</style>
+</head>
+<body>
+<a href='../index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<div class='hover-container'>
+<h2>🖱️ Hover Interactions - Enhanced</h2>
+<p style='color: #666; margin-bottom: 20px;'>Various hover effects and interactions for testing</p>
+
+<!-- Section 1: Basic Hover -->
+<div class='hover-section'>
+  <h3>1. Basic Hover Effect</h3>
+  <div class='hover-box' id='hoverBox1' data-testid='hover-box-1'>
+    👆 Hover over me - I will change color and shadow
+  </div>
+  <div class='hover-status' id='status1' data-testid='hover-status-1'></div>
+</div>
+
+<!-- Section 2: Color Change Hover -->
+<div class='hover-section'>
+  <h3>2. Color Change on Hover</h3>
+  <div class='color-box' id='hoverBox2' data-testid='hover-box-2'>
+    🎨 Hover to see color change
+  </div>
+  <div class='hover-status' id='status2' data-testid='hover-status-2'></div>
+</div>
+
+<!-- Section 3: Scale & Shadow Hover -->
+<div class='hover-section'>
+  <h3>3. Scale Transformation</h3>
+  <div class='scale-box' id='hoverBox3' data-testid='hover-box-3'>
+    📏 Hover to scale up and add shadow
+  </div>
+  <div class='hover-status' id='status3' data-testid='hover-status-3'></div>
+</div>
+
+<!-- Section 4: Reveal Content on Hover -->
+<div class='hover-section'>
+  <h3>4. Reveal Hidden Content</h3>
+  <div class='reveal-box' id='hoverBox4' data-testid='hover-box-4'>
+    <p class='reveal-box-title'>💡 Hover to reveal details</p>
+    <div class='reveal-box-content'>
+      <p>This is hidden content that appears on hover!</p>
+      <p>You can put important information here that is revealed on interaction.</p>
+    </div>
+  </div>
+  <div class='hover-status' id='status4' data-testid='hover-status-4'></div>
+</div>
+
+<!-- Section 5: Icon Change -->
+<div class='hover-section'>
+  <h3>5. Icon Transformation</h3>
+  <div class='icon-box' id='hoverBox5' data-testid='hover-box-5'>
+    <div class='icon-box-icon'>⭐</div>
+    <div class='icon-box-text'>Hover for animation</div>
+  </div>
+  <div class='hover-status' id='status5' data-testid='hover-status-5'></div>
+</div>
+
+<!-- Section 6: Animated Underline -->
+<div class='hover-section'>
+  <h3>6. Animated Underline</h3>
+  <div class='underline-box' id='hoverBox6' data-testid='hover-box-6'>
+    ✨ Hover to see animated underline
+  </div>
+  <div class='hover-status' id='status6' data-testid='hover-status-6'></div>
+</div>
+
+<!-- Section 7: Multiple Elements Grid -->
+<div class='hover-section'>
+  <h3>7. Hover Multiple Items</h3>
+  <div class='hover-grid'>
+    <div class='hover-box' data-testid='grid-item-1'>
+      <span class='item-label'>Item 1</span>
+    </div>
+    <div class='hover-box' data-testid='grid-item-2'>
+      <span class='item-label'>Item 2</span>
+    </div>
+    <div class='hover-box' data-testid='grid-item-3'>
+      <span class='item-label'>Item 3</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<script src='../shared/scripts.js'></script>
+<script>
+onReady(() => {
+  initHoverInteractions();
+  initGridInteractions();
+});
+
+function initHoverInteractions() {
+  // Box 1: Simple hover
+  const box1 = document.getElementById('hoverBox1');
+  const status1 = document.getElementById('status1');
+  box1.addEventListener('mouseenter', () => {
+    status1.textContent = '✅ Hovered - Color and shadow changed';
+    status1.style.borderLeftColor = '#2196f3';
+  });
+  box1.addEventListener('mouseleave', () => {
+    status1.textContent = '';
+  });
+
+  // Box 2: Color change
+  const box2 = document.getElementById('hoverBox2');
+  const status2 = document.getElementById('status2');
+  box2.addEventListener('mouseenter', () => {
+    status2.textContent = '🎨 Color changed!';
+    status2.style.borderLeftColor = '#ff9800';
+  });
+  box2.addEventListener('mouseleave', () => {
+    status2.textContent = '';
+  });
+
+  // Box 3: Scale
+  const box3 = document.getElementById('hoverBox3');
+  const status3 = document.getElementById('status3');
+  box3.addEventListener('mouseenter', () => {
+    status3.textContent = '📏 Scaled up to 105% with shadow';
+    status3.style.borderLeftColor = '#9c27b0';
+  });
+  box3.addEventListener('mouseleave', () => {
+    status3.textContent = '';
+  });
+
+  // Box 4: Reveal
+  const box4 = document.getElementById('hoverBox4');
+  const status4 = document.getElementById('status4');
+  box4.addEventListener('mouseenter', () => {
+    status4.textContent = '💡 Hidden content revealed!';
+    status4.style.borderLeftColor = '#4caf50';
+  });
+  box4.addEventListener('mouseleave', () => {
+    status4.textContent = '';
+  });
+
+  // Box 5: Icon
+  const box5 = document.getElementById('hoverBox5');
+  const status5 = document.getElementById('status5');
+  box5.addEventListener('mouseenter', () => {
+    status5.textContent = '⭐ Icon scaled and rotated!';
+    status5.style.borderLeftColor = '#e91e63';
+  });
+  box5.addEventListener('mouseleave', () => {
+    status5.textContent = '';
+  });
+
+  // Box 6: Underline
+  const box6 = document.getElementById('hoverBox6');
+  const status6 = document.getElementById('status6');
+  box6.addEventListener('mouseenter', () => {
+    status6.textContent = '✨ Underline animated!';
+    status6.style.borderLeftColor = '#ff9800';
+  });
+  box6.addEventListener('mouseleave', () => {
+    status6.textContent = '';
+  });
+}
+
+function initGridInteractions() {
+  const gridItems = document.querySelectorAll('[data-testid^="grid-item"]');
+  gridItems.forEach((item, index) => {
+    item.addEventListener('mouseenter', () => {
+      item.style.background = '#90caf9';
+      item.dataset.hovered = 'true';
+    });
+    item.addEventListener('mouseleave', () => {
+      item.style.background = '#e3f2fd';
+      item.dataset.hovered = 'false';
+    });
+    item.addEventListener('click', () => {
+      alert(`Clicked on Item ${index + 1}`);
+    });
+  });
+}
+</script>
+</body>
+</html>
