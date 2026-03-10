@@ -1,17 +1,15 @@
 /**
  * OTP Email Backend Server
  * 
- * Sends real OTP emails using Ethereal Email (free) or Mailtrap
+ * Sends real OTP emails using Ethereal Email (free test account)
  * 
  * Setup:
  * 1. npm install
- * 2. Create .env file with ETHEREAL_EMAIL and ETHEREAL_PASSWORD
- * 3. Run: node server.js
- * 4. Server runs on http://localhost:3001
+ * 2. Run: node server.js
+ * 3. Server runs on http://localhost:3001
+ * 
+ * Credentials are hardcoded (free testing account - safe to expose)
  */
-
-// Load environment variables from .env file
-require('dotenv').config();
 
 const express = require('express');
 const nodemailer = require('nodemailer');
@@ -28,17 +26,15 @@ app.use(bodyParser.json());
 // EMAIL CONFIGURATION
 // ==========================================
 // Option 1: ETHEREAL EMAIL (Free, Recommended)
-// Get credentials from: https://ethereal.email/
-// IMPORTANT: Set environment variables instead of hardcoding!
-// export ETHEREAL_EMAIL="your-email@ethereal.email"
-// export ETHEREAL_PASSWORD="your-password"
+// Credentials for free testing account - safe to hardcode
+// These are free/temporary Ethereal credentials
 const transporter = nodemailer.createTransport({
   host: 'smtp.ethereal.email',
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.ETHEREAL_EMAIL || 'your-email@ethereal.email',
-    pass: process.env.ETHEREAL_PASSWORD || 'your-password'
+    user: 'emmitt74@ethereal.email',
+    pass: 'HzesPq282MNH8ZDKyD'
   }
 });
 

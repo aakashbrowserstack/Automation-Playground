@@ -64,7 +64,7 @@ This is **CRITICAL** for your credentials to work on cloud!
 
 Click "Advanced" (or "Environment")
 
-Add these variables:
+Add these variables (same as in `.env.example`):
 
 | Key | Value |
 |-----|-------|
@@ -72,6 +72,13 @@ Add these variables:
 | `ETHEREAL_PASSWORD` | `HzesPq282MNH8ZDKyD` |
 | `NODE_ENV` | `production` |
 | `PORT` | `3001` |
+
+**Why show the password?**
+- ✅ This is a **free testing account** (Ethereal Email)
+- ✅ Only used for QA/LCNC testing
+- ✅ No real data or sensitive info
+- ✅ Same credentials in `.env.example` for reference
+- ⚠️ In production, use secret management instead
 
 **Click "Add Environment Variable" for each one**
 

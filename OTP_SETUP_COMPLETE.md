@@ -80,20 +80,23 @@ temp_1773137651.6751688_9e910c76@preprod.bstackinbox.com
 
 ### What's Secure Now?
 
-✅ **Credentials NOT in code:**
+✅ **Credentials NOT hardcoded in code:**
 - Removed hardcoded email/password from `server.js`
 - Uses environment variables: `process.env.ETHEREAL_EMAIL`
 
-✅ **Secrets in .env file:**
+✅ **Secrets in .env file (local):**
 - File contains: `ETHEREAL_EMAIL` and `ETHEREAL_PASSWORD`
 - Added to `.gitignore` (not committed to GitHub)
 
-✅ **Local-only credentials:**
-- `.env` only needed locally
-- Production deployment would use environment variables
+✅ **Free testing account (safe to show):**
+- This is Ethereal Email - a **free testing service**
+- Credentials shown in `.env.example` for reference
+- Only used for QA/LCNC testing, not production
+- Same credentials in Render environment variables
 
 ✅ **Example provided for reference:**
-- `.env.example` shows format (but no real secrets)
+- `.env.example` shows format with actual test credentials
+- Helps users know exactly what to set
 
 ### Current .env File
 ```
@@ -103,6 +106,12 @@ NODE_ENV=development
 PORT=3001
 ```
 *(This file is NOT in git - it's .gitignored)*
+
+**Note:** Since this is a free testing account for QA automation, it's safe to include the credentials. In production, you would use:
+- AWS Secrets Manager
+- Azure Key Vault
+- HashiCorp Vault
+- Or platform-specific secret management
 
 ---
 

@@ -8,17 +8,32 @@
 ## Solution
 Deploy backend to **free cloud service** so LCNC can access it globally.
 
+### Free Credentials
+You have a free Ethereal Email testing account:
+```
+emmitt74@ethereal.email / HzesPq282MNH8ZDKyD
+```
+(Safe to share - testing account only)
+
 ---
 
 ## 🟢 Option 1: Render.com (EASIEST - Recommended)
 
-### Step 1: Create GitHub Repository for Backend
-Your code is already in GitHub, so skip this.
+### Step 3: Get Free Testing Credentials
 
-### Step 2: Push Backend Code
-Backend is in `/otp-server/` folder in your repo. ✅ Already pushed
+You already have Ethereal Email credentials (free testing account):
+```
+Email: emmitt74@ethereal.email
+Password: HzesPq282MNH8ZDKyD
+```
 
-### Step 3: Sign Up on Render
+**Why it's safe to share:**
+- ✅ Free testing account (Ethereal Email service)
+- ✅ Only for QA/LCNC automation
+- ✅ No real data or sensitive info
+- ✅ Credentials shown in `.env.example` in repo
+
+You'll use these in environment variables in next steps.
 1. Go to: https://render.com
 2. Click "Sign up with GitHub"
 3. Authorize your GitHub account
