@@ -1,0 +1,25 @@
+
+╔════════════════════════════════════════════════════╗
+║         🔐 OTP Email Backend Server               ║
+╚════════════════════════════════════════════════════╝
+
+✅ Server running on http://localhost:3001
+
+📧 Email Service Configuration:
+   Provider: Ethereal Email (Free, Test Email)
+   SMTP Host: smtp.ethereal.email:587
+
+📌 API Endpoints:
+   POST   /api/send-otp      - Send OTP to email
+   POST   /api/verify-otp    - Verify OTP code
+   POST   /api/resend-otp    - Resend OTP
+   GET    /api/otp-status/:email - Check OTP status (debug)
+   POST   /api/clear-otps    - Clear all OTPs (debug)
+   GET    /api/health        - Server health check
+
+🧪 Test in Browser:
+   Open: http://localhost:3000/v1/mfa.html
+
+📚 Documentation:
+   Read: OTP_EMAIL_INTEGRATION_GUIDE.md
+
