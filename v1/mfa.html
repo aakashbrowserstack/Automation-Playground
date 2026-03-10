@@ -346,7 +346,7 @@ function initOTPInput() {
   });
 }
 
-function sendOTP() {
+async function sendOTP() {
   const emailInput = document.getElementById('emailInput');
   const email = emailInput.value.trim();
   const emailStatus = document.getElementById('emailStatus');
@@ -365,16 +365,48 @@ function sendOTP() {
     return;
   }
 
-  // Generate OTP
-  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-  otpSentTime = Date.now();
+  // Show loading
+  showStatus(emailStatus, '⏳ Sending OTP...', 'info');
+  const sendBtn = document.getElementById('sendOtpBtn');
+  sendBtn.disabled = true;
 
-  // Show success
-  showStatus(emailStatus, `✅ OTP sent to ${email}`, 'success');
-  emailInput.classList.add('success');
+  try {
+    // Try to send via backend first
+    const response = await fetch('http://localhost:3001/api/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
 
-  // Display OTP (for testing)
-  displayOTPForTesting();
+    const data = await response.json();
+
+    if (data.success) {
+      // Backend sent email
+      showStatus(emailStatus, `✅ OTP sent to ${email}! Check your inbox.`, 'success');
+      emailInput.classList.add('success');
+      
+      // Store email for verification
+      sessionStorage.setItem('otpEmail', email);
+      generatedOTP = null; // Backend handles OTP
+      otpSentTime = Date.now();
+    } else {
+      throw new Error(data.message || 'Backend error');
+    }
+  } catch (error) {
+    // Fallback: Generate local OTP (no email sent, for testing only)
+    console.warn('Backend not available, using demo mode:', error.message);
+    showStatus(emailStatus, `⚠️ Demo Mode: OTP generated locally (backend not running). Check below.`, 'warning');
+    emailInput.classList.add('success');
+    
+    // Generate OTP locally
+    generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    otpSentTime = Date.now();
+    
+    // Display OTP (for testing without backend)
+    displayOTPForTesting();
+  }
+
+  sendBtn.disabled = false;
 
   // Enable OTP input & verify button
   document.getElementById('otpInput').disabled = false;
