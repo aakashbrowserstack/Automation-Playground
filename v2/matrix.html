@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>LCNC Challenge Matrix - challenges x frameworks</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    .m{width:100%;border-collapse:collapse;font-size:13px}
+    .m th,.m td{border:1px solid #e6edf3;padding:6px 8px;text-align:left;vertical-align:top}
+    .m th{background:#f8fafc;position:sticky;top:0}
+    .m td.c{text-align:center;cursor:pointer;min-width:64px;user-select:none}
+    .id{font-family:ui-monospace,Menlo,monospace;color:#6b7280;white-space:nowrap}
+    .pass{background:#dcfce7}.fail{background:#fee2e2}.partial{background:#fef3c7}
+    .legend span{display:inline-block;margin-right:10px;font-size:12px}
+    .swatch{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px;border:1px solid #cbd5e1}
+    .src{font-size:12px;color:#6b7280}
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>LCNC Challenge Matrix</h1>
+    <div class="small">
+      Every challenge x every framework. Click a cell to cycle
+      <strong>untested &rarr; pass &rarr; partial &rarr; fail</strong>. State is stored in this
+      browser (localStorage) so a triage session survives a reload.
+    </div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="angular-demo.html">Angular</a>
+    <a href="lit-demo.html">Lit</a>
+    <a href="jquery-demo.html">jQuery</a>
+    <a href="react-demo.html">React</a>
+    <a href="vue-demo.html">Vue</a>
+  </nav>
+</header>
+
+<main>
+  <section class="card">
+    <div class="legend">
+      <span><i class="swatch pass"></i>pass</span>
+      <span><i class="swatch partial"></i>partial</span>
+      <span><i class="swatch fail"></i>fail</span>
+      <span><i class="swatch"></i>untested</span>
+      <button id="reset" style="float:right">Reset all</button>
+      <button id="export" style="float:right;margin-right:8px">Copy as TSV</button>
+    </div>
+    <table class="m" id="matrix"><thead></thead><tbody></tbody></table>
+    <p class="src">
+      Challenges 01-10 and 16 are drawn from defects observed against the LCA app, not invented.
+      Where a framework page does not yet implement a challenge the cell is marked <em>n/a</em>.
+    </p>
+  </section>
+</main>
+
+<script>
+// Each challenge records WHERE it came from, so the matrix doubles as a provenance list.
+var CHALLENGES = [
+  ['01','No data-testid anywhere (aria/role/text only)','design-stack folder picker'],
+  ['02','Regenerated / dynamic ids','server-rendered listings'],
+  ['03','State in a JS property, not an attribute (indeterminate)','folder checkbox tri-state'],
+  ['04','Element relocates out of the list on state change','fully-selected folder leaves tree'],
+  ['05','Re-render detaches the element handle','click swallowed, needed 3-attempt retry'],
+  ['05b','Detach then re-attach the same node','jQuery .detach() pattern'],
+  ['06','Duplicate labels across rows','"<suite>-N" matched the wrong build'],
+  ['07','Hidden-but-present twin control','create keeps edit-mode button in DOM'],
+  ['08','Late async mount (6s+)','edit wizard; 10s passed once, failed next'],
+  ['09','Occlusion - visible but not clickable','pager behind "Talk to an expert"'],
+  ['10','Hierarchy with no depth attribute','all checkboxes at one x-offset'],
+  ['11','Shadow DOM (open / closed / nested)','web-component surfaces'],
+  ['16','Count badge in word form ("3 tests")','parser expected "(3)" and scored 0'],
+  ['17','Empty state vs zero-result','builds page showing nothing'],
+  ['18','Toast that self-dismisses on a timer','timing races'],
+  ['19','Delegated handlers over replaced nodes','jQuery event delegation']
+];
+
+// null = not implemented on that page yet
+var FRAMEWORKS = [
+  { key:'angular', label:'Angular 12', has:['01','03','04','05','06','07','08','09','10','16','17','18'] },
+  { key:'lit',     label:'Lit 3 (shadow)', has:['01','03','09','10','11','16'] },
+  { key:'jquery',  label:'jQuery 3.7', has:['01','02','03','05b','09','10','16','17','19'] },
+  { key:'react',   label:'React 18', has:[] },
+  { key:'vue',     label:'Vue 3', has:[] },
+  { key:'angularjs', label:'AngularJS 1.8', has:[] },
+  { key:'vanilla', label:'Vanilla', has:[] }
+];
+
+var STATES = ['', 'pass', 'partial', 'fail'];
+var KEY = 'lcnc-matrix-v1';
+var state = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+
+function render(){
+  var head = '<tr><th>#</th><th>Challenge</th><th>Observed in</th>' +
+    FRAMEWORKS.map(function(f){ return '<th>'+f.label+'</th>'; }).join('') + '</tr>';
+  document.querySelector('#matrix thead').innerHTML = head;
+
+  document.querySelector('#matrix tbody').innerHTML = CHALLENGES.map(function(c){
+    var cells = FRAMEWORKS.map(function(f){
+      if (f.has.indexOf(c[0]) === -1) return '<td class="c src">n/a</td>';
+      var id = f.key + ':' + c[0];
+      var st = state[id] || '';
+      return '<td class="c '+st+'" data-id="'+id+'">'+(st || '-')+'</td>';
+    }).join('');
+    return '<tr><td class="id">'+c[0]+'</td><td>'+c[1]+'</td><td class="src">'+c[2]+'</td>'+cells+'</tr>';
+  }).join('');
+}
+
+document.addEventListener('click', function(e){
+  var td = e.target.closest('td.c[data-id]');
+  if(!td) return;
+  var id = td.dataset.id;
+  var next = STATES[(STATES.indexOf(state[id] || '') + 1) % STATES.length];
+  if(next) state[id] = next; else delete state[id];
+  save(); render();
+});
+
+document.querySelector('#reset').addEventListener('click', function(){
+  if(confirm('Clear every recorded result?')){ state = {}; save(); render(); }
+});
+
+document.querySelector('#export').addEventListener('click', function(){
+  var rows = [['id','challenge','observed_in'].concat(FRAMEWORKS.map(function(f){return f.label;})).join('\t')];
+  CHALLENGES.forEach(function(c){
+    rows.push([c[0], c[1], c[2]].concat(FRAMEWORKS.map(function(f){
+      if (f.has.indexOf(c[0]) === -1) return 'n/a';
+      return state[f.key+':'+c[0]] || 'untested';
+    })).join('\t'));
+  });
+  navigator.clipboard.writeText(rows.join('\n')).then(function(){
+    document.querySelector('#export').textContent = 'Copied';
+    setTimeout(function(){ document.querySelector('#export').textContent = 'Copy as TSV'; }, 1500);
+  });
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Lit / Web Components Demo - LCNC Locator Challenge Battery</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    .challenge{border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px;background:#fff}
+    .challenge > h3{margin:0 0 4px;font-size:14px}
+    .tag{display:inline-block;font-size:11px;background:#fef3c7;color:#92400e;border-radius:4px;padding:1px 6px;margin-left:6px}
+    .why{font-size:12px;color:#6b7280;margin:0 0 8px}
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Lit 3 / Web Components - LCNC Locator Challenge Battery</h1>
+    <div class="small">
+      Same battery as the Angular page, but every element lives inside a <strong>shadow root</strong>.
+      A selector that works on the Angular page will find <em>nothing</em> here unless the tool
+      pierces shadow DOM. One block is deliberately open (non-shadow) so you can compare.
+    </div>
+  </div>
+  <nav><a href="../index.html">Home</a><a href="matrix.html">Results Matrix</a></nav>
+</header>
+
+<main>
+  <div class="challenge" data-challenge="11-shadow-dom-closed-vs-open">
+    <h3>Shadow root modes <span class="tag">11 shadow</span></h3>
+    <p class="why">
+      Three identical widgets. The first uses <code>mode: 'open'</code> (piercable via
+      <code>shadowRoot</code>), the second <code>mode: 'closed'</code> (<code>shadowRoot</code>
+      returns <code>null</code> - unreachable from outside, full stop), the third renders to
+      light DOM (no shadow at all). If a recorder handles only the third, it will look like it
+      "supports web components" while failing the first two.
+    </p>
+    <lcnc-widget label="Open shadow root" variant="open"></lcnc-widget>
+    <lcnc-widget-closed label="Closed shadow root"></lcnc-widget-closed>
+    <lcnc-widget-light label="Light DOM (no shadow)"></lcnc-widget-light>
+  </div>
+
+  <div class="challenge" data-challenge="11b-nested-shadow">
+    <h3>Nested shadow roots <span class="tag">11b depth</span></h3>
+    <p class="why">
+      A shadow root inside a shadow root inside a shadow root. Reaching the innermost button needs
+      three successive <code>shadowRoot</code> hops - a single-level piercing implementation stops
+      at the first.
+    </p>
+    <lcnc-nest depth="3"></lcnc-nest>
+  </div>
+
+  <div class="challenge" data-challenge="10-tree-no-depth-attribute">
+    <h3>Folder tree in shadow DOM
+      <span class="tag">01 no-testid</span><span class="tag">03 indeterminate</span>
+      <span class="tag">10 depth</span><span class="tag">16 word-form count</span></h3>
+    <p class="why">
+      The same tree as the Angular page - column-aligned checkboxes, depth only as padding,
+      <code>indeterminate</code> as a JS property, "3 tests" word-form counts - but sealed behind a
+      shadow boundary.
+    </p>
+    <lcnc-tree></lcnc-tree>
+  </div>
+
+  <div class="challenge" data-challenge="09-occlusion-shadow">
+    <h3>Occlusion across the shadow boundary <span class="tag">09</span></h3>
+    <p class="why">
+      The overlay lives in the LIGHT DOM while the button it covers lives in a SHADOW root.
+      <code>elementFromPoint</code> on the document returns the host, not the inner button, so
+      an occlusion check has to recurse via <code>shadowRoot.elementFromPoint</code>.
+    </p>
+    <div style="position:relative">
+      <lcnc-widget label="Covered button" variant="open"></lcnc-widget>
+      <div style="position:absolute;inset:0;background:rgba(3,105,161,.08)" aria-hidden="true"></div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+// Lit 3 prebuilt browser bundle - no build step, matching this repo's CDN-only model.
+import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@3.1.4/core/lit-core.min.js';
+
+const sharedStyles = css`
+  .row{display:flex;gap:8px;align-items:center;margin:6px 0}
+  button{padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;cursor:pointer}
+  .out{font-size:12px;color:#6b7280}
+  table{width:100%;border-collapse:collapse}
+  td{border:1px solid #e6edf3;padding:6px}
+  td.sel{width:34px}
+  .pill{font-size:11px;border-radius:10px;padding:1px 8px;background:#f1f5f9}
+`;
+
+// ---- open shadow root -----------------------------------------------------------------
+class LcncWidget extends LitElement {
+  static properties = { label: {}, variant: {}, clicks: { state: true } };
+  static styles = sharedStyles;
+  constructor(){ super(); this.clicks = 0; }
+  render(){
+    return html`
+      <div class="row">
+        <span>${this.label}</span>
+        <button aria-label="Increment ${this.label}" @click=${() => this.clicks++}>Click me</button>
+        <span class="out">clicks: ${this.clicks}</span>
+      </div>`;
+  }
+}
+customElements.define('lcnc-widget', LcncWidget);
+
+// ---- closed shadow root ---------------------------------------------------------------
+// createRenderRoot is overridden so the root is CLOSED: element.shadowRoot === null from
+// outside, which is the hardest possible case for any external tool.
+class LcncWidgetClosed extends LitElement {
+  static properties = { label: {}, clicks: { state: true } };
+  static styles = sharedStyles;
+  constructor(){ super(); this.clicks = 0; }
+  createRenderRoot(){ return this.attachShadow({ mode: 'closed' }); }
+  render(){
+    return html`
+      <div class="row">
+        <span>${this.label}</span>
+        <button aria-label="Increment ${this.label}" @click=${() => this.clicks++}>Click me</button>
+        <span class="out">clicks: ${this.clicks}</span>
+      </div>`;
+  }
+}
+customElements.define('lcnc-widget-closed', LcncWidgetClosed);
+
+// ---- light DOM (control case) ---------------------------------------------------------
+class LcncWidgetLight extends LitElement {
+  static properties = { label: {}, clicks: { state: true } };
+  constructor(){ super(); this.clicks = 0; }
+  createRenderRoot(){ return this; }   // no shadow root at all
+  render(){
+    return html`
+      <div class="row">
+        <span>${this.label}</span>
+        <button aria-label="Increment ${this.label}" @click=${() => this.clicks++}>Click me</button>
+        <span class="out">clicks: ${this.clicks}</span>
+      </div>`;
+  }
+}
+customElements.define('lcnc-widget-light', LcncWidgetLight);
+
+// ---- nested shadow roots --------------------------------------------------------------
+class LcncNest extends LitElement {
+  static properties = { depth: { type: Number } };
+  static styles = css`:host{display:block;border-left:2px solid #e2e8f0;padding-left:10px;margin:4px 0}`;
+  render(){
+    const d = Number(this.depth) || 1;
+    return d > 1
+      ? html`<span class="out">level ${d}</span><lcnc-nest depth=${d - 1}></lcnc-nest>`
+      : html`<button aria-label="Innermost action">Innermost button</button>`;
+  }
+}
+customElements.define('lcnc-nest', LcncNest);
+
+// ---- folder tree, sealed in shadow DOM ------------------------------------------------
+class LcncTree extends LitElement {
+  static properties = { rows: { state: true }, selected: { state: true } };
+  static styles = sharedStyles;
+  constructor(){
+    super();
+    this.rows = [
+      { id:101, type:'folder', name:'Regression Suite', depth:0, count:3 },
+      { id:1011, type:'test',  name:'login flow',        depth:1 },
+      { id:1012, type:'test',  name:'checkout flow',     depth:1 },
+      { id:102, type:'folder', name:'Nested Smoke',      depth:1, count:1 },
+      { id:1021, type:'test',  name:'smoke - health check', depth:2 },
+      { id:104, type:'folder', name:'Empty Folder',      depth:0, count:0 }
+    ];
+    this.selected = [];
+  }
+  toggle(r){
+    this.selected = this.selected.includes(r.id)
+      ? this.selected.filter(x => x !== r.id)
+      : [...this.selected, r.id];
+    this.updateComplete.then(() => this.applyIndeterminate());
+  }
+  // Same trap as the Angular page and the real LCA picker: state lives ONLY in the DOM property.
+  applyIndeterminate(){
+    this.rows.filter(r => r.type === 'folder' && r.count > 0).forEach(f => {
+      const box = this.renderRoot.querySelector(`#folder-${f.id} input`);
+      if(!box) return;
+      const kids = this.rows.filter(r => r.type === 'test' && r.depth > f.depth);
+      const picked = kids.filter(k => this.selected.includes(k.id)).length;
+      box.indeterminate = picked > 0 && picked < kids.length;
+    });
+  }
+  render(){
+    return html`
+      <table><tbody>
+        ${this.rows.map(r => html`
+          <tr id=${r.type === 'folder' ? `folder-${r.id}` : `test-${r.id}`}>
+            <td class="sel">
+              <input type="checkbox"
+                     aria-label=${(r.type === 'folder' ? 'Select folder ' : 'Select test ') + r.name}
+                     .checked=${this.selected.includes(r.id)}
+                     @change=${() => this.toggle(r)}>
+            </td>
+            <td><span style="padding-left:${r.depth * 22}px">
+              ${r.name}
+              ${r.type === 'folder'
+                ? html`<span class="pill">${r.count} ${r.count === 1 ? 'test' : 'tests'}</span>`
+                : ''}
+            </span></td>
+          </tr>`)}
+      </tbody></table>
+      <div class="out">Selected: ${this.selected.length}</div>`;
+  }
+}
+customElements.define('lcnc-tree', LcncTree);
+</script>
+</body>
+</html>

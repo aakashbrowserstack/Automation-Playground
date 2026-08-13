@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>jQuery Demo - LCNC Locator Challenge Battery</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    .challenge{border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px;background:#fff}
+    .challenge > h3{margin:0 0 4px;font-size:14px}
+    .tag{display:inline-block;font-size:11px;background:#dcfce7;color:#166534;border-radius:4px;padding:1px 6px;margin-left:6px}
+    .why{font-size:12px;color:#6b7280;margin:0 0 8px}
+    .tree td.sel{width:34px}
+    .pill{font-size:11px;border-radius:10px;padding:1px 8px;background:#f1f5f9}
+    .expert-fab{position:fixed;right:16px;bottom:16px;z-index:50;background:#0369a1;color:#fff;border:none;
+      border-radius:24px;padding:12px 18px;box-shadow:0 6px 18px rgba(2,6,23,.2);cursor:pointer}
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>jQuery 3.7 - LCNC Locator Challenge Battery</h1>
+    <div class="small">
+      The profile most enterprise apps LCNC records against actually have: server-rendered markup,
+      id-heavy, DOM mutated <strong>in place</strong> rather than re-rendered. No virtual DOM, so
+      element handles survive updates - but ids are regenerated, which breaks locators in a
+      completely different way from React/Angular.
+    </div>
+  </div>
+  <nav><a href="../index.html">Home</a><a href="matrix.html">Results Matrix</a></nav>
+</header>
+
+<main>
+
+  <div class="challenge" data-challenge="02-dynamic-ids">
+    <h3>Regenerated ids <span class="tag">02 dynamic-id</span></h3>
+    <p class="why">
+      Every refresh re-stamps each row with a fresh random id (<code>row_a8f3c1</code>) - the classic
+      server-rendered pattern. An id-based locator captured once never resolves again; the stable
+      anchors here are the text and the <code>data-sku</code>.
+    </p>
+    <button id="refresh-rows" aria-label="Refresh rows">Refresh rows</button>
+    <table class="table" id="sku-table"><tbody></tbody></table>
+  </div>
+
+  <div class="challenge" data-challenge="10-tree-no-depth-attribute">
+    <h3>Folder tree, mutated in place
+      <span class="tag">01 no-testid</span><span class="tag">03 indeterminate</span>
+      <span class="tag">10 depth</span><span class="tag">16 word-form count</span></h3>
+    <p class="why">
+      Same tree as the Angular and Lit pages. Difference: rows are updated in place via
+      <code>.text()</code>/<code>.prop()</code>, so a captured handle stays attached - the opposite
+      failure mode from a virtual-DOM re-render.
+    </p>
+    <input type="text" id="tree-search" placeholder="Search folders and tests"
+           aria-label="Search folders and tests">
+    <span class="small" id="search-status"></span>
+    <table class="table tree" id="folder-tree"><tbody></tbody></table>
+    <div class="output" id="tree-selected">Selected: 0</div>
+    <div class="small" id="tree-empty" style="display:none" role="status">No matching result found</div>
+  </div>
+
+  <div class="challenge" data-challenge="05b-detach-reattach">
+    <h3>Detach and re-attach <span class="tag">05b</span></h3>
+    <p class="why">
+      jQuery's <code>.detach()</code> removes the node from the document and puts the SAME node
+      back a second later. A handle held across the gap points at an element that is briefly not
+      in the document - "element is not attached to the page" without any re-render involved.
+    </p>
+    <button id="detach-btn" aria-label="Detach and restore panel">Detach for 2s</button>
+    <div id="detach-panel"><button aria-label="Panel action">Panel action</button></div>
+  </div>
+
+  <div class="challenge" data-challenge="19-event-delegation">
+    <h3>Delegated handlers on replaced nodes <span class="tag">19</span></h3>
+    <p class="why">
+      Handlers are bound with <code>$(document).on('click', '.item', ...)</code>, so replacing the
+      innerHTML keeps them working. A tool that verifies "is this element still the one I bound to"
+      will disagree with a user who sees identical behaviour.
+    </p>
+    <button id="replace-items" aria-label="Replace items">Replace items</button>
+    <div id="item-host"></div>
+    <div class="output" id="item-out">No item clicked</div>
+  </div>
+
+  <div class="challenge" data-challenge="09-occlusion">
+    <h3>Occluded pager <span class="tag">09</span></h3>
+    <p class="why">Same defect shape as the reported pagination bug - visible, but the click lands
+       on the floating button.</p>
+    <div style="position:relative;height:56px">
+      <div style="position:absolute;right:26px;bottom:6px">
+        <button id="next-page" aria-label="Next page">Next</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<button class="expert-fab" id="expert-fab">Talk to an expert</button>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+<script>
+$(function () {
+
+  // ---- 02: rows with regenerated ids ---------------------------------------------------
+  var SKUS = [
+    { sku: 'SKU-1001', name: 'Wireless Mouse' },
+    { sku: 'SKU-1002', name: 'Mechanical Keyboard' },
+    { sku: 'SKU-1003', name: 'USB-C Hub' }
+  ];
+  function rid() { return 'row_' + Math.random().toString(36).slice(2, 8); }
+  function renderRows() {
+    var $b = $('#sku-table tbody').empty();
+    SKUS.forEach(function (s) {
+      $b.append(
+        $('<tr>').attr('id', rid()).attr('data-sku', s.sku)
+          .append($('<td>').text(s.name))
+          .append($('<td>').append(
+            $('<button>').attr('aria-label', 'Add ' + s.name + ' to cart').text('Add to cart')
+          ))
+      );
+    });
+  }
+  renderRows();
+  $('#refresh-rows').on('click', renderRows);
+
+  // ---- 01/03/10/16: folder tree --------------------------------------------------------
+  var ROWS = [
+    { id: 101,  type: 'folder', name: 'Regression Suite',    depth: 0, count: 3 },
+    { id: 1011, type: 'test',   name: 'login flow',          depth: 1 },
+    { id: 1012, type: 'test',   name: 'checkout flow',       depth: 1 },
+    { id: 102,  type: 'folder', name: 'Nested Smoke',        depth: 1, count: 1 },
+    { id: 1021, type: 'test',   name: 'smoke - health check', depth: 2 },
+    { id: 104,  type: 'folder', name: 'Empty Folder',        depth: 0, count: 0 }
+  ];
+  var selected = [];
+
+  function renderTree(filter) {
+    var q = (filter || '').toLowerCase().trim();
+    var $b = $('#folder-tree tbody').empty();
+    var shown = ROWS.filter(function (r) {
+      return !q || r.name.toLowerCase().indexOf(q) !== -1;
+    });
+    shown.forEach(function (r) {
+      var label = (r.type === 'folder' ? 'Select folder ' : 'Select test ') + r.name;
+      var $name = $('<span>').css('padding-left', (r.depth * 22) + 'px').text(r.name + ' ');
+      if (r.type === 'folder') {
+        // Word-form count, never "(3)" -- the exact shape that broke a parser for real.
+        $name.append($('<span class="pill">').text(r.count + ' ' + (r.count === 1 ? 'test' : 'tests')));
+      }
+      $b.append(
+        $('<tr>').attr('id', (r.type === 'folder' ? 'folder-' : 'test-') + r.id)
+          .append($('<td class="sel">').append(
+            $('<input type="checkbox">').attr('aria-label', label)
+              .prop('checked', selected.indexOf(r.id) !== -1)
+              .on('change', function () { toggle(r); })
+          ))
+          .append($('<td class="name">').append($name))
+      );
+    });
+    $('#tree-empty').toggle(shown.length === 0);
+    applyIndeterminate();
+  }
+
+  function toggle(r) {
+    var i = selected.indexOf(r.id);
+    if (i === -1) selected.push(r.id); else selected.splice(i, 1);
+    $('#tree-selected').text('Selected: ' + selected.length);
+    applyIndeterminate();
+  }
+
+  // Property only -- no attribute, no aria-checked="mixed".
+  function applyIndeterminate() {
+    ROWS.filter(function (r) { return r.type === 'folder' && r.count > 0; }).forEach(function (f) {
+      var box = $('#folder-' + f.id + ' input')[0];
+      if (!box) return;
+      var kids = ROWS.filter(function (r) { return r.type === 'test' && r.depth > f.depth; });
+      var picked = kids.filter(function (k) { return selected.indexOf(k.id) !== -1; }).length;
+      box.indeterminate = picked > 0 && picked < kids.length;
+    });
+  }
+
+  renderTree('');
+
+  // Debounced search over folder AND test names -- models LCNC-18103 directly.
+  var t = null;
+  $('#tree-search').on('input', function () {
+    var v = this.value;
+    $('#search-status').text(' searching...');
+    clearTimeout(t);
+    t = setTimeout(function () { $('#search-status').text(''); renderTree(v); }, 400);
+  });
+
+  // ---- 05b: detach / re-attach ---------------------------------------------------------
+  $('#detach-btn').on('click', function () {
+    var $panel = $('#detach-panel').detach();
+    setTimeout(function () { $panel.insertAfter('#detach-btn'); }, 2000);
+  });
+
+  // ---- 19: delegated handlers over replaced nodes --------------------------------------
+  function renderItems() {
+    var stamp = Math.random().toString(36).slice(2, 6);
+    $('#item-host').html(
+      '<button class="item" data-k="a" aria-label="Item A">Item A (' + stamp + ')</button> ' +
+      '<button class="item" data-k="b" aria-label="Item B">Item B (' + stamp + ')</button>'
+    );
+  }
+  renderItems();
+  $('#replace-items').on('click', renderItems);
+  $(document).on('click', '.item', function () {
+    $('#item-out').text('Clicked item: ' + $(this).data('k'));
+  });
+
+  $('#next-page,#expert-fab').on('click', function () {
+    $('#item-out').text('Clicked: ' + (this.id === 'next-page' ? 'Next page' : 'Talk to an expert'));
+  });
+});
+</script>
+</body>
+</html>

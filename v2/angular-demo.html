@@ -1,0 +1,311 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Angular 12 Demo - LCNC Locator Challenge Battery</title>
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    /* Deliberately NO data-testid anywhere on this page. Selectors must fall back to
+       role / aria-label / text / structure -- the same constraint a design-system UI imposes. */
+    .challenge{border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px;background:#fff}
+    .challenge > h3{margin:0 0 4px;font-size:14px}
+    .tag{display:inline-block;font-size:11px;background:#eef2ff;color:#3730a3;border-radius:4px;padding:1px 6px;margin-left:6px}
+    .why{font-size:12px;color:#6b7280;margin:0 0 8px}
+    .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+    /* Tree indentation is applied to the NAME cell only. Every checkbox sits in its own
+       column-aligned <td>, so all checkboxes report an identical x-offset regardless of depth
+       -- depth is NOT geometrically measurable, exactly like the LCA folder picker. */
+    .tree td.sel{width:34px}
+    .tree td.name span{display:inline-block}
+    .expert-fab{position:fixed;right:16px;bottom:16px;z-index:50;background:#0369a1;color:#fff;border:none;
+      border-radius:24px;padding:12px 18px;box-shadow:0 6px 18px rgba(2,6,23,.2);cursor:pointer}
+    .toast{position:fixed;top:14px;right:14px;background:#065f46;color:#fff;padding:10px 14px;border-radius:8px;z-index:60}
+    .muted{color:#6b7280}
+    .pill{font-size:11px;border-radius:10px;padding:1px 8px;background:#f1f5f9}
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Angular 12 - LCNC Locator Challenge Battery</h1>
+    <div class="small">
+      Real Angular 2+ (v12 UMD, Ivy). Component-scoped <code>_ngcontent-*</code> attributes, no
+      <code>data-testid</code>. Every block below reproduces a defect that has actually cost
+      debugging time against the LCA app.
+    </div>
+  </div>
+  <nav><a href="../index.html">Home</a><a href="matrix.html">Results Matrix</a></nav>
+</header>
+
+<main>
+  <app-root></app-root>
+</main>
+
+<!-- Angular 12 is the last release shipping UMD bundles, so it runs from a CDN with no build
+     step -- consistent with every other page in this repo. Its rendered DOM (component host
+     elements + _ngcontent/_nghost scoping) matches modern Angular for locator purposes. -->
+<!-- Angular's UMD bundles declare rxjs and tslib as EXTERNAL globals -- without these two,
+     core.umd.js dies on "Cannot read properties of undefined (reading 'operators')" and every
+     later bundle cascades (InjectionToken is not a constructor). Order matters. -->
+<script src="https://unpkg.com/zone.js@0.11.4/dist/zone.min.js"></script>
+<script src="https://unpkg.com/tslib@2.3.1/tslib.js"></script>
+<script src="https://unpkg.com/rxjs@6.6.7/bundles/rxjs.umd.min.js"></script>
+<script src="https://unpkg.com/@angular/core@12.2.17/bundles/core.umd.js"></script>
+<script src="https://unpkg.com/@angular/common@12.2.17/bundles/common.umd.js"></script>
+<script src="https://unpkg.com/@angular/compiler@12.2.17/bundles/compiler.umd.js"></script>
+<script src="https://unpkg.com/@angular/platform-browser@12.2.17/bundles/platform-browser.umd.js"></script>
+<script src="https://unpkg.com/@angular/platform-browser-dynamic@12.2.17/bundles/platform-browser-dynamic.umd.js"></script>
+
+<script>
+(function () {
+  var core = ng.core;
+
+  // Angular decorators are factory functions, so in plain JS a component is declared by
+  // calling the factory and applying it to the class -- no TypeScript or build step needed.
+  function Component(config, klass) { return core.Component(config)(klass); }
+
+  // ---- Seed data -----------------------------------------------------------------------
+  // Folder tree mirrors the LCA picker: a parent holding tests AND a subfolder, plus several
+  // single-test folders, plus one empty folder. Two rows deliberately share a name.
+  function seedTree() {
+    return [
+      { id: 101, type: 'folder', name: 'Regression Suite', depth: 0, open: true, count: 3 },
+      { id: 1011, type: 'test', name: 'login flow', depth: 1 },
+      { id: 1012, type: 'test', name: 'checkout flow', depth: 1 },
+      { id: 102, type: 'folder', name: 'Nested Smoke', depth: 1, open: true, count: 1 },
+      { id: 1021, type: 'test', name: 'smoke - health check', depth: 2 },
+      { id: 103, type: 'folder', name: 'Archive', depth: 0, open: true, count: 1 },
+      { id: 1031, type: 'test', name: 'login flow', depth: 1 },   // duplicate name, different folder
+      { id: 104, type: 'folder', name: 'Empty Folder', depth: 0, open: true, count: 0 }
+    ];
+  }
+
+  var App = Component({
+    selector: 'app-root',
+    // A `styles` entry switches on emulated view encapsulation, which is what makes Angular
+    // stamp _nghost-*/_ngcontent-* attributes onto the DOM. Without it there is no scoping
+    // attribute at all. Those suffixes are BUILD-GENERATED and change between builds, so any
+    // locator that captures one is guaranteed to rot -- that is the challenge.
+    styles: ['.ng-scoped-marker{outline:0}'],
+    template: [
+      // ------------------------------------------------------------------ 01 + 03 + 10 + 16
+      '<div class="challenge" data-challenge="10-tree-no-depth-attribute">',
+      '  <h3>Folder tree <span class="tag">01 no-testid</span><span class="tag">03 indeterminate</span>',
+      '      <span class="tag">10 depth-not-measurable</span><span class="tag">16 word-form count</span></h3>',
+      '  <p class="why">Depth exists only as name-cell padding; every checkbox is column-aligned, so',
+      '     x-offset cannot reveal nesting. Parent state uses the <code>indeterminate</code> DOM',
+      '     property, which is never an attribute and never aria-checked="mixed". Counts read',
+      '     "3 tests", not "(3)".</p>',
+      '  <input type="text" [value]="query" (input)="onSearch($event)"',
+      '         placeholder="Search folders and tests" aria-label="Search folders and tests">',
+      '  <span class="small muted" *ngIf="searching"> searching...</span>',
+      '  <table class="table tree"><tbody>',
+      '    <tr *ngFor="let r of visibleRows()" [id]="rowId(r)">',
+      '      <td class="sel">',
+      '        <input type="checkbox" [attr.aria-label]="(r.type===\'folder\'?\'Select folder \':\'Select test \')+r.name"',
+      '               [checked]="isChecked(r)" (change)="toggle(r)">',
+      '      </td>',
+      '      <td class="name">',
+      '        <span [style.padding-left.px]="r.depth*22">',
+      '          <button *ngIf="r.type===\'folder\'" (click)="r.open=!r.open"',
+      '                  [attr.aria-label]="r.open?\'Collapse folder\':\'Expand folder\'">{{r.open?"-":"+"}}</button>',
+      '          {{r.name}}',
+      '          <span class="pill" *ngIf="r.type===\'folder\'">{{r.count}} {{r.count===1?"test":"tests"}}</span>',
+      '        </span>',
+      '      </td>',
+      '    </tr>',
+      '  </tbody></table>',
+      '  <div class="small muted" *ngIf="visibleRows().length===0" role="status">',
+      '    No matching result found</div>',   // 17 empty state
+      '  <div class="output">Selected: {{selected.length}}</div>',
+      '</div>',
+
+      // ------------------------------------------------------------------ 04 relocation
+      '<div class="challenge" data-challenge="04-element-relocates">',
+      '  <h3>Selected items relocate <span class="tag">04</span></h3>',
+      '  <p class="why">A fully-selected folder LEAVES the tree above and reappears here, so a',
+      '     locator captured pre-selection no longer resolves.</p>',
+      '  <ul><li *ngFor="let s of selectedNames()">{{s}}</li></ul>',
+      '  <span class="small muted" *ngIf="selected.length===0">Nothing selected yet</span>',
+      '</div>',
+
+      // ------------------------------------------------------------------ 05 re-render detach
+      '<div class="challenge" data-challenge="05-rerender-detaches-handle">',
+      '  <h3>Re-render detaches the handle <span class="tag">05</span></h3>',
+      '  <p class="why">Clicking shuffles the list and re-keys every node, so the element the',
+      '     recorder grabbed is detached before the next command lands. Needs a retry, or a',
+      '     locator that re-resolves.</p>',
+      '  <button (click)="shuffle()" aria-label="Shuffle the list">Shuffle</button>',
+      '  <ul><li *ngFor="let n of shuffleList; trackBy: neverSame">{{n}}</li></ul>',
+      '</div>',
+
+      // ------------------------------------------------------------------ 06 duplicate names
+      '<div class="challenge" data-challenge="06-duplicate-names">',
+      '  <h3>Duplicate labels <span class="tag">06</span></h3>',
+      '  <p class="why">Three buttons with identical text. Only one is correct; a name/text match',
+      '     picks the wrong one. Requires an ancestor-scoped or positional selector.</p>',
+      '  <div class="row-actions">',
+      '    <span *ngFor="let g of [1,2,3]">',
+      '      <button (click)="pickDup(g)" [attr.data-group]="g">Run</button>',
+      '    </span>',
+      '  </div>',
+      '  <div class="output">Picked group: {{dupPicked || "none"}} (correct = 2)</div>',
+      '</div>',
+
+      // ------------------------------------------------------------------ 07 hidden twin
+      '<div class="challenge" data-challenge="07-hidden-twin-control">',
+      '  <h3>Hidden twin control <span class="tag">07</span></h3>',
+      '  <p class="why">Both buttons are in the DOM at all times; only one is displayed. An',
+      '     existence check ($$().length &gt; 0) picks the wrong one -- gate on displayed.</p>',
+      '  <button [hidden]="editMode" (click)="mark(\'Add test(s)\')">Add test(s)</button>',
+      '  <button [hidden]="!editMode" (click)="mark(\'Update tests\')">Update tests</button>',
+      '  <button (click)="editMode=!editMode" aria-label="Toggle edit mode">Toggle mode</button>',
+      '  <div class="output">Last clicked: {{lastMark || "none"}} | mode: {{editMode?"edit":"create"}}</div>',
+      '</div>',
+
+      // ------------------------------------------------------------------ 08 async mount
+      '<div class="challenge" data-challenge="08-async-mount">',
+      '  <h3>Late mount <span class="tag">08</span></h3>',
+      '  <p class="why">Appears ~6s after the click. A single displayed-check fails instantly;',
+      '     only a poll succeeds.</p>',
+      '  <button (click)="startLate()" aria-label="Load late panel">Load panel</button>',
+      '  <div *ngIf="lateReady" role="region" aria-label="Late panel">',
+      '    <button (click)="mark(\'late-confirm\')">Confirm</button>',
+      '  </div>',
+      '  <span class="small muted" *ngIf="lateLoading">mounting...</span>',
+      '</div>',
+
+      // ------------------------------------------------------------------ 09 occlusion
+      '<div class="challenge" data-challenge="09-occlusion">',
+      '  <h3>Occluded control <span class="tag">09</span></h3>',
+      '  <p class="why">The pager sits under a floating "Talk to an expert" button.',
+      '     isDisplayed() returns true, but the click lands on the overlay -- exactly the',
+      '     reported pagination defect.</p>',
+      '  <div style="position:relative;height:56px">',
+      '    <div style="position:absolute;right:26px;bottom:6px">',
+      '      <button (click)="mark(\'next-page\')" aria-label="Next page">Next</button>',
+      '    </div>',
+      '  </div>',
+      '</div>',
+
+      // ------------------------------------------------------------------ 18 auto-dismiss toast
+      '<div class="challenge" data-challenge="18-auto-dismiss-toast">',
+      '  <h3>Self-dismissing toast <span class="tag">18</span></h3>',
+      '  <p class="why">Visible for 3s only. Assert it too late and it is gone; the recorder must',
+      '     capture it inside the window.</p>',
+      '  <button (click)="fireToast()" aria-label="Trigger toast">Trigger toast</button>',
+      '</div>',
+
+      '<div class="toast" *ngIf="toast" role="alert">{{toast}}</div>',
+      '<button class="expert-fab" (click)="mark(\'talk-to-expert\')">Talk to an expert</button>'
+    ].join('\n')
+  }, function AppComponent() {
+    this.rows = seedTree();
+    this.query = '';
+    this.searching = false;
+    this.selected = [];
+    this.shuffleList = ['alpha', 'bravo', 'charlie', 'delta'];
+    this.dupPicked = null;
+    this.editMode = false;
+    this.lastMark = null;
+    this.lateReady = false;
+    this.lateLoading = false;
+    this.toast = null;
+    this._timer = null;
+    this._n = 0;
+  });
+
+  App.prototype.rowId = function (r) {
+    return r.type === 'folder' ? 'folder-' + r.id : 'test-' + r.id;
+  };
+
+  // Debounced, and the filter matches BOTH folder names and test names -- the behaviour whose
+  // absence made customers believe their folders had been deleted.
+  App.prototype.onSearch = function (ev) {
+    var self = this;
+    this.query = ev.target.value;
+    this.searching = true;
+    clearTimeout(this._timer);
+    this._timer = setTimeout(function () { self.searching = false; }, 400);
+  };
+
+  App.prototype.visibleRows = function () {
+    var q = (this.query || '').toLowerCase().trim();
+    var self = this;
+    return this.rows.filter(function (r) {
+      if (self.selected.indexOf(r.id) !== -1 && r.type === 'folder') return false; // 04 relocation
+      if (!q) return true;
+      return r.name.toLowerCase().indexOf(q) !== -1;
+    });
+  };
+
+  App.prototype.isChecked = function (r) { return this.selected.indexOf(r.id) !== -1; };
+
+  App.prototype.toggle = function (r) {
+    var i = this.selected.indexOf(r.id);
+    if (i === -1) this.selected.push(r.id); else this.selected.splice(i, 1);
+    this.applyIndeterminate();
+  };
+
+  // Parent state is written as a DOM PROPERTY. It never appears in the markup, so an
+  // attribute-based or aria-based locator cannot read it.
+  App.prototype.applyIndeterminate = function () {
+    var self = this;
+    setTimeout(function () {
+      self.rows.filter(function (r) { return r.type === 'folder' && r.count > 0; }).forEach(function (f) {
+        var box = document.querySelector('#folder-' + f.id + ' input[type=checkbox]');
+        if (!box) return;
+        var kids = self.rows.filter(function (r) { return r.type === 'test' && r.depth > f.depth; });
+        var picked = kids.filter(function (k) { return self.selected.indexOf(k.id) !== -1; }).length;
+        box.indeterminate = picked > 0 && picked < kids.length;
+      });
+    }, 0);
+  };
+
+  App.prototype.selectedNames = function () {
+    var self = this;
+    return this.rows.filter(function (r) { return self.selected.indexOf(r.id) !== -1; })
+                    .map(function (r) { return r.name; });
+  };
+
+  // trackBy returns a fresh key every cycle, forcing Angular to destroy and recreate each node.
+  App.prototype.neverSame = function () { return Math.random(); };
+  App.prototype.shuffle = function () {
+    this.shuffleList = this.shuffleList.slice().sort(function () { return Math.random() - 0.5; });
+  };
+
+  App.prototype.pickDup = function (g) { this.dupPicked = g; };
+  App.prototype.mark = function (what) { this.lastMark = what; };
+
+  App.prototype.startLate = function () {
+    var self = this;
+    this.lateLoading = true;
+    setTimeout(function () { self.lateLoading = false; self.lateReady = true; }, 6000);
+  };
+
+  App.prototype.fireToast = function () {
+    var self = this;
+    this.toast = 'Saved successfully';
+    setTimeout(function () { self.toast = null; }, 3000);
+  };
+
+  var AppModule = core.NgModule({
+    declarations: [App],
+    imports: [ng.platformBrowser.BrowserModule],
+    bootstrap: [App]
+  })(function AppModule() {});
+
+  document.addEventListener('DOMContentLoaded', function () {
+    ng.platformBrowserDynamic.platformBrowserDynamic()
+      .bootstrapModule(AppModule)
+      .catch(function (e) {
+        console.error('Angular bootstrap failed', e);
+        document.querySelector('app-root').innerHTML =
+          '<div class="output">Angular failed to bootstrap: ' + e.message + '</div>';
+      });
+  });
+})();
+</script>
+</body>
+</html>
