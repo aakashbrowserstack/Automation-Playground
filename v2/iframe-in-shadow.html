@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>Iframe inside Shadow Root - LCNC-20384 fixture</title>
+<link rel='stylesheet' href='../shared/styles.css'>
+<style>
+.vault-container { margin: 20px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+.vault-container h3 { margin-top: 0; color: #333; }
+.hint { color: #666; font-size: 14px; margin-top: 10px; }
+code { background: #eef; padding: 2px 6px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<a href='../index.html' class='small btn'>Back</a>
+
+<section class='card'>
+<h2>Iframe nested inside Shadow Root (LCNC-20384)</h2>
+<p style='color: #666; margin-bottom: 20px;'>
+  Mirrors the real-world PBL Pollard CVV widget: a custom element
+  (<code>&lt;cvv-vault-widget&gt;</code>) with an open shadow root containing
+  an iframe (<code>&lt;iframe title='Iframe Widget'&gt;</code>) whose body
+  carries the actual input (<code>&lt;input data-test-id='cvv-input'&gt;</code>).
+  Reproduces the "<code>||</code> then <code>&lt;&lt;</code>" custom-locator
+  path fixed in <code>lcnc-app</code> PR #5427.
+</p>
+
+<div class='vault-container'>
+  <h3>CVV Vault Widget (iframe inside shadow DOM)</h3>
+  <cvv-vault-widget is-cvv-widget data-testid='cvv-vault'></cvv-vault-widget>
+  <div class='hint'>
+    Custom locator to validate: <br>
+    <code>cvv-vault-widget[is-cvv-widget] || iframe[title='Iframe Widget'] &lt;&lt; input[data-test-id='cvv-input']</code>
+  </div>
+</div>
+
+</section>
+
+<script>
+// Mirror of <vault-iframe is-cvv-widget> on playonkansas.com (LCNC-20384).
+// The input lives inside an iframe (title='Iframe Widget') that is itself
+// a child of this element's open shadow root. The 'cvv-vault-widget' tag,
+// 'is-cvv-widget' attribute, 'Iframe Widget' title and
+// 'data-test-id=cvv-input' selector match the real customer page.
+class CvvVaultWidget extends HTMLElement {
+  connectedCallback() {
+    const shadow = this.attachShadow({ mode: 'open' });
+    const iframe = document.createElement('iframe');
+    iframe.title = 'Iframe Widget';
+    iframe.style.cssText = 'width: 100%; height: 90px; border: 1px solid #bbb; border-radius: 4px;';
+    iframe.setAttribute('data-testid', 'cvv-iframe');
+    // Use srcdoc so the iframe body stays same-origin AND the input is
+    // reachable only through the shadow + iframe boundary chain.
+    iframe.srcdoc = [
+      "<!doctype html><html><head><style>",
+      "  body { font-family: sans-serif; padding: 10px; margin: 0; }",
+      "  input { padding: 8px; width: 100%; max-width: 260px; border: 1px solid #bbb; border-radius: 4px; font-size: 14px; }",
+      "  label { display: block; margin-bottom: 6px; color: #333; font-weight: 600; }",
+      "</style></head><body>",
+      "  <label for='cvv'>CVV</label>",
+      "  <input id='cvv' type='text' maxlength='4' placeholder='3 or 4 digits' data-test-id='cvv-input' />",
+      "</body></html>",
+    ].join('');
+    shadow.appendChild(iframe);
+  }
+}
+customElements.define('cvv-vault-widget', CvvVaultWidget);
+</script>
+
+</body>
+</html>
